@@ -8,12 +8,27 @@ Source0:    %{name}-%{version}.tar.gz
 
 %define BUILD_PROFILE %{?profile}%{!?profile:%{?tizen_profile_name}}
 
+# Using the active window hooking for app monitoring, via ecore-x
+%define ACTIVE_WINDOW_HOOK off
+
 BuildRequires: cmake
+
 BuildRequires: pkgconfig(context-common)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(capi-system-info)
 BuildRequires: pkgconfig(capi-system-device)
 BuildRequires: pkgconfig(capi-system-runtime-info)
+BuildRequires: pkgconfig(capi-appfw-package-manager)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(capi-appfw-app-manager)
+BuildRequires: pkgconfig(pkgmgr)
+BuildRequires: pkgconfig(pkgmgr-info)
+BuildRequires: pkgconfig(capi-media-sound-manager)
+
+%if "%{ACTIVE_WINDOW_HOOK}" == "on"
+BuildRequires: pkgconfig(ecore)
+BuildRequires: pkgconfig(ecore-x)
+%endif
 
 %if "%{?BUILD_PROFILE}" == "mobile"
 BuildRequires: pkgconfig(capi-network-bluetooth)
@@ -23,6 +38,8 @@ BuildRequires: pkgconfig(tapi)
 BuildRequires: pkgconfig(msg-service)
 BuildRequires: pkgconfig(capi-messaging-email)
 BuildRequires: pkgconfig(motion)
+BuildRequires: pkgconfig(contacts-service2)
+BuildRequires: pkgconfig(capi-content-media-content)
 %endif
 
 %if "%{?BUILD_PROFILE}" == "wearable"
@@ -37,6 +54,7 @@ BuildRequires: pkgconfig(motion)
 %if "%{?BUILD_PROFILE}" == "tv"
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-network-wifi)
+BuildRequires: pkgconfig(capi-content-media-content)
 %endif
 
 %description
@@ -62,7 +80,8 @@ export   CFLAGS+=" -DTIZEN_ENGINEER_MODE"
 export CXXFLAGS+=" -DTIZEN_ENGINEER_MODE"
 export   FFLAGS+=" -DTIZEN_ENGINEER_MODE"
 
-cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DMAJORVER=${MAJORVER} -DFULLVER=%{version} -DPROFILE=%{?BUILD_PROFILE}
+cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DMAJORVER=${MAJORVER} -DFULLVER=%{version} \
+		-DPROFILE=%{?BUILD_PROFILE} -DACTIVE_WINDOW_HOOK=%{ACTIVE_WINDOW_HOOK}
 make %{?jobs:-j%jobs}
 
 %install

@@ -1,0 +1,62 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+SET(target "ctx-statistics")
+
+# Common Options
+INCLUDE_DIRECTORIES(
+	${CMAKE_CURRENT_SOURCE_DIR}/shared
+)
+
+# Common Profile
+FILE(GLOB srcs ./*.cpp)
+FILE(GLOB srcs ${srcs} shared/*.cpp)
+FILE(GLOB srcs ${srcs} app/*.cpp)
+FILE(GLOB srcs ${srcs} prediction/*.cpp)
+
+SET(deps "capi-system-runtime-info pkgmgr pkgmgr-info capi-appfw-package-manager")
+SET(deps "${deps} capi-appfw-application capi-appfw-app-manager")
+SET(deps "${deps} capi-media-sound-manager")
+
+IF("${ACTIVE_WINDOW_HOOK}" STREQUAL "on")
+	ADD_DEFINITIONS("-D_USE_ACTIVE_WINDOW_HOOKING_")
+	SET(deps "${deps} ecore ecore-x")
+	SET(srcs ${srcs} app/app_use_monitor/active_window_monitor.cpp)
+ELSE("${ACTIVE_WINDOW_HOOK}" STREQUAL "on")
+	SET(srcs ${srcs} app/app_use_monitor/launch_monitor.cpp)
+ENDIF("${ACTIVE_WINDOW_HOOK}" STREQUAL "on")
+
+# Mobile Profile
+IF("${PROFILE}" STREQUAL "mobile")
+	FILE(GLOB srcs ${srcs} media/*.cpp)
+	FILE(GLOB srcs ${srcs} social/*.cpp)
+	SET(deps "${deps} contacts-service2 capi-content-media-content")
+ENDIF("${PROFILE}" STREQUAL "mobile")
+
+# Wearable Profile
+#IF("${PROFILE}" STREQUAL "wearable")
+#ENDIF("${PROFILE}" STREQUAL "wearable")
+
+# TV Profile
+IF("${PROFILE}" STREQUAL "tv")
+	FILE(GLOB srcs ${srcs} media/*.cpp)
+	SET(deps "${deps} capi-content-media-content")
+ENDIF("${PROFILE}" STREQUAL "tv")
+
+MESSAGE("Statistics Provider Sources: ${srcs}")
+
+# Build
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(stats_pkgs REQUIRED ${deps_common} ${deps})
+
+FOREACH(flag ${stats_pkgs_CFLAGS})
+	SET(extra_cflags "${extra_cflags} ${flag}")
+ENDFOREACH(flag)
+
+ADD_LIBRARY(${target} SHARED ${srcs})
+TARGET_LINK_LIBRARIES(${target} ${stats_pkgs_LDFLAGS})
+SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_FLAGS ${extra_cflags})
+SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "LOG_TAG=\"CONTEXT-STATS\"")
+SET_TARGET_PROPERTIES(${target} PROPERTIES SOVERSION ${MAJORVER})
+SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${FULLVER})
+
+# Install
+INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT RuntimeLibraries)
