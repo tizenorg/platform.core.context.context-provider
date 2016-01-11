@@ -40,6 +40,8 @@ BuildRequires: pkgconfig(capi-messaging-email)
 BuildRequires: pkgconfig(motion)
 BuildRequires: pkgconfig(contacts-service2)
 BuildRequires: pkgconfig(capi-content-media-content)
+BuildRequires: pkgconfig(capi-location-manager)
+BuildRequires: pkgconfig(capi-geofence-manager)
 %endif
 
 %if "%{?BUILD_PROFILE}" == "wearable"
