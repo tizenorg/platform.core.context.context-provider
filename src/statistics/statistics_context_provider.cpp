@@ -20,6 +20,10 @@
 
 #include "app/app_stats_provider.h"
 
+#ifndef _DISABLE_PREDICTION_ENGINE_
+// include prediction engine header files here
+#endif
+
 #ifdef _MOBILE_
 #include "media/media_stats_provider.h"
 #include "social/social_stats_provider.h"
@@ -49,6 +53,10 @@ EXTAPI bool ctx::init_statistics_context_provider()
 	register_provider<app_statistics_provider>(APP_SUBJ_COMMON_SETTING, APP_HISTORY_PRIV);
 	register_provider<app_statistics_provider>(APP_SUBJ_FREQUENCY, APP_HISTORY_PRIV);
 	app_statistics_provider::submit_trigger_item();
+
+#ifndef _DISABLE_PREDICTION_ENGINE_
+// initialize the prediction engine here
+#endif
 
 #ifdef _MOBILE_
 	media_statistics_provider::create(NULL);
