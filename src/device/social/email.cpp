@@ -75,7 +75,7 @@ void ctx::social_status_email::on_signal_received(const char* sender, const char
 
 int ctx::social_status_email::subscribe()
 {
-	dbus_signal_id = ctx::dbus_server::signal_subscribe(NULL, NULL, "User.Email.NetworkStatus", "email", this);
+	dbus_signal_id = ctx::dbus_server::subscribe_session_signal(NULL, NULL, "User.Email.NetworkStatus", "email", this);
 	IF_FAIL_RETURN_TAG(dbus_signal_id >= 0, ERR_OPERATION_FAILED, _E, "Email dbus signal subscription failed");
 	return ERR_NONE;
 }
@@ -83,6 +83,6 @@ int ctx::social_status_email::subscribe()
 
 int ctx::social_status_email::unsubscribe()
 {
-	ctx::dbus_server::signal_unsubscribe(dbus_signal_id);
+	ctx::dbus_server::unsubscribe_session_signal(dbus_signal_id);
 	return ERR_NONE;
 }

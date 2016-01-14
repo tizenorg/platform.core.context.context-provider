@@ -22,12 +22,7 @@
 
 #include "db_init.h"
 #include "install_monitor.h"
-
-#ifdef _USE_ACTIVE_WINDOW_HOOKING_
-#include "app_use_monitor/active_window_monitor.h"
-#else
-#include "app_use_monitor/launch_monitor.h"
-#endif
+#include "active_window_monitor.h"
 
 static ctx::app_install_monitor *install_mon = NULL;
 static ctx::app_use_monitor *launch_mon = NULL;

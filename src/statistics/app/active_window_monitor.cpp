@@ -16,26 +16,24 @@
 
 #include <sys/types.h>
 #include <time.h>
-#include <Ecore_X.h>
 #include <app_manager.h>
 
 #include <db_mgr.h>
 #include <json.h>
 #include <types_internal.h>
 #include <system_info.h>
-#include "../app_stats_types.h"
+#include <dbus_server.h>
+#include "app_stats_types.h"
 #include "active_window_monitor.h"
 
 /* Active window changes frequently.
  * We thus consider the apps being foregrounded at least 3 secs */
 #define MIN_VALID_USE_TIME 2
-
 #define ONE_DAY_IN_SEC 86400
 
-static Ecore_Event_Handler *window_property_event_handler = NULL;
-
 ctx::app_use_monitor::app_use_monitor()
-	: last_cleanup_time(0)
+	: signal_id(-1)
+	, last_cleanup_time(0)
 	, last_timestamp(0)
 	, last_pid(-1)
 {
@@ -49,69 +47,48 @@ ctx::app_use_monitor::~app_use_monitor()
 
 bool ctx::app_use_monitor::start_logging()
 {
-	/* This ecore_x based approach does not work with virtualization features */
-	if(window_property_event_handler == NULL) {
-		ecore_x_init(NULL);
-		ecore_x_event_mask_set(ecore_x_window_root_first_get(), ECORE_X_EVENT_MASK_WINDOW_PROPERTY);
-		window_property_event_handler = ecore_event_handler_add(ECORE_X_EVENT_WINDOW_PROPERTY, on_window_property_changed, this);
-		IF_FAIL_RETURN_TAG(window_property_event_handler, false, _E, "ecore_event_handler_add() failed");
-		_D("Active window monitoring started");
-	}
-
-	return true;
+	signal_id = dbus_server::subscribe_system_signal(NULL,
+			"/Org/Tizen/Aul/AppStatus", "org.tizen.aul.AppStatus", "AppStatusChange", this);
+	_D("Active window monitoring started (%lld)", signal_id);
+	return (signal_id > 0);
 }
 
 void ctx::app_use_monitor::stop_logging()
 {
-	if (window_property_event_handler) {
-		ecore_event_handler_del(window_property_event_handler);
-		window_property_event_handler = NULL;
+	if (signal_id > 0) {
+		dbus_server::unsubscribe_system_signal(signal_id);
 		_D("Active window monitoring stopped");
 	}
 }
 
-Eina_Bool ctx::app_use_monitor::on_window_property_changed(void* data, int type, void* event)
+void ctx::app_use_monitor::on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
 {
-	IF_FAIL_RETURN_TAG(data && event, ECORE_CALLBACK_PASS_ON, _W, "Invalid window event");
+	gint pid = 0;
+	const gchar *appid = NULL;
+	const gchar *pkgid = NULL;
+	const gchar *status = NULL;
+	const gchar *type = NULL;
 
-	Ecore_X_Event_Window_Property *property = static_cast<Ecore_X_Event_Window_Property*>(event);
-	Ecore_X_Atom atom = ecore_x_atom_get("_NET_ACTIVE_WINDOW");
+	g_variant_get(param, "(i&s&s&s&s)", &pid, &appid, &pkgid, &status, &type);
+	IF_FAIL_VOID(appid && status && type);
+	IF_FAIL_VOID(STR_EQ(status, "fg") && STR_EQ(type, "uiapp"));
 
-	IF_FAIL_RETURN(property->atom == atom, ECORE_CALLBACK_PASS_ON);
-
-	int pid = 0;
-	Ecore_X_Window win = 0;
-
-	ecore_x_window_prop_window_get(property->win, atom, &win, 1);
-	ecore_x_netwm_pid_get(win, &pid);
-
-	IF_FAIL_RETURN_TAG(pid > 0, ECORE_CALLBACK_PASS_ON, _W, "Invalid pid");
-
-	app_use_monitor *instance = static_cast<app_use_monitor*>(data);
-	instance->on_active_window_changed(pid);
-
-	return ECORE_CALLBACK_PASS_ON;
+	on_active_window_changed(appid);
 }
 
-void ctx::app_use_monitor::on_active_window_changed(int pid)
+void ctx::app_use_monitor::on_active_window_changed(std::string app_id)
 {
-	IF_FAIL_VOID(last_pid != pid);
-	_D("Active window changed: PID-%d", pid);
+	IF_FAIL_VOID(last_app_id != app_id);
+	_D("New fourground app '%s'", app_id.c_str());
 
 	int timestamp = static_cast<int>(time(NULL));
 	int duration = timestamp - last_timestamp;
 
-	if (!last_app_id.empty() > 0 && duration >= MIN_VALID_USE_TIME)
+	if (!last_app_id.empty() && duration >= MIN_VALID_USE_TIME)
 		verify_used_app(last_app_id.c_str(), duration);
 
 	last_timestamp = timestamp;
-	last_pid = pid;
-
-	char *app_id = NULL;
-	app_manager_get_app_id(pid, &app_id);
-	last_app_id = (app_id ? app_id : "");
-	g_free(app_id);
-	_D("Current Active App: %s", last_app_id.c_str());
+	last_app_id = app_id;
 }
 
 void ctx::app_use_monitor::verify_used_app(const char *app_id, int duration)

@@ -8,9 +8,6 @@ Source0:    %{name}-%{version}.tar.gz
 
 %define BUILD_PROFILE %{?profile}%{!?profile:%{?tizen_profile_name}}
 
-# Using the active window hooking for app monitoring, via ecore-x
-%define ACTIVE_WINDOW_HOOK off
-
 BuildRequires: cmake
 
 BuildRequires: pkgconfig(context-common)
@@ -24,11 +21,6 @@ BuildRequires: pkgconfig(capi-appfw-app-manager)
 BuildRequires: pkgconfig(pkgmgr)
 BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: pkgconfig(capi-media-sound-manager)
-
-%if "%{ACTIVE_WINDOW_HOOK}" == "on"
-BuildRequires: pkgconfig(ecore)
-BuildRequires: pkgconfig(ecore-x)
-%endif
 
 %if "%{?BUILD_PROFILE}" == "mobile"
 BuildRequires: pkgconfig(capi-network-bluetooth)
@@ -82,8 +74,7 @@ export   CFLAGS+=" -DTIZEN_ENGINEER_MODE"
 export CXXFLAGS+=" -DTIZEN_ENGINEER_MODE"
 export   FFLAGS+=" -DTIZEN_ENGINEER_MODE"
 
-cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DMAJORVER=${MAJORVER} -DFULLVER=%{version} \
-		-DPROFILE=%{?BUILD_PROFILE} -DACTIVE_WINDOW_HOOK=%{ACTIVE_WINDOW_HOOK}
+cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DMAJORVER=${MAJORVER} -DFULLVER=%{version} -DPROFILE=%{?BUILD_PROFILE}
 make %{?jobs:-j%jobs}
 
 %install

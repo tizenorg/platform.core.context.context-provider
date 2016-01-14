@@ -17,24 +17,29 @@
 #ifndef __CONTEXT_APP_USE_MONITOR_H__
 #define __CONTEXT_APP_USE_MONITOR_H__
 
-#include <app_manager.h>
-#include <db_listener_iface.h>
+#include <string>
+#include <sstream>
+#include <dbus_listener_iface.h>
 
 namespace ctx {
 
-	class app_use_monitor : public db_listener_iface {
+	class app_use_monitor : public dbus_listener_iface {
 	private:
+		int64_t signal_id;
+		int last_cleanup_time;
+		int last_timestamp;
+		int last_pid;
+		std::string last_app_id;
+
 		bool start_logging(void);
 		void stop_logging(void);
 
-		void log_launch_event(const char* app_id);
-		void log_terminate_event(const char* app_id);
+		void verify_used_app(const char *app_id, int duration);
+		void insert_log(const char *app_id, int duration);
+		void append_cleanup_query(std::stringstream &query);
 
-		void on_creation_result_received(unsigned int query_id, int error) {}
-		void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-		void on_query_result_received(unsigned int query_id, int error, std::vector<json>& records) {}
-
-		static void app_context_event_cb(app_context_h app_context, app_context_event_e event, void *user_data);
+		void on_active_window_changed(std::string app_id);
+		void on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param);
 
 	public:
 		app_use_monitor();

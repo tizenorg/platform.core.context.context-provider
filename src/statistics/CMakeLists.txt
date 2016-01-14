@@ -25,14 +25,6 @@ SET(deps "capi-system-runtime-info pkgmgr pkgmgr-info capi-appfw-package-manager
 SET(deps "${deps} capi-appfw-application capi-appfw-app-manager")
 SET(deps "${deps} capi-media-sound-manager")
 
-IF("${ACTIVE_WINDOW_HOOK}" STREQUAL "on")
-	ADD_DEFINITIONS("-D_USE_ACTIVE_WINDOW_HOOKING_")
-	SET(deps "${deps} ecore ecore-x")
-	SET(srcs ${srcs} app/app_use_monitor/active_window_monitor.cpp)
-ELSE("${ACTIVE_WINDOW_HOOK}" STREQUAL "on")
-	SET(srcs ${srcs} app/app_use_monitor/launch_monitor.cpp)
-ENDIF("${ACTIVE_WINDOW_HOOK}" STREQUAL "on")
-
 # Mobile Profile
 IF("${PROFILE}" STREQUAL "mobile")
 	FILE(GLOB srcs ${srcs} media/*.cpp)
