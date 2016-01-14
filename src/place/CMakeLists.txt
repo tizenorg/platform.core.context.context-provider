@@ -1,5 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(target "ctx-place")
+SET(definitions LOG_TAG=\"CONTEXT-PLACE\")
 
 # Build flag for the place auto detection engine.
 # Set this to "yes" to enable the engine.
@@ -16,6 +17,8 @@ IF("${PROFILE}" STREQUAL "mobile")
 		FILE(GLOB_RECURSE srcs ${srcs} recognition/*.cpp)
 		SET(deps "${deps} capi-location-manager")
 		SET(deps "${deps} capi-network-wifi")
+	ELSE("${enable_recog_engine}" STREQUAL "yes")
+		SET(definitions ${definitions} "_DISABLE_RECOG_ENGINE_")
 	ENDIF("${enable_recog_engine}" STREQUAL "yes")
 ENDIF("${PROFILE}" STREQUAL "mobile")
 
@@ -32,13 +35,9 @@ ENDFOREACH(flag)
 ADD_LIBRARY(${target} SHARED ${srcs})
 TARGET_LINK_LIBRARIES(${target} ${place_pkgs_LDFLAGS})
 SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_FLAGS ${extra_cflags})
-SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "LOG_TAG=\"CONTEXT-PLACE\"")
+SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "${definitions}")
 SET_TARGET_PROPERTIES(${target} PROPERTIES SOVERSION ${MAJORVER})
 SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${FULLVER})
-
-IF(NOT "${enable_recog_engine}" STREQUAL "yes")
-	SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "_DISABLE_RECOG_ENGINE_")
-ENDIF(NOT "${enable_recog_engine}" STREQUAL "yes")
 
 # Install
 INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT RuntimeLibraries)

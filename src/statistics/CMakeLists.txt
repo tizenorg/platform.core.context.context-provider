@@ -1,5 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(target "ctx-statistics")
+SET(definitions LOG_TAG=\"CONTEXT-STATS\")
 
 # Build flag for the prediction engine.
 # Set this to "yes" to enable the engine.
@@ -16,6 +17,8 @@ FILE(GLOB srcs ${srcs} shared/*.cpp)
 FILE(GLOB srcs ${srcs} app/*.cpp)
 IF("${enable_prediction_engine}" STREQUAL "yes")
 	FILE(GLOB srcs ${srcs} prediction/*.cpp)
+ELSE("${enable_prediction_engine}" STREQUAL "yes")
+	SET(definitions ${definitions} "_DISABLE_PREDICTION_ENGINE_")
 ENDIF("${enable_prediction_engine}" STREQUAL "yes")
 
 SET(deps "capi-system-runtime-info pkgmgr pkgmgr-info capi-appfw-package-manager")
@@ -60,13 +63,9 @@ ENDFOREACH(flag)
 ADD_LIBRARY(${target} SHARED ${srcs})
 TARGET_LINK_LIBRARIES(${target} ${stats_pkgs_LDFLAGS})
 SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_FLAGS ${extra_cflags})
-SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "LOG_TAG=\"CONTEXT-STATS\"")
+SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "${definitions}")
 SET_TARGET_PROPERTIES(${target} PROPERTIES SOVERSION ${MAJORVER})
 SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${FULLVER})
-
-IF(NOT "${enable_prediction_engine}" STREQUAL "yes")
-	SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "_DISABLE_PREDICTION_ENGINE_")
-ENDIF(NOT "${enable_prediction_engine}" STREQUAL "yes")
 
 # Install
 INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT RuntimeLibraries)
