@@ -42,6 +42,8 @@ static ctx::json latest;
 
 ctx::social_status_call::social_status_call()
 {
+	handle_list.count = 0;
+	handle_list.handle = NULL;
 }
 
 ctx::social_status_call::~social_status_call()

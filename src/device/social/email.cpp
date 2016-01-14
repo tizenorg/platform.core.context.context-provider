@@ -25,6 +25,7 @@
 GENERATE_PROVIDER_COMMON_IMPL(social_status_email);
 
 ctx::social_status_email::social_status_email()
+	: dbus_signal_id(-1)
 {
 }
 

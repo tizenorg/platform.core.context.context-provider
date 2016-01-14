@@ -24,6 +24,7 @@
 
 ctx::contact_log_aggregator::contact_log_aggregator()
 	: timer_id(-1)
+	, time_diff(0)
 {
 	create_table();
 	timer_id = timer_manager::set_at(3, 0, timer_types::EVERYDAY, this, NULL);

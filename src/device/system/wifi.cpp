@@ -25,6 +25,7 @@ ctx::device_status_wifi::device_status_wifi()
 	: last_state(_UNKNOWN)
 	, is_initialized(false)
 	, is_activated(false)
+	, conn_state(WIFI_CONNECTION_STATE_FAILURE)
 {
 	IF_FAIL_VOID_TAG(start_monitor(), _W, "WiFi monitor initialization failed");
 
