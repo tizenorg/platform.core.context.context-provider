@@ -62,12 +62,12 @@ std::string ctx::social_db_handle::create_where_clause(ctx::json filter)
 	switch(comm_type) {
 	case SOCIAL_COMMUNICATION_TYPE_CALL:
 		where_clause <<
-			" AND " SOCIAL_PHONE_LOG_TYPE " >= " << CONTACTS_PLOG_TYPE_VOICE_INCOMMING <<
+			" AND " SOCIAL_PHONE_LOG_TYPE " >= " << CONTACTS_PLOG_TYPE_VOICE_INCOMING <<
 			" AND " SOCIAL_PHONE_LOG_TYPE " <= " << CONTACTS_PLOG_TYPE_VIDEO_BLOCKED;
 		break;
 	case SOCIAL_COMMUNICATION_TYPE_MESSAGE:
 		where_clause <<
-			" AND " SOCIAL_PHONE_LOG_TYPE " >= " << CONTACTS_PLOG_TYPE_MMS_INCOMMING <<
+			" AND " SOCIAL_PHONE_LOG_TYPE " >= " << CONTACTS_PLOG_TYPE_MMS_INCOMING <<
 			" AND " SOCIAL_PHONE_LOG_TYPE " <= " << CONTACTS_PLOG_TYPE_MMS_BLOCKED;
 		break;
 	default:

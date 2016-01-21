@@ -91,7 +91,7 @@ void ctx::contact_log_aggregator::get_updated_contact_log_list(int last_time, co
 	err = contacts_filter_create(_contacts_phone_log._uri, &filter);
 	IF_FAIL_CATCH_TAG(err == CONTACTS_ERROR_NONE, _E, "contacts_filter_create() failed");
 
-	contacts_filter_add_int(filter, _contacts_phone_log.log_type, CONTACTS_MATCH_GREATER_THAN_OR_EQUAL, CONTACTS_PLOG_TYPE_VOICE_INCOMMING);
+	contacts_filter_add_int(filter, _contacts_phone_log.log_type, CONTACTS_MATCH_GREATER_THAN_OR_EQUAL, CONTACTS_PLOG_TYPE_VOICE_INCOMING);
 	contacts_filter_add_operator(filter, CONTACTS_FILTER_OPERATOR_AND);
 	contacts_filter_add_int(filter, _contacts_phone_log.log_type, CONTACTS_MATCH_LESS_THAN_OR_EQUAL, CONTACTS_PLOG_TYPE_MMS_BLOCKED);
 	contacts_filter_add_operator(filter, CONTACTS_FILTER_OPERATOR_AND);
