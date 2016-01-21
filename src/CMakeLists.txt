@@ -11,6 +11,7 @@ ENDFUNCTION(add_provider)
 add_provider(device)
 add_provider(statistics)
 add_provider(place)
+add_provider(custom)
 
 SEPARATE_ARGUMENTS(deps_list)
 LIST(REMOVE_DUPLICATES deps_list)
