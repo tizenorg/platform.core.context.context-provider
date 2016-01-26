@@ -29,8 +29,9 @@
 template<typename provider>
 void register_provider(const char *subject, const char *privilege)
 {
-	if (!provider::is_supported())
+	if (!provider::is_supported()) {
 		return;
+	}
 
 	ctx::context_provider_info provider_info(provider::create, provider::destroy, NULL, privilege);
 	ctx::context_manager::register_provider(subject, provider_info);
