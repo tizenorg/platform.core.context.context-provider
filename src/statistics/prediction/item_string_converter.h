@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_ITEMSTRINGCONVERTER_H_
-#define INCLUDE_ITEMSTRINGCONVERTER_H_
+#ifndef PREDICTION_ITEM_STRING_CONVERTER_H_
+#define PREDICTION_ITEM_STRING_CONVERTER_H_
 
 #include "item.h"
 
@@ -32,4 +32,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_ITEMSTRINGCONVERTER_H_ */
+#endif /* PREDICTION_ITEM_STRING_CONVERTER_H_ */

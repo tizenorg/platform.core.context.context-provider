@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_WEIGHT_APRIORI_H_
-#define INCLUDE_WEIGHT_APRIORI_H_
+#ifndef PREDICTION_WEIGHT_APRIORI_H_
+#define PREDICTION_WEIGHT_APRIORI_H_
 
 #include "baskets_agregator.h"
 #include <list>
@@ -41,4 +41,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_WEIGHT_APRIORI_H_ */
+#endif /* PREDICTION_WEIGHT_APRIORI_H_ */

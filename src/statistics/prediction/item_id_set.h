@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_ITEM_ID_SET_H_
-#define INCLUDE_ITEM_ID_SET_H_
+#ifndef PREDICTION_ITEM_ID_SET_H_
+#define PREDICTION_ITEM_ID_SET_H_
 
 #include <list>
 
@@ -26,4 +26,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_ITEM_ID_SET_H_ */
+#endif /* PREDICTION_ITEM_ID_SET_H_ */

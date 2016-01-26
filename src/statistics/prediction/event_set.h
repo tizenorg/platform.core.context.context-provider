@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_EVENT_SET_H_
-#define INCLUDE_EVENT_SET_H_
+#ifndef PREDICTION_EVENT_SET_H_
+#define PREDICTION_EVENT_SET_H_
 
 #include "event.h"
 
@@ -25,4 +25,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_EVENT_SET_H_ */
+#endif /* PREDICTION_EVENT_SET_H_ */

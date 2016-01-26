@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_EVENT_H_
-#define INCLUDE_EVENT_H_
+#ifndef PREDICTION_EVENT_H_
+#define PREDICTION_EVENT_H_
 
 #include "item.h"
 #include "interval.h"
@@ -38,4 +38,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_EVENT_H_ */
+#endif /* PREDICTION_EVENT_H_ */

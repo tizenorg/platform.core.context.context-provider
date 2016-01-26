@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef ASSOC_RULE_PRODUCER_H_
-#define ASSOC_RULE_PRODUCER_H_
+#ifndef PREDICTION_ASSOC_RULE_PRODUCER_H_
+#define PREDICTION_ASSOC_RULE_PRODUCER_H_
 
 #include "assoc_rule_of_ids.h"
 #include "basket.h"
@@ -41,4 +41,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* ASSOC_RULE_PRODUCER_H_ */
+#endif /* PREDICTION_ASSOC_RULE_PRODUCER_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef BASKET_COMPRESSOR_H_
-#define BASKET_COMPRESSOR_H_
+#ifndef PREDICTION_BASKET_COMPRESSOR_H_
+#define PREDICTION_BASKET_COMPRESSOR_H_
 
 #include <list>
 #include <string>
@@ -35,4 +35,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* BASKET_COMPRESSOR_H_ */
+#endif /* PREDICTION_BASKET_COMPRESSOR_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef BASKET_FILTER_H_
-#define BASKET_FILTER_H_
+#ifndef PREDICTION_BASKET_FILTER_H_
+#define PREDICTION_BASKET_FILTER_H_
 
 #include "basket.h"
 #include "i_item_id_filter.h"
@@ -35,4 +35,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* BASKET_FILTER_H_ */
+#endif /* PREDICTION_BASKET_FILTER_H_ */

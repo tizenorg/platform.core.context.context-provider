@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_ITEM_H_
-#define INCLUDE_ITEM_H_
+#ifndef PREDICTION_ITEM_H_
+#define PREDICTION_ITEM_H_
 
 #include <string>
 #include <iostream>
@@ -48,4 +48,4 @@ namespace std {
 
 }
 
-#endif /* INCLUDE_ITEM_H_ */
+#endif /* PREDICTION_ITEM_H_ */
