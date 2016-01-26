@@ -33,8 +33,10 @@ std::ostream& ctx::operator<<(std::ostream& out, const ctx::ItemSet& itemSet)
 
 bool ctx::itemset_includes_in(const ctx::ItemSet& small, const ctx::ItemSet& big)
 {
-	for (const Item& s : small)
-		if (std::find(big.begin(), big.end(), s) == big.end())
+	for (const Item& s : small) {
+		if (std::find(big.begin(), big.end(), s) == big.end()) {
 			return false;
+		}
+	}
 	return true;
 }
