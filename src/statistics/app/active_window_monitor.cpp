@@ -28,14 +28,11 @@
 
 /* Active window changes frequently.
  * We thus consider the apps being foregrounded at least 3 secs */
-#define MIN_VALID_USE_TIME 2
 #define ONE_DAY_IN_SEC 86400
 
 ctx::app_use_monitor::app_use_monitor()
 	: signal_id(-1)
 	, last_cleanup_time(0)
-	, last_timestamp(0)
-	, last_pid(-1)
 {
 	start_logging();
 }
@@ -70,102 +67,84 @@ void ctx::app_use_monitor::on_signal_received(const char* sender, const char* pa
 	const gchar *type = NULL;
 
 	g_variant_get(param, "(i&s&s&s&s)", &pid, &appid, &pkgid, &status, &type);
+	_D("AppEvent: %s, %s, %s", appid, status, type);
+
 	IF_FAIL_VOID(appid && status && type);
-	IF_FAIL_VOID(STR_EQ(status, "fg") && STR_EQ(type, "uiapp"));
+	IF_FAIL_VOID(STR_EQ(type, "uiapp") && !is_skippable(appid));
 
-	on_active_window_changed(appid);
+	if (STR_EQ(status, "fg")) {
+		create_record(appid);
+	} else if (STR_EQ(status, "bg")) {
+		finish_record(appid);
+		remove_expired();
+	}
 }
 
-void ctx::app_use_monitor::on_active_window_changed(std::string app_id)
-{
-	IF_FAIL_VOID(last_app_id != app_id);
-	_D("New fourground app '%s'", app_id.c_str());
-
-	int timestamp = static_cast<int>(time(NULL));
-	int duration = timestamp - last_timestamp;
-
-	if (!last_app_id.empty() && duration >= MIN_VALID_USE_TIME)
-		verify_used_app(last_app_id.c_str(), duration);
-
-	last_timestamp = timestamp;
-	last_app_id = app_id;
-}
-
-void ctx::app_use_monitor::verify_used_app(const char *app_id, int duration)
-{
-	app_info_h app_info = NULL;
-	int err = app_manager_get_app_info(app_id, &app_info);
-	IF_FAIL_VOID_TAG(err == APP_MANAGER_ERROR_NONE && app_info, _E, "app_manager_get_app_info() failed");
-
-	bool nodisp = false;
-	err = app_info_is_nodisplay(app_info, &nodisp);
-	IF_FAIL_CATCH_TAG(err == APP_MANAGER_ERROR_NONE, _E, "app_info_is_nodisplay() failed");
-	IF_FAIL_CATCH(!nodisp);
-
-	insert_log(app_id, duration);
-
-CATCH:
-	if (app_info)
-		app_info_destroy(app_info);
-}
-
-void ctx::app_use_monitor::insert_log(const char *app_id, int duration)
+void ctx::app_use_monitor::create_record(std::string app_id)
 {
 	int audiojack;
 	int system_volume;
 	int media_volume;
 	std::string bssid;
+	json data;
+	data.set(NULL, STATS_APP_ID, app_id);
 
-	std::stringstream cols;
-	std::stringstream vals;
+	if (ctx::system_info::get_audio_jack_state(&audiojack))
+		data.set(NULL, STATS_AUDIO_JACK, audiojack);
 
-	/* App ID */
-	cols << STATS_APP_ID << ",";
-	vals << "'" << app_id << "',";
-
-	/* Audio Jack */
-	if (ctx::system_info::get_audio_jack_state(&audiojack)) {
-		cols << STATS_AUDIO_JACK << ",";
-		vals << audiojack << ",";
-	}
-
-	/* Volume */
 	if (ctx::system_info::get_volume(&system_volume, &media_volume)) {
-		cols << STATS_SYSTEM_VOLUME << "," << STATS_MEDIA_VOLUME << ",";
-		vals << system_volume << "," << media_volume << ",";
+		data.set(NULL, STATS_SYSTEM_VOLUME, system_volume);
+		data.set(NULL, STATS_MEDIA_VOLUME, media_volume);
 	}
 
-	/* BSSID */
-	if (ctx::system_info::get_wifi_bssid(bssid)) {
-		cols << STATS_BSSID << ",";
-		vals << "'" << bssid << "',";
-	}
+	if (ctx::system_info::get_wifi_bssid(bssid))
+		data.set(NULL, STATS_BSSID, bssid);
 
-	/* Time */
-	cols << STATS_UNIV_TIME << ",";
-	vals << "(strftime('%s', 'now')) - " << duration << ",";
+	db_manager::insert(0, APP_TABLE_USAGE_LOG, data, NULL);
+}
 
-	cols << STATS_LOCAL_TIME << ",";
-	vals << "(strftime('%s', 'now', 'localtime')) - " << duration << ",";
-
-	/* Duration */
-	cols << STATS_DURATION;
-	vals << duration;
-
+void ctx::app_use_monitor::finish_record(std::string app_id)
+{
+	/* TODO: It might be necessary to update system status here */
 	std::stringstream query;
-	append_cleanup_query(query);
-	query << "INSERT INTO " << APP_TABLE_USAGE_LOG << " ("
-		<< cols.str() << ") VALUES (" << vals.str() << ")";
-
+	query <<
+		"UPDATE " APP_TABLE_USAGE_LOG \
+		" SET " STATS_DURATION " = strftime('%s', 'now') - " STATS_UNIV_TIME \
+		" WHERE " STATS_COL_ROW_ID " = (" \
+			"SELECT MAX(" STATS_COL_ROW_ID ") FROM " APP_TABLE_USAGE_LOG \
+			" WHERE " STATS_APP_ID " = '" << app_id << "'" \
+			" AND " STATS_DURATION " = 0)";
 	db_manager::execute(0, query.str().c_str(), NULL);
 }
 
-void ctx::app_use_monitor::append_cleanup_query(std::stringstream &query)
+bool ctx::app_use_monitor::is_skippable(std::string app_id)
 {
-	IF_FAIL_VOID(last_timestamp - last_cleanup_time >= ONE_DAY_IN_SEC);
+	/* TODO: circular cache */
+	app_info_h app_info = NULL;
+	int err = app_manager_get_app_info(app_id.c_str(), &app_info);
+	IF_FAIL_RETURN_TAG(err == APP_MANAGER_ERROR_NONE && app_info, true, _E, "app_manager_get_app_info() failed");
 
-	last_cleanup_time = last_timestamp;
+	bool nodisp = false;
+	err = app_info_is_nodisplay(app_info, &nodisp);
+	if (err != APP_MANAGER_ERROR_NONE) {
+		app_info_destroy(app_info);
+		_E("app_info_is_nodisplay() failed");
+		return true;
+	}
 
+	app_info_destroy(app_info);
+	return nodisp;
+}
+
+void ctx::app_use_monitor::remove_expired()
+{
+	int timestamp = static_cast<int>(time(NULL));
+	IF_FAIL_VOID(timestamp - last_cleanup_time >= ONE_DAY_IN_SEC);
+
+	last_cleanup_time = timestamp;
+
+	std::stringstream query;
 	query << "DELETE FROM " APP_TABLE_USAGE_LOG " WHERE " \
-		STATS_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD << ";";
+		STATS_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
+	db_manager::execute(0, query.str().c_str(), NULL);
 }
