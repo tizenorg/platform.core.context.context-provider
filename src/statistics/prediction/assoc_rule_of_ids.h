@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef ASSOC_RULE_OF_IDS_H_
-#define ASSOC_RULE_OF_IDS_H_
+#ifndef _PREDICTION_ASSOC_RULE_OF_IDS_H_
+#define _PREDICTION_ASSOC_RULE_OF_IDS_H_
 
 #include "item_id_set.h"
 
@@ -41,4 +41,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* ASSOC_RULE_OF_IDS_H_ */
+#endif /* _PREDICTION_ASSOC_RULE_OF_IDS_H_ */

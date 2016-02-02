@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SINGLE_CATEGORY_ITEM_ID_FILTER_H_
-#define SINGLE_CATEGORY_ITEM_ID_FILTER_H_
+#ifndef _PREDICTION_SINGLE_CATEGORY_ITEM_ID_FILTER_H_
+#define _PREDICTION_SINGLE_CATEGORY_ITEM_ID_FILTER_H_
 
 #include "i_item_id_filter.h"
 #include "item_catalogue.h"
@@ -35,4 +35,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* SINGLE_CATEGORY_ITEM_ID_FILTER_H_ */
+#endif /* _PREDICTION_SINGLE_CATEGORY_ITEM_ID_FILTER_H_ */

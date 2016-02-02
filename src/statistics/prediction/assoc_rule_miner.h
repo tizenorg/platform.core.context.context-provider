@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef ASSOC_RULE_MINER_H_
-#define ASSOC_RULE_MINER_H_
+#ifndef _PREDICTION_ASSOC_RULE_MINER_H_
+#define _PREDICTION_ASSOC_RULE_MINER_H_
 
 #include <list>
 #include <string>
@@ -49,4 +49,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* ASSOC_RULE_MINER_H_ */
+#endif /* _PREDICTION_ASSOC_RULE_MINER_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_ASSOC_RULE_H_
-#define INCLUDE_ASSOC_RULE_H_
+#ifndef _PREDICTION_ASSOC_RULE_H_
+#define _PREDICTION_ASSOC_RULE_H_
 
 #include "item_set.h"
 #include <iostream>
@@ -44,4 +44,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_ASSOC_RULE_H_ */
+#endif /* _PREDICTION_ASSOC_RULE_H_ */

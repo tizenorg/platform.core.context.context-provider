@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef I_ITEM_ID_FILTER_H_
-#define I_ITEM_ID_FILTER_H_
+#ifndef _PREDICTION_I_ITEM_ID_FILTER_H_
+#define _PREDICTION_I_ITEM_ID_FILTER_H_
 
 namespace ctx {
 
@@ -29,4 +29,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* I_ITEM_ID_FILTER_H_ */
+#endif /* _PREDICTION_I_ITEM_ID_FILTER_H_ */

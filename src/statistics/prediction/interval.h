@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_INTERVAL_H_
-#define INCLUDE_INTERVAL_H_
+#ifndef _PREDICTION_INTERVAL_H_
+#define _PREDICTION_INTERVAL_H_
 
 #include <ctime>
 
@@ -33,4 +33,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_INTERVAL_H_ */
+#endif /* _PREDICTION_INTERVAL_H_ */
