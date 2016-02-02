@@ -15,9 +15,11 @@
  */
 
 #include <map>
+#include <vector>
 #include <types_internal.h>
 #include <context_mgr.h>
 #include <provider_iface.h>
+#include <db_mgr.h>
 #include <custom_context_provider.h>
 #include "custom_base.h"
 
@@ -59,10 +61,44 @@ EXTAPI void ctx::custom_context_provider::destroy(void *data)
 
 EXTAPI bool ctx::init_custom_context_provider()
 {
+	// Create custom template db
+	std::string q = std::string("CREATE TABLE IF NOT EXISTS context_trigger_custom_template ")
+			+ "(subject TEXT DEFAULT '' NOT NULL PRIMARY KEY, name TEXT DEFAULT '' NOT NULL, operation INTEGER DEFAULT 3 NOT NULL, "
+			+ "attributes TEXT DEFAULT '' NOT NULL, owner TEXT DEFAULT '' NOT NULL)";
+
+	std::vector<json> record;
+	bool ret = db_manager::execute_sync(q.c_str(), &record);
+	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
+
+	// Register custom items
+	std::string q_select = "SELECT * FROM context_trigger_custom_template";
+	ret = db_manager::execute_sync(q_select.c_str(), &record);
+	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
+	IF_FAIL_RETURN(record.size() > 0, true);
+
+	int error;
+	std::vector<json>::iterator vec_end = record.end();
+	for (std::vector<json>::iterator vec_pos = record.begin(); vec_pos != vec_end; ++vec_pos) {
+		ctx::json elem = *vec_pos;
+		std::string subject;
+		std::string name;
+		std::string attributes;
+		std::string owner;
+		elem.get(NULL, "subject", &subject);
+		elem.get(NULL, "name", &name);
+		elem.get(NULL, "attributes", &attributes);
+		elem.get(NULL, "owner", &owner);
+
+		error = ctx::custom_context_provider::add_item(subject, name, ctx::json(attributes), owner.c_str(), true);
+		if (error != ERR_NONE) {
+			_E("Failed to add custom item(%s): %#x", subject.c_str(), error);
+		}
+	}
+
 	return true;
 }
 
-EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::string name, ctx::json tmpl, const char* owner)
+EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::string name, ctx::json tmpl, const char* owner, bool is_init)
 {
 	std::map<std::string, ctx::custom_base*>::iterator it;
 	it = custom_map.find(subject);
@@ -82,6 +118,15 @@ EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::stri
 
 	register_provider(custom->get_subject(), NULL);
 
+	// Add item to custom template db
+	if (!is_init) {
+		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
+				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
+		std::vector<json> record;
+		bool ret = db_manager::execute_sync(q.c_str(), &record);
+		IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
+	}
+
 	return ERR_NONE;
 }
 
@@ -92,6 +137,12 @@ EXTAPI int ctx::custom_context_provider::remove_item(std::string subject)
 	IF_FAIL_RETURN_TAG(it != custom_map.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
 
 	unregister_provider(subject.c_str());
+
+	// Remove item from custom template db
+	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
+	std::vector<json> record;
+	bool ret = db_manager::execute_sync(q.c_str(), &record);
+	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 
 	return ERR_NONE;
 }
