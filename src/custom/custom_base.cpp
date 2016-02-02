@@ -17,8 +17,11 @@
 #include <context_mgr.h>
 #include "custom_base.h"
 
-ctx::custom_base::custom_base(std::string subject, std::string name, ctx::json tmpl, std::string owner)
-: _subject(subject), _name(name), _tmpl(tmpl), _owner(owner)
+ctx::custom_base::custom_base(std::string subject, std::string name, ctx::json tmpl, std::string owner) :
+	_subject(subject),
+	_name(name),
+	_tmpl(tmpl),
+	_owner(owner)
 {
 }
 
