@@ -27,16 +27,15 @@ namespace ctx {
 	private:
 		int64_t signal_id;
 		int last_cleanup_time;
-		int last_timestamp;
-		int last_pid;
 		std::string last_app_id;
 
 		bool start_logging(void);
 		void stop_logging(void);
 
-		void verify_used_app(const char *app_id, int duration);
-		void insert_log(const char *app_id, int duration);
-		void append_cleanup_query(std::stringstream &query);
+		bool is_skippable(std::string app_id);
+		void create_record(std::string app_id);
+		void finish_record(std::string app_id);
+		void remove_expired();
 
 		void on_active_window_changed(std::string app_id);
 		void on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param);
