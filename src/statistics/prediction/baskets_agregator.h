@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_BASKETS_AGREGATOR_H_
-#define INCLUDE_BASKETS_AGREGATOR_H_
+#ifndef _PREDICTION_BASKETS_AGREGATOR_H_
+#define _PREDICTION_BASKETS_AGREGATOR_H_
 
 #include <list>
 #include <memory>
@@ -38,4 +38,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_BASKETS_AGREGATOR_H_ */
+#endif /* _PREDICTION_BASKETS_AGREGATOR_H_ */

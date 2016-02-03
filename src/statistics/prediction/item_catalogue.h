@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_ITEMCATALOGUE_H_
-#define INCLUDE_ITEMCATALOGUE_H_
+#ifndef _PREDICTION_ITEM_CATALOGUE_H_
+#define _PREDICTION_ITEM_CATALOGUE_H_
 
 #include "item.h"
 #include <map>
@@ -57,4 +57,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_ITEMCATALOGUE_H_ */
+#endif /* _PREDICTION_ITEM_CATALOGUE_H_ */

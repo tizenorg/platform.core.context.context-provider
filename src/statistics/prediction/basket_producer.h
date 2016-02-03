@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef INCLUDE_BASKET_PRODUCER_H_
-#define INCLUDE_BASKET_PRODUCER_H_
+#ifndef _PREDICTION_BASKET_PRODUCER_H_
+#define _PREDICTION_BASKET_PRODUCER_H_
 
 #include "event.h"
 #include "basket.h"
@@ -47,4 +47,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* INCLUDE_BASKET_PRODUCER_H_ */
+#endif /* _PREDICTION_BASKET_PRODUCER_H_ */
