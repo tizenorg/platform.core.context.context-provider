@@ -48,13 +48,12 @@ ctx::context_provider_iface *ctx::app_statistics_provider::create(void *data)
 	__instance = new(std::nothrow) app_statistics_provider();
 	IF_FAIL_RETURN_TAG(__instance, NULL, _E, "Memory allocation failed");
 
-	_I(BLUE("Created"));
-
 	if (!__instance->init()) {
 		destroy(data);
 		return NULL;
 	}
 
+	_I(BLUE("Created"));
 	return __instance;
 }
 
