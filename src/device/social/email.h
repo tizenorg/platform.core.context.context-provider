@@ -17,24 +17,25 @@
 #ifndef _CONTEXT_SOCIAL_STATUS_EMAIL_H_
 #define _CONTEXT_SOCIAL_STATUS_EMAIL_H_
 
-#include <dbus_listener_iface.h>
+#include <DBusSignalWatcher.h>
 #include "../provider_base.h"
 
 namespace ctx {
 
-	class social_status_email : public device_provider_base, public dbus_listener_iface {
+	class social_status_email : public device_provider_base, public IDBusSignalListener {
 
 		GENERATE_PROVIDER_COMMON_DECL(social_status_email);
 
 	public:
 		int subscribe();
 		int unsubscribe();
-		void on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param);
+		void onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param);
 		static bool is_supported();
 		static void submit_trigger_item();
 
 	private:
 		int64_t dbus_signal_id;
+		DBusSignalWatcher __dbusWatcher;
 
 		social_status_email();
 		~social_status_email();
