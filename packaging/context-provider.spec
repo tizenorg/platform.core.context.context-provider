@@ -1,6 +1,6 @@
 Name:       context-provider
 Summary:    Context Provider
-Version:    0.7.1
+Version:    0.7.2
 Release:    1
 Group:      Service/Context
 License:    Apache-2.0
@@ -60,19 +60,25 @@ Context Provider
 %build
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
 
-export   CFLAGS+=" -Wextra -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wswitch-default"
-export CXXFLAGS+=" -Wextra -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wswitch-default -Wnon-virtual-dtor -Wno-c++0x-compat"
+export   CFLAGS+=" -Wextra -Wcast-align -Wshadow -Wwrite-strings -Wswitch-default -Wno-unused-parameter"
+export CXXFLAGS+=" -Wextra -Wcast-align -Wshadow -Wwrite-strings -Wswitch-default -Wno-unused-parameter"
 
-export   CFLAGS+=" -Wno-unused-parameter -Wno-empty-body"
-export CXXFLAGS+=" -Wno-unused-parameter -Wno-empty-body"
-export CXXFLAGS+=" -std=c++0x"
+export   CFLAGS+=" -Wno-empty-body -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+export CXXFLAGS+=" -Wno-empty-body -fno-omit-frame-pointer -fno-optimize-sibling-calls"
 
-export   CFLAGS+=" -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict-overflow -fno-common"
-export CXXFLAGS+=" -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict-overflow"
+export   CFLAGS+=" -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict-overflow"
+export CXXFLAGS+=" -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict-overflow"
 
-export   CFLAGS+=" -DTIZEN_ENGINEER_MODE"
-export CXXFLAGS+=" -DTIZEN_ENGINEER_MODE"
-export   FFLAGS+=" -DTIZEN_ENGINEER_MODE"
+export   CFLAGS+=" -fno-common"
+export CXXFLAGS+=" -Wnon-virtual-dtor"
+export CXXFLAGS+=" -std=c++11 -Wno-c++11-compat"
+
+#export   CFLAGS+=" -Wcast-qual"
+#export CXXFLAGS+=" -Wcast-qual"
+
+#export   CFLAGS+=" -DTIZEN_ENGINEER_MODE"
+#export CXXFLAGS+=" -DTIZEN_ENGINEER_MODE"
+#export   FFLAGS+=" -DTIZEN_ENGINEER_MODE"
 
 cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DMAJORVER=${MAJORVER} -DFULLVER=%{version} -DPROFILE=%{?BUILD_PROFILE}
 make %{?jobs:-j%jobs}

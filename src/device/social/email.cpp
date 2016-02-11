@@ -19,13 +19,13 @@
 
 #include <context_mgr.h>
 #include "social_types.h"
-#include <dbus_server.h>
 #include "email.h"
 
 GENERATE_PROVIDER_COMMON_IMPL(social_status_email);
 
 ctx::social_status_email::social_status_email()
 	: dbus_signal_id(-1)
+	, __dbusWatcher(DBusType::SESSION)
 {
 }
 
@@ -47,7 +47,7 @@ void ctx::social_status_email::submit_trigger_item()
 			NULL);
 }
 
-void ctx::social_status_email::on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
+void ctx::social_status_email::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
 {
 	gint sub_type = 0;
 	gint gi1 = 0;
@@ -75,7 +75,7 @@ void ctx::social_status_email::on_signal_received(const char* sender, const char
 
 int ctx::social_status_email::subscribe()
 {
-	dbus_signal_id = ctx::dbus_server::subscribe_session_signal(NULL, NULL, "User.Email.NetworkStatus", "email", this);
+	dbus_signal_id = __dbusWatcher.watch(NULL, NULL, "User.Email.NetworkStatus", "email", this);
 	IF_FAIL_RETURN_TAG(dbus_signal_id >= 0, ERR_OPERATION_FAILED, _E, "Email dbus signal subscription failed");
 	return ERR_NONE;
 }
@@ -83,6 +83,6 @@ int ctx::social_status_email::subscribe()
 
 int ctx::social_status_email::unsubscribe()
 {
-	ctx::dbus_server::unsubscribe_session_signal(dbus_signal_id);
+	__dbusWatcher.unwatch(dbus_signal_id);
 	return ERR_NONE;
 }

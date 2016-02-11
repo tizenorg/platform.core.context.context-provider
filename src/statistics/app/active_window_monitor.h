@@ -19,14 +19,15 @@
 
 #include <string>
 #include <sstream>
-#include <dbus_listener_iface.h>
+#include <DBusSignalWatcher.h>
 
 namespace ctx {
 
-	class app_use_monitor : public dbus_listener_iface {
+	class app_use_monitor : public IDBusSignalListener {
 	private:
 		int64_t signal_id;
 		int last_cleanup_time;
+		DBusSignalWatcher __dbusWatcher;
 
 		bool start_logging(void);
 		void stop_logging(void);
@@ -35,7 +36,7 @@ namespace ctx {
 		void create_record(std::string app_id);
 		void finish_record(std::string app_id);
 		void remove_expired();
-		void on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param);
+		void onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param);
 
 	public:
 		app_use_monitor();

@@ -22,7 +22,6 @@
 #include <json.h>
 #include <types_internal.h>
 #include <system_info.h>
-#include <dbus_server.h>
 #include "app_stats_types.h"
 #include "active_window_monitor.h"
 
@@ -33,6 +32,7 @@
 ctx::app_use_monitor::app_use_monitor()
 	: signal_id(-1)
 	, last_cleanup_time(0)
+	, __dbusWatcher(DBusType::SYSTEM)
 {
 	start_logging();
 }
@@ -44,8 +44,7 @@ ctx::app_use_monitor::~app_use_monitor()
 
 bool ctx::app_use_monitor::start_logging()
 {
-	signal_id = dbus_server::subscribe_system_signal(NULL,
-			"/Org/Tizen/Aul/AppStatus", "org.tizen.aul.AppStatus", "AppStatusChange", this);
+	signal_id = __dbusWatcher.watch(NULL, "/Org/Tizen/Aul/AppStatus", "org.tizen.aul.AppStatus", "AppStatusChange", this);
 	_D("Active window monitoring started (%lld)", signal_id);
 	return (signal_id > 0);
 }
@@ -53,12 +52,12 @@ bool ctx::app_use_monitor::start_logging()
 void ctx::app_use_monitor::stop_logging()
 {
 	if (signal_id > 0) {
-		dbus_server::unsubscribe_system_signal(signal_id);
+		__dbusWatcher.unwatch(signal_id);
 		_D("Active window monitoring stopped");
 	}
 }
 
-void ctx::app_use_monitor::on_signal_received(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
+void ctx::app_use_monitor::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
 {
 	gint pid = 0;
 	const gchar *appid = NULL;
