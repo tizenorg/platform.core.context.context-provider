@@ -15,13 +15,10 @@
  */
 
 #include <context_mgr.h>
-#include <scope_mutex.h>
 #include <timer_mgr.h>
 #include <timer_util.h>
 #include "system_types.h"
 #include "alarm.h"
-
-static GMutex timer_mutex;
 
 GENERATE_PROVIDER_COMMON_IMPL(device_status_alarm);
 
@@ -156,8 +153,6 @@ bool ctx::device_status_alarm::add(int minute, int day_of_week)
 			day_of_week > 0 && day_of_week <= timer_types::EVERYDAY,
 			false, _E, "Invalid parameter");
 
-	ctx::scope_mutex sm(&timer_mutex);
-
 	ref_count_array_s &ref = ref_count_map[minute];
 
 	for (int d = 0; d < MAX_DAY; ++d) {
@@ -174,8 +169,6 @@ bool ctx::device_status_alarm::remove(int minute, int day_of_week)
 	IF_FAIL_RETURN_TAG(minute >=0 && minute < 1440 &&
 			day_of_week > 0 && day_of_week <= timer_types::EVERYDAY,
 			false, _E, "Invalid parameter");
-
-	ctx::scope_mutex sm(&timer_mutex);
 
 	ref_count_array_s &ref = ref_count_map[minute];
 
@@ -227,8 +220,6 @@ bool ctx::device_status_alarm::reset_timer(int minute)
 
 void ctx::device_status_alarm::clear()
 {
-	ctx::scope_mutex sm(&timer_mutex);
-
 	for (timer_state_map_t::iterator it = timer_state_map.begin(); it != timer_state_map.end(); ++it) {
 		if (it->second.timer_id > 0) {
 			timer_manager::remove(it->second.timer_id);
