@@ -9,7 +9,7 @@ INCLUDE_DIRECTORIES(
 ADD_DEFINITIONS(-O2 -Wall -fPIC -fvisibility=hidden -Wl,--as-needed)
 
 # Common Dependency
-SET(deps_common "context-common")
+SET(deps_common "libcontext-shared libcontext-server")
 
 # Profiles
 IF("${PROFILE}" STREQUAL "mobile")
