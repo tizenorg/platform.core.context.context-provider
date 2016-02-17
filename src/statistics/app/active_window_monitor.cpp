@@ -21,7 +21,7 @@
 #include <db_mgr.h>
 #include <json.h>
 #include <types_internal.h>
-#include <system_info.h>
+#include "../shared/system_info.h"
 #include "app_stats_types.h"
 #include "active_window_monitor.h"
 

@@ -19,7 +19,7 @@
 
 #include <string>
 #include <json.h>
-#include <db_handle_base.h>
+#include "../shared/db_handle_base.h"
 
 namespace ctx {
 	class app_db_handle : public stats_db_handle_base {

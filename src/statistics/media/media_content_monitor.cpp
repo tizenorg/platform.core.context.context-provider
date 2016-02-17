@@ -17,7 +17,7 @@
 #include <time.h>
 #include <types_internal.h>
 #include <db_mgr.h>
-#include <system_info.h>
+#include "../shared/system_info.h"
 #include "media_stats_types.h"
 #include "db_handle.h"
 #include "media_content_monitor.h"

@@ -1,6 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(context-provider)
 INCLUDE(GNUInstallDirs)
+SET(target "context-provider")
+SET(compile_defs "LOG_TAG=\"CONTEXT\"")
 
 # Common Options
 INCLUDE_DIRECTORIES(
@@ -8,8 +10,8 @@ INCLUDE_DIRECTORIES(
 )
 ADD_DEFINITIONS(-O2 -Wall -fPIC -fvisibility=hidden -Wl,--as-needed)
 
-# Common Dependency
-SET(deps_common "libcontext-shared libcontext-server")
+# Base Dependency
+SET(dependencies "libcontext-shared libcontext-server")
 
 # Profiles
 IF("${PROFILE}" STREQUAL "mobile")
@@ -26,6 +28,22 @@ ENDIF("${PROFILE}" STREQUAL "tv")
 
 # Include Sub-modules
 ADD_SUBDIRECTORY(src)
+MESSAGE("Compile definitions: ${compile_defs}")
+
+# Build
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(DEPS REQUIRED ${dependencies})
+
+FOREACH(flag ${DEPS_CFLAGS})
+	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
+ENDFOREACH(flag)
+
+ADD_LIBRARY(${target} SHARED ${sources})
+TARGET_LINK_LIBRARIES(${target} ${DEPS_LDFLAGS})
+SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_FLAGS ${EXTRA_CFLAGS})
+SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "${compile_defs}")
+SET_TARGET_PROPERTIES(${target} PROPERTIES SOVERSION ${MAJORVER})
+SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${FULLVER})
 
 # Package Config
 SET(VERSION ${FULLVER})
@@ -34,11 +52,9 @@ SET(PC_NAME ${PROJECT_NAME})
 SET(PC_DESCRIPTION "Tizen Context Framework Context Provider")
 SET(PC_INCLUDE "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/context-service")
 SET(PC_LIBDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
-SET(PC_CFLAGS -I\${includedir}/context-service)
-
-GET_DIRECTORY_PROPERTY(PC_LDFLAGS DIRECTORY src DEFINITION target_all)
-GET_DIRECTORY_PROPERTY(PC_REQUIRED DIRECTORY src DEFINITION deps_all)
-SET(PC_REQUIRED "${deps_common} ${PC_REQUIRED}")
+SET(PC_CFLAGS "-I\${includedir}/context-service")
+SET(PC_LDFLAGS "-l${target}")
+SET(PC_REQUIRED "${dependencies}")
 
 CONFIGURE_FILE(
 	${PROJECT_NAME}.pc.in
@@ -48,7 +64,9 @@ CONFIGURE_FILE(
 
 # Installing
 INSTALL(
-	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/context-service/internal
+	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/context-service/internal
 	FILES_MATCHING PATTERN "*.h"
 )
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT RuntimeLibraries)
