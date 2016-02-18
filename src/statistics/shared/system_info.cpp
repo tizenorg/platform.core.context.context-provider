@@ -18,7 +18,7 @@
 #include <runtime_info.h>
 #include <sound_manager.h>
 #include <types_internal.h>
-#include <shared_vars.h>
+#include <SharedVars.h>
 #include "system_info.h"
 
 #define CONNECTED		1
@@ -75,6 +75,6 @@ bool ctx::system_info::get_wifi_bssid(std::string& bssid)
 
 	return !bssid.empty();
 #endif
-	bssid = ctx::shared::wifi_bssid;
+	bssid = ctx::SharedVars().get(ctx::SharedVars::WIFI_BSSID);
 	return true;
 }

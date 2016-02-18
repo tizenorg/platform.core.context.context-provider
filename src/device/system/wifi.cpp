@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <shared_vars.h>
+#include <SharedVars.h>
 #include <context_mgr.h>
 #include "system_types.h"
 #include "wifi.h"
@@ -122,7 +122,7 @@ bool ctx::device_status_wifi::get_bssid()
 	if (bssid.empty())
 		_W("Failed to get BSSID");
 
-	ctx::shared::wifi_bssid = bssid;
+	SharedVars().set(ctx::SharedVars::WIFI_BSSID, bssid);
 	_D("BSSID: %s", bssid.c_str());
 
 	return !bssid.empty();
@@ -131,7 +131,7 @@ bool ctx::device_status_wifi::get_bssid()
 void ctx::device_status_wifi::clear_bssid()
 {
 	bssid.clear();
-	ctx::shared::wifi_bssid.clear();
+	SharedVars().clear(ctx::SharedVars::WIFI_BSSID);
 	_D("No WiFi connection");
 }
 
