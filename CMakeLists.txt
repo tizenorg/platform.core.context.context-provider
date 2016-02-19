@@ -11,7 +11,7 @@ INCLUDE_DIRECTORIES(
 ADD_DEFINITIONS(-O2 -Wall -fPIC -fvisibility=hidden -Wl,--as-needed)
 
 # Base Dependency
-SET(dependencies "libcontext-shared libcontext-server")
+SET(dependencies libcontext-shared libcontext-server)
 
 # Profiles
 IF("${PROFILE}" STREQUAL "mobile")
@@ -46,6 +46,10 @@ SET_TARGET_PROPERTIES(${target} PROPERTIES SOVERSION ${MAJORVER})
 SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${FULLVER})
 
 # Package Config
+FOREACH(item IN LISTS dependencies)
+	SET(deps_str "${deps_str} ${item}")
+ENDFOREACH(item)
+
 SET(VERSION ${FULLVER})
 SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 SET(PC_NAME ${PROJECT_NAME})
@@ -54,7 +58,7 @@ SET(PC_INCLUDE "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/context-serv
 SET(PC_LIBDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 SET(PC_CFLAGS "-I\${includedir}/context-service")
 SET(PC_LDFLAGS "-l${target}")
-SET(PC_REQUIRED "${dependencies}")
+SET(PC_REQUIRED "${deps_str}")
 
 CONFIGURE_FILE(
 	${PROJECT_NAME}.pc.in

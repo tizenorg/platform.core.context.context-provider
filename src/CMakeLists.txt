@@ -18,12 +18,7 @@ add_provider(custom)
 
 
 LIST(REMOVE_DUPLICATES deps_collected)
-FOREACH(item IN LISTS deps_collected)
-	SET(deps_filtered "${deps_filtered} ${item}")
-ENDFOREACH(item)
-
-STRING(STRIP "${deps_filtered}" deps_filtered)
 
 SET(sources ${sources} ${srcs_collected} PARENT_SCOPE)
-SET(dependencies "${dependencies} ${deps_filtered}" PARENT_SCOPE)
+SET(dependencies ${dependencies} ${deps_collected} PARENT_SCOPE)
 SET(compile_defs ${compile_defs} ${cdef_collected} PARENT_SCOPE)
