@@ -6,6 +6,9 @@ SET(definitions LOG_TAG=\"CONTEXT-DEVICE\")
 FILE(GLOB srcs ./*.cpp)
 SET(deps "vconf capi-system-info capi-system-device capi-system-runtime-info")
 
+# Common Profile
+SET(srcs ${srcs} system/alarm.cpp system/time.cpp)
+
 # Mobile Profile
 IF("${PROFILE}" STREQUAL "mobile")
 	SET(deps "${deps} capi-network-bluetooth capi-network-wifi")
@@ -32,8 +35,6 @@ IF("${PROFILE}" STREQUAL "tv")
 		${srcs}
 		system/headphone.cpp
 		system/wifi.cpp
-		system/alarm.cpp
-		system/time.cpp
 	)
 ENDIF("${PROFILE}" STREQUAL "tv")
 
