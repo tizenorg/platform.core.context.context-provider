@@ -30,13 +30,13 @@ namespace ctx {
 		GENERATE_PROVIDER_COMMON_DECL(device_status_alarm);
 
 	public:
-		int subscribe(const char *subject, ctx::json option, ctx::json *request_result);
-		int unsubscribe(const char *subject, ctx::json option);
-		int read(const char *subject, ctx::json option, ctx::json *request_result);
-		int write(const char *subject, ctx::json data, ctx::json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int unsubscribe(const char *subject, ctx::Json option);
+		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
 
-		int subscribe(ctx::json option);
-		int unsubscribe(ctx::json option);
+		int subscribe(ctx::Json option);
+		int unsubscribe(ctx::Json option);
 		static bool is_supported();
 		static void submit_trigger_item();
 
@@ -45,7 +45,7 @@ namespace ctx {
 		~device_status_alarm();
 		void handle_update();
 		static void update_cb(void* user_data);
-		int get_arranged_day_of_week(ctx::json& option);
+		int get_arranged_day_of_week(ctx::Json& option);
 
 		struct ref_count_array_s {
 			int count[7];	/* reference counts for days of week*/
@@ -60,7 +60,7 @@ namespace ctx {
 
 		typedef std::map<int, ref_count_array_s> ref_count_map_t;
 		typedef std::map<int, timer_state_s> timer_state_map_t;
-		typedef std::set<ctx::json*> option_t;
+		typedef std::set<ctx::Json*> option_t;
 
 		ref_count_map_t ref_count_map;
 		timer_state_map_t timer_state_map;
@@ -76,8 +76,8 @@ namespace ctx {
 		void on_timer_expired(int hour, int min, int day_of_week);
 		bool on_timer_expired(int timer_id, void *user_data);
 
-		bool is_matched(ctx::json& option, int time, std::string day);
-		option_t::iterator find_option(ctx::json& option);
+		bool is_matched(ctx::Json& option, int time, std::string day);
+		option_t::iterator find_option(ctx::Json& option);
 
 		void destroy_if_unused();
 

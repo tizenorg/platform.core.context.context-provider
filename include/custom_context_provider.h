@@ -21,9 +21,9 @@ namespace ctx {
 	bool init_custom_context_provider();
 
 	namespace custom_context_provider {
-	int add_item(std::string subject, std::string name, ctx::json tmpl, const char* owner, bool is_init = false);
+	int add_item(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool is_init = false);
 	int remove_item(std::string subject);
-	int publish_data(std::string subject, ctx::json fact);
+	int publish_data(std::string subject, ctx::Json fact);
 
 	context_provider_iface* create(void* data);
 	void destroy(void* data);

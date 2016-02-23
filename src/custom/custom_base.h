@@ -17,7 +17,7 @@
 #ifndef _CUSTOM_BASE_H_
 #define _CUSTOM_BASE_H_
 
-#include <json.h>
+#include <Json.h>
 #include <provider_iface.h>
 #include <types_internal.h>
 
@@ -25,30 +25,30 @@ namespace ctx {
 
 	class custom_base : public context_provider_iface {
 	public:
-		custom_base(std::string subject, std::string name, ctx::json tmpl, std::string owner);
+		custom_base(std::string subject, std::string name, ctx::Json tmpl, std::string owner);
 		~custom_base();
 
-		int subscribe(const char *subject, ctx::json option, ctx::json *request_result);
-		int unsubscribe(const char *subject, ctx::json option);
-		int read(const char *subject, ctx::json option, ctx::json *request_result);
-		int write(const char *subject, ctx::json data, ctx::json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int unsubscribe(const char *subject, ctx::Json option);
+		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
 
 		static bool is_supported();
 		void submit_trigger_item();
 		void unsubmit_trigger_item();
 
-		void handle_update(ctx::json data);
+		void handle_update(ctx::Json data);
 
 		const char* get_subject();
 		std::string get_owner();
-		ctx::json get_template();
+		ctx::Json get_template();
 
 	private:
 		std::string _subject;
 		std::string _name;
-		ctx::json _tmpl;
+		ctx::Json _tmpl;
 		std::string _owner;
-		ctx::json latest;
+		ctx::Json latest;
 	};
 }
 

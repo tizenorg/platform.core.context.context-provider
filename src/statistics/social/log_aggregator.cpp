@@ -15,7 +15,7 @@
  */
 
 #include <sstream>
-#include <json.h>
+#include <Json.h>
 #include <db_mgr.h>
 #include <timer_mgr.h>
 #include <types_internal.h>
@@ -60,7 +60,7 @@ void ctx::contact_log_aggregator::aggregate_contact_log()
 			" FROM " SOCIAL_TABLE_CONTACT_LOG, this);
 }
 
-void ctx::contact_log_aggregator::on_query_result_received(unsigned int query_id, int error, std::vector<json>& records)
+void ctx::contact_log_aggregator::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	IF_FAIL_VOID_TAG(!records.empty(), _E, "Invalid query result");
 
@@ -131,7 +131,7 @@ void ctx::contact_log_aggregator::insert_contact_log_list(contacts_list_h list)
 		contacts_list_get_current_record_p(list, &record);
 		if (record == NULL) break;
 
-		ctx::json data;
+		ctx::Json data;
 
 		char* address = NULL;
 		int log_type;

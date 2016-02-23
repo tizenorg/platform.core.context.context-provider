@@ -19,7 +19,7 @@
 #include "../place_recognition_types.h"
 #include <db_mgr.h>
 #include <sstream>
-#include <json.h>
+#include <Json.h>
 #include "user_places_params.h"
 #include "debug_utils.h"
 
@@ -182,7 +182,7 @@ int ctx::LocationLogger::create_table()
 
 int ctx::LocationLogger::db_insert_log(location_event_s location_event)
 {
-	json data;
+	Json data;
 	data.set(NULL, LOCATION_COLUMN_LATITUDE, location_event.coordinates.latitude, GEO_LOCATION_PRECISION);
 	data.set(NULL, LOCATION_COLUMN_LONGITUDE, location_event.coordinates.longitude, GEO_LOCATION_PRECISION);
 	data.set(NULL, LOCATION_COLUMN_ACCURACY, location_event.coordinates.accuracy, GEO_LOCATION_PRECISION);

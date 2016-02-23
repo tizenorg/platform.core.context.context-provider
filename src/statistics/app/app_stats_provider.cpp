@@ -15,7 +15,7 @@
  */
 
 #include <types_internal.h>
-#include <json.h>
+#include <Json.h>
 #include <context_mgr.h>
 #include "app_stats_provider.h"
 #include "db_handle.h"
@@ -98,17 +98,17 @@ CATCH:
 	return false;
 }
 
-int ctx::app_statistics_provider::subscribe(const char* subject, ctx::json option, ctx::json* request_result)
+int ctx::app_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* request_result)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::app_statistics_provider::unsubscribe(const char* subject, ctx::json option)
+int ctx::app_statistics_provider::unsubscribe(const char* subject, ctx::Json option)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::app_statistics_provider::read(const char* subject, ctx::json option, ctx::json* request_result)
+int ctx::app_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* request_result)
 {
 	ctx::app_db_handle *handle = new(std::nothrow) ctx::app_db_handle();
 	IF_FAIL_RETURN_TAG(handle, ERR_OPERATION_FAILED, _E, "Memory allocation failed");
@@ -122,7 +122,7 @@ int ctx::app_statistics_provider::read(const char* subject, ctx::json option, ct
 	return ERR_NONE;
 }
 
-int ctx::app_statistics_provider::write(const char* subject, ctx::json data, ctx::json* request_result)
+int ctx::app_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* request_result)
 {
 	return ERR_NOT_SUPPORTED;
 }

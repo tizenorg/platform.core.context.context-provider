@@ -79,7 +79,7 @@ int ctx::device_status_headphone::read()
 	if (!being_subscribed)
 		connected = get_current_status();
 
-	json data;
+	Json data;
 	generate_data_packet(data);
 	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_HEADPHONE, NULL, ERR_NONE, data);
 
@@ -140,7 +140,7 @@ bool ctx::device_status_headphone::get_current_status()
 	return ((audio_jack_state != RUNTIME_INFO_AUDIO_JACK_STATUS_UNCONNECTED) || bt_audio_state);
 }
 
-void ctx::device_status_headphone::generate_data_packet(ctx::json &data)
+void ctx::device_status_headphone::generate_data_packet(ctx::Json &data)
 {
 	data.set(NULL, DEVICE_ST_IS_CONNECTED, connected ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
@@ -165,7 +165,7 @@ bool ctx::device_status_headphone::handle_event()
 
 	IF_FAIL_RETURN(prev_state != connected, false);
 
-	ctx::json data;
+	ctx::Json data;
 	generate_data_packet(data);
 	ctx::context_manager::publish(DEVICE_ST_SUBJ_HEADPHONE, NULL, ERR_NONE, data);
 	return true;

@@ -121,7 +121,7 @@ void ctx::media_content_monitor::update_play_count(const char *uuid, int type, i
 	db_manager::execute(0, query.str().c_str(), this);
 }
 
-void ctx::media_content_monitor::on_query_result_received(unsigned int query_id, int error, std::vector<json>& records)
+void ctx::media_content_monitor::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	IF_FAIL_VOID(!records.empty());
 
@@ -135,7 +135,7 @@ void ctx::media_content_monitor::insert_log(int media_type)
 {
 	int system_volume = -1, media_volume = -1, audiojack = -1;
 
-	json data;
+	Json data;
 	data.set(NULL, CX_MEDIA_TYPE, media_type);
 
 	if (ctx::system_info::get_audio_jack_state(&audiojack))

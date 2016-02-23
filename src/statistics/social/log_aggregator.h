@@ -41,7 +41,7 @@ namespace ctx {
 
 			void on_creation_result_received(unsigned int query_id, int error) {}
 			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-			void on_query_result_received(unsigned int query_id, int error, std::vector<json>& records);
+			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
 			bool on_timer_expired(int timer_id, void* user_data);
 
 	};	/* class phone_contact_log_aggregator */

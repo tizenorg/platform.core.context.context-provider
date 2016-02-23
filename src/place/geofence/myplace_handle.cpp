@@ -15,7 +15,7 @@
  */
 
 #include <types_internal.h>
-#include <json.h>
+#include <Json.h>
 #include <context_mgr.h>
 #include "place_geofence_types.h"
 #include "myplace_handle.h"
@@ -180,10 +180,10 @@ void ctx::myplace_handle::emit_state_change()
 
 	prev_state = current_state;
 
-	json option;
+	Json option;
 	option.set(NULL, PLACE_STATUS_DATA_MYPLACE_ID, _place_id);
 
-	json data;
+	Json data;
 	data.set(NULL, PLACE_STATUS_DATA_MYPLACE_ID, _place_id);
 	data.set(NULL, PLACE_STATUS_DATA_MYPLACE_EVENT, get_state_string(current_state));
 

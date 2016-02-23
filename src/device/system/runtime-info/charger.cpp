@@ -47,7 +47,7 @@ void ctx::device_status_charger::handle_update()
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_CHARGER_CONNECTED, &charger_status);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::json data_read;
+	ctx::Json data_read;
 	data_read.set(NULL, DEVICE_ST_IS_CONNECTED, charger_status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
 	context_manager::publish(DEVICE_ST_SUBJ_CHARGER, NULL, ERR_NONE, data_read);
@@ -56,7 +56,7 @@ void ctx::device_status_charger::handle_update()
 int ctx::device_status_charger::read()
 {
 	bool charger_status = false;
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_CHARGER_CONNECTED, &charger_status);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");

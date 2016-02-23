@@ -40,12 +40,12 @@ namespace ctx {
 
 	private:
 		bool test_mode;
-		double double_value_from_json(json &row, const char* key);
-		categs_t visit_categs_from_json(json &row);
-		visit_s visit_from_json(json &row);
-		visits_t visits_from_jsons(std::vector<json>& records);
-		std::shared_ptr<ctx::Place> place_from_json(json &row);
-		std::vector<std::shared_ptr<Place>> places_from_jsons(std::vector<json>& records);
+		double double_value_from_json(Json &row, const char* key);
+		categs_t visit_categs_from_json(Json &row);
+		visit_s visit_from_json(Json &row);
+		visits_t visits_from_jsons(std::vector<Json>& records);
+		std::shared_ptr<ctx::Place> place_from_json(Json &row);
+		std::vector<std::shared_ptr<Place>> places_from_jsons(std::vector<Json>& records);
 		std::shared_ptr<graph_t> graph_from_visits(const std::vector<visit_s> &visits);
 		void db_create_table();
 		void db_delete_places();
@@ -68,7 +68,7 @@ namespace ctx {
 		bool on_timer_expired(int timer_id, void* user_data);
 		void on_creation_result_received(unsigned int query_id, int error) {}
 		void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-		void on_query_result_received(unsigned int query_id, int error, std::vector<json>& records);
+		void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
 		std::shared_ptr<components_t> merge_visits(const std::vector<visit_s> &visits);
 		std::vector<std::shared_ptr<Place>> get_places();
 

@@ -44,7 +44,7 @@ void ctx::user_activity_base::handle_event(activity_type_e activity, const activ
 {
 	IF_FAIL_VOID_TAG(activity == activity_type, _E, "Invalid activity: %d", activity);
 
-	ctx::json data_read;
+	ctx::Json data_read;
 	data_read.set(NULL, USER_ACT_EVENT, USER_ACT_DETECTED);
 
 	activity_accuracy_e accuracy = ACTIVITY_ACCURACY_LOW;

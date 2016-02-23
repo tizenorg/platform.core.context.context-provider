@@ -51,7 +51,7 @@ namespace ctx {
 		void unset_bt_audio_callback();
 		void set_bt_audio_state(bool state);
 
-		void generate_data_packet(json &data);
+		void generate_data_packet(Json &data);
 		bool handle_event();
 		void handle_audio_jack_event();
 

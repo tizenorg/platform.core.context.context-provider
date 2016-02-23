@@ -18,7 +18,7 @@
 #define __CONTEXT_SOCIAL_DB_HANDLE_H__
 
 #include <string>
-#include <json.h>
+#include <Json.h>
 #include "../shared/db_handle_base.h"
 
 namespace ctx {
@@ -27,13 +27,13 @@ namespace ctx {
 			social_db_handle();
 			~social_db_handle();
 
-			int read(const char* subject, ctx::json filter);
+			int read(const char* subject, ctx::Json filter);
 
 		private:
-			std::string create_where_clause(ctx::json filter);
-			std::string create_sql_freq_address(ctx::json filter);
-			std::string create_sql_frequency(ctx::json filter);
-			void reply_trigger_item(int error, ctx::json &json_result);
+			std::string create_where_clause(ctx::Json filter);
+			std::string create_sql_freq_address(ctx::Json filter);
+			std::string create_sql_frequency(ctx::Json filter);
+			void reply_trigger_item(int error, ctx::Json &json_result);
 	};
 }
 

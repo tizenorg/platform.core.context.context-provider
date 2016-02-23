@@ -60,13 +60,13 @@ void ctx::social_status_email::onSignal(const char* sender, const char* path, co
 	if (sub_type == NOTI_DOWNLOAD_FINISH) {
 		//TODO: Check if this signal actually means that there are new mails
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", sub_type, gi1, gc, gi2, gi3);
-		ctx::json data_updated;
+		ctx::Json data_updated;
 		data_updated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
 		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, data_updated);
 
 	} else if (sub_type == NOTI_SEND_FINISH) {
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", sub_type, gi1, gc, gi2, gi3);
-		ctx::json data_updated;
+		ctx::Json data_updated;
 		data_updated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_SENT);
 		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, data_updated);
 	}

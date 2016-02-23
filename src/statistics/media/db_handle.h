@@ -18,7 +18,7 @@
 #define __CONTEXT_MEDIA_DB_HANDLE_H__
 
 #include <string>
-#include <json.h>
+#include <Json.h>
 #include "../shared/db_handle_base.h"
 
 namespace ctx {
@@ -27,14 +27,14 @@ namespace ctx {
 			media_db_handle();
 			~media_db_handle();
 
-			int read(const char* subject, ctx::json filter);
+			int read(const char* subject, ctx::Json filter);
 
 		private:
-			std::string create_where_clause(int media_type, ctx::json filter);
-			std::string create_sql_peak_time(int media_type, ctx::json filter);
-			std::string create_sql_common_setting(int media_type, ctx::json filter);
-			std::string create_sql_frequency(int media_type, ctx::json filter);
-			void reply_trigger_item(int error, ctx::json &json_result);
+			std::string create_where_clause(int media_type, ctx::Json filter);
+			std::string create_sql_peak_time(int media_type, ctx::Json filter);
+			std::string create_sql_common_setting(int media_type, ctx::Json filter);
+			std::string create_sql_frequency(int media_type, ctx::Json filter);
+			void reply_trigger_item(int error, ctx::Json &json_result);
 	};
 }
 

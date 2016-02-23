@@ -48,7 +48,7 @@ void ctx::device_status_psmode::update_cb(keynode_t *node, void* user_data)
 void ctx::device_status_psmode::handle_update(keynode_t *node)
 {
 	int status;
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	status = vconf_keynode_get_int(node);
 	IF_FAIL_VOID_TAG(status >= 0, _E, "Getting state failed");
@@ -78,7 +78,7 @@ int ctx::device_status_psmode::read()
 	int ret = vconf_get_int(VCONFKEY_SETAPPL_PSMODE, &mode);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 
-	ctx::json data_read;
+	ctx::Json data_read;
 	data_read.set(NULL, DEVICE_ST_IS_ENABLED, mode == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
 
 	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, data_read);

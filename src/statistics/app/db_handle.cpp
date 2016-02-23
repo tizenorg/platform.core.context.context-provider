@@ -29,7 +29,7 @@ ctx::app_db_handle::~app_db_handle()
 {
 }
 
-int ctx::app_db_handle::read(const char* subject, ctx::json filter)
+int ctx::app_db_handle::read(const char* subject, ctx::Json filter)
 {
 	std::string query;
 
@@ -61,7 +61,7 @@ int ctx::app_db_handle::read(const char* subject, ctx::json filter)
 	return ERR_NONE;
 }
 
-std::string ctx::app_db_handle::create_where_clause_with_device_status(ctx::json filter)
+std::string ctx::app_db_handle::create_where_clause_with_device_status(ctx::Json filter)
 {
 	std::stringstream where_clause;
 	std::string bssid;
@@ -78,19 +78,19 @@ std::string ctx::app_db_handle::create_where_clause_with_device_status(ctx::json
 	return where_clause.str();
 }
 
-std::string ctx::app_db_handle::create_sql_peak_time(ctx::json filter)
+std::string ctx::app_db_handle::create_sql_peak_time(ctx::Json filter)
 {
 	return stats_db_handle_base::create_sql_peak_time(filter, APP_TABLE_USAGE_LOG, create_where_clause(filter));
 }
 
-std::string ctx::app_db_handle::create_sql_common_setting(ctx::json filter)
+std::string ctx::app_db_handle::create_sql_common_setting(ctx::Json filter)
 {
 	return stats_db_handle_base::create_sql_common_setting(filter, APP_TABLE_USAGE_LOG, create_where_clause(filter));
 }
 
-std::string ctx::app_db_handle::create_sql_frequency(ctx::json filter)
+std::string ctx::app_db_handle::create_sql_frequency(ctx::Json filter)
 {
-	ctx::json filter_cleaned;
+	ctx::Json filter_cleaned;
 	std::string week_str;
 	std::string time_of_day;
 	std::string app_id;
@@ -134,7 +134,7 @@ std::string ctx::app_db_handle::create_sql_frequency(ctx::json filter)
 	return query.str();
 }
 
-std::string ctx::app_db_handle::create_sql_recently_used(ctx::json filter)
+std::string ctx::app_db_handle::create_sql_recently_used(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -155,7 +155,7 @@ std::string ctx::app_db_handle::create_sql_recently_used(ctx::json filter)
 	return query.str();
 }
 
-std::string ctx::app_db_handle::create_sql_frequently_used(ctx::json filter)
+std::string ctx::app_db_handle::create_sql_frequently_used(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -176,7 +176,7 @@ std::string ctx::app_db_handle::create_sql_frequently_used(ctx::json filter)
 	return query.str();
 }
 
-std::string ctx::app_db_handle::create_sql_rarely_used(ctx::json filter)
+std::string ctx::app_db_handle::create_sql_rarely_used(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -199,11 +199,11 @@ std::string ctx::app_db_handle::create_sql_rarely_used(ctx::json filter)
 	return query.str();
 }
 
-void ctx::app_db_handle::reply_trigger_item(int error, ctx::json &json_result)
+void ctx::app_db_handle::reply_trigger_item(int error, ctx::Json &json_result)
 {
 	IF_FAIL_VOID_TAG(STR_EQ(req_subject.c_str(), APP_SUBJ_FREQUENCY), _E, "Invalid subject");
 
-	ctx::json results;
+	ctx::Json results;
 	std::string val_str;
 	int val;
 

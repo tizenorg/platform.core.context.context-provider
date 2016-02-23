@@ -47,7 +47,7 @@ void ctx::device_status_usb::handle_update()
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_USB_CONNECTED, &status);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::json data_read;
+	ctx::Json data_read;
 	data_read.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
 	context_manager::publish(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, data_read);
@@ -56,7 +56,7 @@ void ctx::device_status_usb::handle_update()
 int ctx::device_status_usb::read()
 {
 	bool status = false;
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_USB_CONNECTED, &status);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");

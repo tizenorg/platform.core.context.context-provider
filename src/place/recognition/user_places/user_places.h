@@ -21,7 +21,7 @@
 #include "places_detector.h"
 #include <vector>
 #include "user_places_types.h"
-#include <json.h>
+#include <Json.h>
 
 namespace ctx {
 
@@ -38,7 +38,7 @@ namespace ctx {
 
 		void set_mode(place_recog_mode_e energy_mode);
 		std::vector<std::shared_ptr<Place>> get_places();
-		static json compose_json(std::vector<std::shared_ptr<Place>> places);
+		static Json compose_json(std::vector<std::shared_ptr<Place>> places);
 
 	};	/* class UserPlaces */
 

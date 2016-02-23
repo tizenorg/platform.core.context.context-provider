@@ -135,7 +135,7 @@ void ctx::device_status_wifi::clear_bssid()
 	_D("No WiFi connection");
 }
 
-bool ctx::device_status_wifi::get_response_packet(ctx::json &data)
+bool ctx::device_status_wifi::get_response_packet(ctx::Json &data)
 {
 	switch (last_state) {
 	case _DISABLED:
@@ -162,7 +162,7 @@ int ctx::device_status_wifi::read()
 {
 	IF_FAIL_RETURN(get_current_state(), ERR_OPERATION_FAILED);
 
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	if (get_response_packet(data_read)) {
 		ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, data_read);
@@ -246,7 +246,7 @@ void ctx::device_status_wifi::aggregate_updated_data()
 			clear_bssid();
 		}
 
-		ctx::json data;
+		ctx::Json data;
 		if (being_subscribed && get_response_packet(data))
 			context_manager::publish(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, data);
 	}

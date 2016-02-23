@@ -68,7 +68,7 @@ int ctx::device_status_time::read()
 	int minute_of_day = timeinfo.tm_hour * 60 + timeinfo.tm_min;
 	std::string day_of_week = ctx::timer_util::convert_day_of_week_int_to_string(0x01 << timeinfo.tm_wday);
 
-	ctx::json data_read;
+	ctx::Json data_read;
 	data_read.set(NULL, DEVICE_ST_DAY_OF_MONTH, day_of_month);
 	data_read.set(NULL, DEVICE_ST_DAY_OF_WEEK, day_of_week);
 	data_read.set(NULL, DEVICE_ST_TIME_OF_DAY, minute_of_day);

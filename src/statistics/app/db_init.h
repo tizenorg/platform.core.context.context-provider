@@ -30,7 +30,7 @@ namespace ctx {
 
 			void on_creation_result_received(unsigned int query_id, int error);
 			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id);
-			void on_query_result_received(unsigned int query_id, int error, std::vector<json>& records);
+			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
 
 			static bool package_info_cb(package_info_h package_info, void *user_data);
 			static bool app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data);

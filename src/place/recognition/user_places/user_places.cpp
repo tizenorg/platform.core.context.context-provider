@@ -111,11 +111,11 @@ std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::get_places()
  *	  ]
  * }
  */
-ctx::json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> places)
+ctx::Json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> places)
 {
-	ctx::json data;
+	ctx::Json data;
 	for (std::shared_ptr<ctx::Place> place : places) {
-		ctx::json place_j;
+		ctx::Json place_j;
 		place_j.set(NULL, PLACE_CATEG_ID, place->categ_id);
 		place_j.set(NULL, PLACE_CATEG_CONFIDENCE, place->categ_confidence);
 		place_j.set(NULL, PLACE_NAME, place->name);
@@ -125,7 +125,7 @@ ctx::json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> plac
 		}
 		place_j.set(NULL, PLACE_WIFI_APS, place->wifi_aps);
 		place_j.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->create_date));
-		data.array_append(NULL, DATA_READ, place_j);
+		data.append(NULL, DATA_READ, place_j);
 	}
 	return data;
 }

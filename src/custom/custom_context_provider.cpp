@@ -25,9 +25,9 @@
 
 std::map<std::string, ctx::custom_base*> custom_map;
 
-static bool is_valid_fact(std::string subject, ctx::json& fact);
-static bool check_value_int(ctx::json& tmpl, std::string key, int value);
-static bool check_value_string(ctx::json& tmpl, std::string key, std::string value);
+static bool is_valid_fact(std::string subject, ctx::Json& fact);
+static bool check_value_int(ctx::Json& tmpl, std::string key, int value);
+static bool check_value_string(ctx::Json& tmpl, std::string key, std::string value);
 
 void register_provider(const char *subject, const char *privilege)
 {
@@ -66,7 +66,7 @@ EXTAPI bool ctx::init_custom_context_provider()
 			+ "(subject TEXT DEFAULT '' NOT NULL PRIMARY KEY, name TEXT DEFAULT '' NOT NULL, operation INTEGER DEFAULT 3 NOT NULL, "
 			+ "attributes TEXT DEFAULT '' NOT NULL, owner TEXT DEFAULT '' NOT NULL)";
 
-	std::vector<json> record;
+	std::vector<Json> record;
 	bool ret = db_manager::execute_sync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
 
@@ -77,9 +77,9 @@ EXTAPI bool ctx::init_custom_context_provider()
 	IF_FAIL_RETURN(record.size() > 0, true);
 
 	int error;
-	std::vector<json>::iterator vec_end = record.end();
-	for (std::vector<json>::iterator vec_pos = record.begin(); vec_pos != vec_end; ++vec_pos) {
-		ctx::json elem = *vec_pos;
+	std::vector<Json>::iterator vec_end = record.end();
+	for (std::vector<Json>::iterator vec_pos = record.begin(); vec_pos != vec_end; ++vec_pos) {
+		ctx::Json elem = *vec_pos;
 		std::string subject;
 		std::string name;
 		std::string attributes;
@@ -89,7 +89,7 @@ EXTAPI bool ctx::init_custom_context_provider()
 		elem.get(NULL, "attributes", &attributes);
 		elem.get(NULL, "owner", &owner);
 
-		error = ctx::custom_context_provider::add_item(subject, name, ctx::json(attributes), owner.c_str(), true);
+		error = ctx::custom_context_provider::add_item(subject, name, ctx::Json(attributes), owner.c_str(), true);
 		if (error != ERR_NONE) {
 			_E("Failed to add custom item(%s): %#x", subject.c_str(), error);
 		}
@@ -98,7 +98,7 @@ EXTAPI bool ctx::init_custom_context_provider()
 	return true;
 }
 
-EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::string name, ctx::json tmpl, const char* owner, bool is_init)
+EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool is_init)
 {
 	std::map<std::string, ctx::custom_base*>::iterator it;
 	it = custom_map.find(subject);
@@ -122,7 +122,7 @@ EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::stri
 	if (!is_init) {
 		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
 				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
-		std::vector<json> record;
+		std::vector<Json> record;
 		bool ret = db_manager::execute_sync(q.c_str(), &record);
 		IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	}
@@ -140,14 +140,14 @@ EXTAPI int ctx::custom_context_provider::remove_item(std::string subject)
 
 	// Remove item from custom template db
 	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
-	std::vector<json> record;
+	std::vector<Json> record;
 	bool ret = db_manager::execute_sync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::publish_data(std::string subject, ctx::json fact)
+EXTAPI int ctx::custom_context_provider::publish_data(std::string subject, ctx::Json fact)
 {
 	std::map<std::string, ctx::custom_base*>::iterator it;
 	it = custom_map.find(subject);
@@ -160,14 +160,14 @@ EXTAPI int ctx::custom_context_provider::publish_data(std::string subject, ctx::
 	return ERR_NONE;
 }
 
-bool is_valid_fact(std::string subject, ctx::json& fact)
+bool is_valid_fact(std::string subject, ctx::Json& fact)
 {
-	ctx::json tmpl = custom_map[subject]->get_template();
+	ctx::Json tmpl = custom_map[subject]->get_template();
 	IF_FAIL_RETURN_TAG(tmpl != EMPTY_JSON_OBJECT, false, _E, "Failed to get template");
 
 	bool ret;
 	std::list<std::string> keys;
-	fact.get_keys(&keys);
+	fact.getKeys(&keys);
 
 	for (std::list<std::string>::iterator it = keys.begin(); it != keys.end(); it++) {
 		std::string key = *it;
@@ -197,7 +197,7 @@ bool is_valid_fact(std::string subject, ctx::json& fact)
 	return true;
 }
 
-bool check_value_int(ctx::json& tmpl, std::string key, int value)
+bool check_value_int(ctx::Json& tmpl, std::string key, int value)
 {
 	int min, max;
 
@@ -212,15 +212,15 @@ bool check_value_int(ctx::json& tmpl, std::string key, int value)
 	return true;
 }
 
-bool check_value_string(ctx::json& tmpl, std::string key, std::string value)
+bool check_value_string(ctx::Json& tmpl, std::string key, std::string value)
 {
 	// case1: any value is accepted
-	if (tmpl.array_get_size(key.c_str(), "values") <= 0)
+	if (tmpl.getSize(key.c_str(), "values") <= 0)
 		return true;
 
 	// case2: check acceptable value
 	std::string t_val;
-	for (int i = 0; tmpl.get_array_elem(key.c_str(), "values", i, &t_val); i++) {
+	for (int i = 0; tmpl.getAt(key.c_str(), "values", i, &t_val); i++) {
 		if (t_val == value)
 			return true;
 	}

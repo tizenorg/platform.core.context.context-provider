@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <glib.h>
-#include <json.h>
+#include <Json.h>
 #include <types_internal.h>
 #include <db_mgr.h>
 #include "app_stats_types.h"
@@ -81,7 +81,7 @@ void ctx::app_install_monitor::package_event_cb(const char *type, const char *pa
 bool ctx::app_install_monitor::app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data)
 {
 	if (last_event_type == PACKAGE_MANAGER_EVENT_TYPE_INSTALL) {
-		json data;
+		Json data;
 		data.set(NULL, STATS_APP_ID, app_id);
 		db_manager::insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 	} else if (last_event_type == PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL) {

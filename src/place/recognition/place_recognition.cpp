@@ -38,23 +38,23 @@ void ctx::place_recognition_provider::destroy(void *data)
 	_I(BLUE("Destroyed"));
 }
 
-int ctx::place_recognition_provider::subscribe(const char *subject, ctx::json option, ctx::json* request_result)
+int ctx::place_recognition_provider::subscribe(const char *subject, ctx::Json option, ctx::Json* request_result)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::place_recognition_provider::unsubscribe(const char *subject, ctx::json option)
+int ctx::place_recognition_provider::unsubscribe(const char *subject, ctx::Json option)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::place_recognition_provider::read(const char *subject, ctx::json option, ctx::json* request_result)
+int ctx::place_recognition_provider::read(const char *subject, ctx::Json option, ctx::Json* request_result)
 {
 	_I(BLUE("Read"));
 	_J("Option", option);
 
 	std::vector<std::shared_ptr<ctx::Place>> places = engine.get_places();
-	json data_read = engine.compose_json(places);
+	Json data_read = engine.compose_json(places);
 
 	// The below function needs to be called once.
 	// It does not need to be called within this read() function.
@@ -66,7 +66,7 @@ int ctx::place_recognition_provider::read(const char *subject, ctx::json option,
 	return ERR_NONE;
 }
 
-int ctx::place_recognition_provider::write(const char *subject, ctx::json data, ctx::json* request_result)
+int ctx::place_recognition_provider::write(const char *subject, ctx::Json data, ctx::Json* request_result)
 {
 	return ERR_NOT_SUPPORTED;
 }

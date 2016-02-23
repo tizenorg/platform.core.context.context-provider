@@ -17,7 +17,7 @@
 #include <context_mgr.h>
 #include "custom_base.h"
 
-ctx::custom_base::custom_base(std::string subject, std::string name, ctx::json tmpl, std::string owner) :
+ctx::custom_base::custom_base(std::string subject, std::string name, ctx::Json tmpl, std::string owner) :
 	_subject(subject),
 	_name(name),
 	_tmpl(tmpl),
@@ -45,30 +45,30 @@ void ctx::custom_base::unsubmit_trigger_item()
 	context_manager::unregister_trigger_item(_subject.c_str());
 }
 
-int ctx::custom_base::subscribe(const char *subject, ctx::json option, ctx::json *request_result)
+int ctx::custom_base::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
 {
 	return ERR_NONE;
 
 }
 
-int ctx::custom_base::unsubscribe(const char *subject, ctx::json option)
+int ctx::custom_base::unsubscribe(const char *subject, ctx::Json option)
 {
 	return ERR_NONE;
 }
 
-int ctx::custom_base::read(const char *subject, ctx::json option, ctx::json *request_result)
+int ctx::custom_base::read(const char *subject, ctx::Json option, ctx::Json *request_result)
 {
-	ctx::json data = latest.str();
+	ctx::Json data = latest.str();
 	ctx::context_manager::reply_to_read(_subject.c_str(), NULL, ERR_NONE, data);
 	return ERR_NONE;
 }
 
-int ctx::custom_base::write(const char *subject, ctx::json data, ctx::json *request_result)
+int ctx::custom_base::write(const char *subject, ctx::Json data, ctx::Json *request_result)
 {
 	return ERR_NONE;
 }
 
-void ctx::custom_base::handle_update(ctx::json data)
+void ctx::custom_base::handle_update(ctx::Json data)
 {
 	// Store latest state
 	latest = data.str();
@@ -85,7 +85,7 @@ std::string ctx::custom_base::get_owner()
 	return _owner;
 }
 
-ctx::json ctx::custom_base::get_template()
+ctx::Json ctx::custom_base::get_template()
 {
 	return _tmpl;
 }

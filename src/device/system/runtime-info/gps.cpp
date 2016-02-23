@@ -67,7 +67,7 @@ void ctx::device_status_gps::handle_update()
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gps_status);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	const char* state_str = get_state_string(gps_status);
 	IF_FAIL_VOID(state_str);
@@ -80,7 +80,7 @@ void ctx::device_status_gps::handle_update()
 int ctx::device_status_gps::read()
 {
 	int gps_status;
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gps_status);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");

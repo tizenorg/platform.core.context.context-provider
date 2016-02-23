@@ -18,7 +18,7 @@
 #define __CONTEXT_DEVICE_PROVIDER_BASE_H__
 
 #include <types_internal.h>
-#include <json.h>
+#include <Json.h>
 #include <provider_iface.h>
 
 #define CREATE_INSTANCE(prvd) \
@@ -66,10 +66,10 @@ namespace ctx {
 
 	class device_provider_base : public context_provider_iface {
 	public:
-		int subscribe(const char *subject, ctx::json option, ctx::json *request_result);
-		int unsubscribe(const char *subject, ctx::json option);
-		int read(const char *subject, ctx::json option, ctx::json *request_result);
-		int write(const char *subject, ctx::json data, ctx::json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int unsubscribe(const char *subject, ctx::Json option);
+		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
 
 	protected:
 		bool being_subscribed;
