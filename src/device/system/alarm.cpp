@@ -15,8 +15,6 @@
  */
 
 #include <context_mgr.h>
-#include <timer_mgr.h>
-#include <timer_util.h>
 #include "system_types.h"
 #include "alarm.h"
 
@@ -122,7 +120,7 @@ int ctx::device_status_alarm::get_arranged_day_of_week(ctx::Json& option)
 
 	std::string tmp_d;
 	for (int i = 0; option.getAt(NULL, DEVICE_ST_DAY_OF_WEEK, i, &tmp_d); i++) {
-		dow |= ctx::timer_util::convert_day_of_week_string_to_int(tmp_d);
+		dow |= ctx::TimerManager::dowToInt(tmp_d);
 	}
 	_D("Requested day of week (%#x)", dow);
 
@@ -131,14 +129,14 @@ int ctx::device_status_alarm::get_arranged_day_of_week(ctx::Json& option)
 
 ctx::device_status_alarm::ref_count_array_s::ref_count_array_s()
 {
-	memset(count, 0, sizeof(int) * MAX_DAY);
+	memset(count, 0, sizeof(int) * DAYS_PER_WEEK);
 }
 
 int ctx::device_status_alarm::merge_day_of_week(int* ref_cnt)
 {
 	int day_of_week = 0;
 
-	for (int d = 0; d < MAX_DAY; ++d) {
+	for (int d = 0; d < DAYS_PER_WEEK; ++d) {
 		if (ref_cnt[d] > 0) {
 			day_of_week |= (0x01 << d);
 		}
@@ -150,12 +148,12 @@ int ctx::device_status_alarm::merge_day_of_week(int* ref_cnt)
 bool ctx::device_status_alarm::add(int minute, int day_of_week)
 {
 	IF_FAIL_RETURN_TAG(minute >=0 && minute < 1440 &&
-			day_of_week > 0 && day_of_week <= timer_types::EVERYDAY,
+			day_of_week > 0 && day_of_week <= static_cast<int>(DayOfWeek::EVERYDAY),
 			false, _E, "Invalid parameter");
 
 	ref_count_array_s &ref = ref_count_map[minute];
 
-	for (int d = 0; d < MAX_DAY; ++d) {
+	for (int d = 0; d < DAYS_PER_WEEK; ++d) {
 		if ((day_of_week & (0x01 << d)) != 0) {
 			ref.count[d] += 1;
 		}
@@ -167,12 +165,12 @@ bool ctx::device_status_alarm::add(int minute, int day_of_week)
 bool ctx::device_status_alarm::remove(int minute, int day_of_week)
 {
 	IF_FAIL_RETURN_TAG(minute >=0 && minute < 1440 &&
-			day_of_week > 0 && day_of_week <= timer_types::EVERYDAY,
+			day_of_week > 0 && day_of_week <= static_cast<int>(DayOfWeek::EVERYDAY),
 			false, _E, "Invalid parameter");
 
 	ref_count_array_s &ref = ref_count_map[minute];
 
-	for (int d = 0; d < MAX_DAY; ++d) {
+	for (int d = 0; d < DAYS_PER_WEEK; ++d) {
 		if ((day_of_week & (0x01 << d)) != 0 && ref.count[d] > 0) {
 			ref.count[d] -= 1;
 		}
@@ -193,7 +191,7 @@ bool ctx::device_status_alarm::reset_timer(int minute)
 
 	if (day_of_week == 0 && timer.timer_id > 0) {
 		/* Turn off the timer at hour, if it is not necessray anymore. */
-		timer_manager::remove(timer.timer_id);
+		__timerManager.remove(timer.timer_id);
 		timer_state_map.erase(minute);
 		ref_count_map.erase(minute);
 		return true;
@@ -201,7 +199,7 @@ bool ctx::device_status_alarm::reset_timer(int minute)
 
 	if (timer.timer_id > 0) {
 		/* Turn off the current timer, to set a new one. */
-		timer_manager::remove(timer.timer_id);
+		__timerManager.remove(timer.timer_id);
 		timer.timer_id = -1;
 		timer.day_of_week = 0;
 	}
@@ -209,7 +207,7 @@ bool ctx::device_status_alarm::reset_timer(int minute)
 	/* Create a new timer, w.r.t. the new day_of_week value. */
 	int h = minute / 60;
 	int m = minute - h * 60;
-	int tid = timer_manager::set_at(h, m, day_of_week, this);
+	int tid = __timerManager.setAt(h, m, static_cast<DayOfWeek>(day_of_week), this);
 	IF_FAIL_RETURN_TAG(tid > 0, false, _E, "Timer setting failed");
 
 	timer.timer_id = tid;
@@ -222,7 +220,7 @@ void ctx::device_status_alarm::clear()
 {
 	for (timer_state_map_t::iterator it = timer_state_map.begin(); it != timer_state_map.end(); ++it) {
 		if (it->second.timer_id > 0) {
-			timer_manager::remove(it->second.timer_id);
+			__timerManager.remove(it->second.timer_id);
 		}
 	}
 
@@ -230,7 +228,7 @@ void ctx::device_status_alarm::clear()
 	ref_count_map.clear();
 }
 
-bool ctx::device_status_alarm::on_timer_expired(int timer_id, void* user_data)
+bool ctx::device_status_alarm::onTimerExpired(int timer_id)
 {
 	time_t rawtime;
 	struct tm timeinfo;
@@ -254,7 +252,7 @@ void ctx::device_status_alarm::on_timer_expired(int hour, int min, int day_of_we
 
 	ctx::Json data_read;
 	int result_time = hour * 60 + min;
-	std::string result_day = ctx::timer_util::convert_day_of_week_int_to_string(day_of_week);
+	std::string result_day = ctx::TimerManager::dowToStr(day_of_week);
 	data_read.set(NULL, DEVICE_ST_TIME_OF_DAY, result_time);
 	data_read.set(NULL, DEVICE_ST_DAY_OF_WEEK, result_day);
 

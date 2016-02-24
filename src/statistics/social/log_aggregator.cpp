@@ -17,7 +17,6 @@
 #include <sstream>
 #include <Json.h>
 #include <db_mgr.h>
-#include <timer_mgr.h>
 #include <types_internal.h>
 #include "social_stats_types.h"
 #include "log_aggregator.h"
@@ -27,12 +26,12 @@ ctx::contact_log_aggregator::contact_log_aggregator()
 	, time_diff(0)
 {
 	create_table();
-	timer_id = timer_manager::set_at(3, 0, timer_types::EVERYDAY, this, NULL);
+	timer_id = __timerManager.setAt(3, 0, DayOfWeek::EVERYDAY, this);
 }
 
 ctx::contact_log_aggregator::~contact_log_aggregator()
 {
-	timer_manager::remove(timer_id);
+	__timerManager.remove(timer_id);
 }
 
 void ctx::contact_log_aggregator::create_table()
@@ -46,7 +45,7 @@ void ctx::contact_log_aggregator::create_table()
 	done = true;
 }
 
-bool ctx::contact_log_aggregator::on_timer_expired(int timer, void* user_data)
+bool ctx::contact_log_aggregator::onTimerExpired(int timer)
 {
 	aggregate_contact_log();
 	return true;
