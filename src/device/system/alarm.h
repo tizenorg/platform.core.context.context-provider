@@ -20,12 +20,12 @@
 #include <map>
 #include <set>
 #include <provider_iface.h>
-#include <timer_listener_iface.h>
+#include <TimerManager.h>
 #include "../provider_base.h"
 
 namespace ctx {
 
-	class device_status_alarm : public context_provider_iface, timer_listener_iface {
+	class device_status_alarm : public context_provider_iface, ITimerListener {
 
 		GENERATE_PROVIDER_COMMON_DECL(device_status_alarm);
 
@@ -65,6 +65,7 @@ namespace ctx {
 		ref_count_map_t ref_count_map;
 		timer_state_map_t timer_state_map;
 		option_t option_set;
+		TimerManager __timerManager;
 
 		bool add(int minute, int day_of_week);
 		bool remove(int minute, int day_of_week);
@@ -74,7 +75,7 @@ namespace ctx {
 		int merge_day_of_week(int *ref_cnt);
 		bool reset_timer(int hour);
 		void on_timer_expired(int hour, int min, int day_of_week);
-		bool on_timer_expired(int timer_id, void *user_data);
+		bool onTimerExpired(int timer_id);
 
 		bool is_matched(ctx::Json& option, int time, std::string day);
 		option_t::iterator find_option(ctx::Json& option);

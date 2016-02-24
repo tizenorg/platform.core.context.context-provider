@@ -486,7 +486,7 @@ void ctx::LocationLogger::broadcast(ctx::location_event_s location_event)
 	}
 }
 
-bool ctx::LocationLogger::on_timer_expired(int id, void* user_data)
+bool ctx::LocationLogger::onTimerExpired(int id)
 {
 	time_t now = time(nullptr);
 	double seconds = difftime(now, timer_timestamp);
@@ -564,14 +564,14 @@ void ctx::LocationLogger::passive_interval_timer_start()
 void ctx::LocationLogger::timer_start(time_t minutes)
 {
 	timer_timestamp = time(nullptr);
-	timer_id = timer_manager::set_for(minutes, this, NULL);
+	timer_id = __timerManager.setFor(minutes, this);
 	_D("%s (minutes=%d) timer_id = %d", timer_id >= 0 ? "SUCCESS" : "ERROR", minutes, timer_id);
 }
 
 void ctx::LocationLogger::timer_stop()
 {
 	_D("");
-	timer_manager::remove(timer_id);
+	__timerManager.remove(timer_id);
 }
 
 void ctx::LocationLogger::start_logging()

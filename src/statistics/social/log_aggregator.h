@@ -19,14 +19,15 @@
 
 #include <contacts.h>
 #include <db_listener_iface.h>
-#include <timer_listener_iface.h>
+#include <TimerManager.h>
 
 namespace ctx {
 
-	class contact_log_aggregator : public db_listener_iface, public timer_listener_iface {
+	class contact_log_aggregator : public db_listener_iface, public ITimerListener {
 		private:
 			int timer_id;
 			int time_diff;
+			TimerManager __timerManager;
 			void create_table();
 			void get_updated_contact_log_list(int last_time, contacts_list_h *list);
 			void insert_contact_log_list(contacts_list_h list);
@@ -42,7 +43,7 @@ namespace ctx {
 			void on_creation_result_received(unsigned int query_id, int error) {}
 			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
 			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
-			bool on_timer_expired(int timer_id, void* user_data);
+			bool onTimerExpired(int timer_id);
 
 	};	/* class phone_contact_log_aggregator */
 

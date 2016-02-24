@@ -17,11 +17,12 @@
 #ifndef __CONTEXT_PLACE_STATUS_USER_PLACES_ENGINE_H__
 #define __CONTEXT_PLACE_STATUS_USER_PLACES_ENGINE_H__
 
+#include <vector>
+#include <Json.h>
+#include <TimerManager.h>
 #include "visit_detector.h"
 #include "places_detector.h"
-#include <vector>
 #include "user_places_types.h"
-#include <Json.h>
 
 namespace ctx {
 
@@ -31,6 +32,7 @@ namespace ctx {
 		VisitDetector *visit_detector;
 		PlacesDetector *places_detector;
 		int places_detector_timer_id;
+		TimerManager __timerManager;
 
 	public:
 		UserPlaces(place_recog_mode_e energy_mode = PLACE_RECOG_HIGH_ACCURACY_MODE);

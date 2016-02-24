@@ -19,7 +19,6 @@
 #include <types_internal.h>
 #include "user_places.h"
 #include "places_detector.h"
-#include "timer_mgr.h"
 #include "../place_recognition_types.h"
 #include "db_mgr.h"
 
@@ -41,10 +40,10 @@ ctx::UserPlaces::UserPlaces(place_recog_mode_e energy_mode)
 		return;
 	}
 
-	places_detector_timer_id = timer_manager::set_at( // execute once every night
+	places_detector_timer_id = __timerManager.setAt( // execute once every night
 			PLACES_DETECTOR_TASK_START_HOUR,
 			PLACES_DETECTOR_TASK_START_MINUTE,
-			timer_types::EVERYDAY,
+			DayOfWeek::EVERYDAY,
 			places_detector);
 	if (places_detector_timer_id < 0) {
 		_E("PlacesDetector timer set FAIL");
@@ -57,7 +56,7 @@ ctx::UserPlaces::UserPlaces(place_recog_mode_e energy_mode)
 ctx::UserPlaces::~UserPlaces()
 {
 	if (places_detector_timer_id >= 0) {
-		timer_manager::remove(places_detector_timer_id);
+		__timerManager.remove(places_detector_timer_id);
 		_D("PlacesDetector timer removed");
 	}
 

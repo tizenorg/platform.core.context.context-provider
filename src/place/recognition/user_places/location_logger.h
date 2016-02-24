@@ -17,9 +17,8 @@
 #ifndef __CONTEXT_PLACE_STATUS_LOCATION_LOGGER_H__
 #define __CONTEXT_PLACE_STATUS_LOCATION_LOGGER_H__
 
-#include <timer_listener_iface.h>
 #include <locations.h>
-#include "timer_mgr.h"
+#include <TimerManager.h>
 #include "visit_listener_iface.h"
 #include "location_listener_iface.h"
 
@@ -63,7 +62,7 @@ namespace ctx {
 		LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL = 4
 	} timer_purpose_e;
 
-	class LocationLogger : public timer_listener_iface, public IVisitListener {
+	class LocationLogger : public ITimerListener, public IVisitListener {
 
 	public:
 		LocationLogger(ILocationListener *listener_ = nullptr,
@@ -103,6 +102,7 @@ namespace ctx {
 		/* TIMER */
 		int timer_id;
 		time_t timer_timestamp;
+		TimerManager __timerManager;
 		timer_purpose_e timer_purpose;
 		void set_next_timer();
 		void active_request_timer_start();
@@ -111,7 +111,7 @@ namespace ctx {
 		void passive_interval_timer_start();
 		void timer_start(time_t minutes);
 		void timer_stop();
-		bool on_timer_expired(int timer_id, void* user_data);
+		bool onTimerExpired(int timerId);
 
 		/* DATABASE */
 		static int create_table();

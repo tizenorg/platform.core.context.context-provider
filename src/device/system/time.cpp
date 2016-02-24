@@ -15,7 +15,7 @@
  */
 
 #include <context_mgr.h>
-#include <timer_util.h>
+#include <TimerManager.h>
 #include "system_types.h"
 #include "time.h"
 
@@ -66,7 +66,7 @@ int ctx::device_status_time::read()
 
 	int day_of_month = timeinfo.tm_mday;
 	int minute_of_day = timeinfo.tm_hour * 60 + timeinfo.tm_min;
-	std::string day_of_week = ctx::timer_util::convert_day_of_week_int_to_string(0x01 << timeinfo.tm_wday);
+	std::string day_of_week = ctx::TimerManager::dowToStr(0x01 << timeinfo.tm_wday);
 
 	ctx::Json data_read;
 	data_read.set(NULL, DEVICE_ST_DAY_OF_MONTH, day_of_month);

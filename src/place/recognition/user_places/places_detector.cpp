@@ -70,7 +70,7 @@
 	PLACE_COLUMN_WIFI_APS " STRING, "\
 	PLACE_COLUMN_CREATE_DATE " timestamp"
 
-bool ctx::PlacesDetector::on_timer_expired(int timer_id, void* user_data)
+bool ctx::PlacesDetector::onTimerExpired(int timerId)
 {
 	_D("");
 	db_delete_places();
