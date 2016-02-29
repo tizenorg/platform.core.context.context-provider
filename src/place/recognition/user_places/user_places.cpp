@@ -120,8 +120,8 @@ ctx::Json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> plac
 		place_j.set(NULL, PLACE_CATEG_CONFIDENCE, place->categ_confidence);
 		place_j.set(NULL, PLACE_NAME, place->name);
 		if (place->location_valid) {
-			place_j.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude, GEO_LOCATION_PRECISION);
-			place_j.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude, GEO_LOCATION_PRECISION);
+			place_j.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude);
+			place_j.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude);
 		}
 		place_j.set(NULL, PLACE_WIFI_APS, place->wifi_aps);
 		place_j.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->create_date));

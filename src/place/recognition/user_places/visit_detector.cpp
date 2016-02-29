@@ -398,8 +398,8 @@ int ctx::VisitDetector::db_insert_visit(visit_s visit)
 	data.set(NULL, VISIT_COLUMN_WIFI_APS, macs_ss.str().c_str());
 
 	data.set(NULL, VISIT_COLUMN_LOCATION_VALID, visit.location_valid);
-	data.set(NULL, VISIT_COLUMN_LOCATION_LATITUDE, visit.location.latitude, GEO_LOCATION_PRECISION);
-	data.set(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, visit.location.longitude, GEO_LOCATION_PRECISION);
+	data.set(NULL, VISIT_COLUMN_LOCATION_LATITUDE, visit.location.latitude);
+	data.set(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, visit.location.longitude);
 
 	data.set(NULL, VISIT_COLUMN_START_TIME, static_cast<int>(visit.interval.start));
 	data.set(NULL, VISIT_COLUMN_END_TIME, static_cast<int>(visit.interval.end));

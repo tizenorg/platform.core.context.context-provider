@@ -438,8 +438,8 @@ void ctx::PlacesDetector::db_insert_place(const Place &place)
 	data.set(NULL, PLACE_COLUMN_NAME, place.name);
 
 	data.set(NULL, PLACE_COLUMN_LOCATION_VALID, place.location_valid);
-	data.set(NULL, PLACE_COLUMN_LOCATION_LATITUDE, place.location.latitude, GEO_LOCATION_PRECISION);
-	data.set(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, place.location.longitude, GEO_LOCATION_PRECISION);
+	data.set(NULL, PLACE_COLUMN_LOCATION_LATITUDE, place.location.latitude);
+	data.set(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, place.location.longitude);
 
 	data.set(NULL, PLACE_COLUMN_WIFI_APS, place.wifi_aps);
 	data.set(NULL, PLACE_COLUMN_CREATE_DATE, static_cast<int>(place.create_date));
