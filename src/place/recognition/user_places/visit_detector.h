@@ -23,7 +23,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "user_places_types.h"
-#include <json.h>
+#include <Json.h>
 #include "visit_listener_iface.h"
 #include "location_logger.h"
 #include "location_listener_iface.h"
@@ -80,8 +80,8 @@ namespace ctx {
 		bool protrudes_from(const mac_counts_t &mac_counts, const mac_set_t &mac_set);
 
 		void db_create_table();
-		void json_put_visit_categ(json &data, const char* key, const categs_t &categs, int categ_type);
-		void json_put_visit_categs(json &data, const categs_t &categs);
+		void json_put_visit_categ(Json &data, const char* key, const categs_t &categs, int categ_type);
+		void json_put_visit_categs(Json &data, const categs_t &categs);
 		int db_insert_visit(visit_s visit);
 		void set_period(place_recog_mode_e mode);
 

@@ -22,7 +22,7 @@ ctx::device_provider_base::device_provider_base()
 {
 }
 
-int ctx::device_provider_base::subscribe(const char *subject, ctx::json option, ctx::json *request_result)
+int ctx::device_provider_base::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
 {
 	IF_FAIL_RETURN(!being_subscribed, ERR_NONE);
 
@@ -36,7 +36,7 @@ int ctx::device_provider_base::subscribe(const char *subject, ctx::json option, 
 	return ret;
 }
 
-int ctx::device_provider_base::unsubscribe(const char *subject, ctx::json option)
+int ctx::device_provider_base::unsubscribe(const char *subject, ctx::Json option)
 {
 	int ret = ERR_NONE;
 
@@ -47,7 +47,7 @@ int ctx::device_provider_base::unsubscribe(const char *subject, ctx::json option
 	return ret;
 }
 
-int ctx::device_provider_base::read(const char *subject, ctx::json option, ctx::json *request_result)
+int ctx::device_provider_base::read(const char *subject, ctx::Json option, ctx::Json *request_result)
 {
 	int ret = read();
 
@@ -57,7 +57,7 @@ int ctx::device_provider_base::read(const char *subject, ctx::json option, ctx::
 	return ret;
 }
 
-int ctx::device_provider_base::write(const char *subject, ctx::json data, ctx::json *request_result)
+int ctx::device_provider_base::write(const char *subject, ctx::Json data, ctx::Json *request_result)
 {
 	int ret = write();
 

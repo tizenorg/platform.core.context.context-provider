@@ -17,7 +17,7 @@
 #include <geofence_manager.h>
 
 #include <types_internal.h>
-#include <json.h>
+#include <Json.h>
 #include <context_mgr.h>
 #include "place_geofence.h"
 
@@ -79,33 +79,33 @@ void ctx::place_geofence_provider::__destroy_if_unused()
 }
 
 
-int ctx::place_geofence_provider::subscribe(const char *subject, ctx::json option, ctx::json *request_result)
+int ctx::place_geofence_provider::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
 {
 	int ret = __subscribe(option);
 	__destroy_if_unused();
 	return ret;
 }
 
-int ctx::place_geofence_provider::unsubscribe(const char *subject, ctx::json option)
+int ctx::place_geofence_provider::unsubscribe(const char *subject, ctx::Json option)
 {
 	int ret = __unsubscribe(option);
 	__destroy_if_unused();
 	return ret;
 }
 
-int ctx::place_geofence_provider::read(const char *subject, ctx::json option, ctx::json *request_result)
+int ctx::place_geofence_provider::read(const char *subject, ctx::Json option, ctx::Json *request_result)
 {
 	__destroy_if_unused();
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::place_geofence_provider::write(const char *subject, ctx::json data, ctx::json *request_result)
+int ctx::place_geofence_provider::write(const char *subject, ctx::Json data, ctx::Json *request_result)
 {
 	__destroy_if_unused();
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::place_geofence_provider::__subscribe(ctx::json option)
+int ctx::place_geofence_provider::__subscribe(ctx::Json option)
 {
 	int pid = -1;
 	option.get(NULL, PLACE_STATUS_OPT_MYPLACE_ID, &pid);
@@ -132,7 +132,7 @@ int ctx::place_geofence_provider::__subscribe(ctx::json option)
 	return ERR_NONE;
 }
 
-int ctx::place_geofence_provider::__unsubscribe(ctx::json option)
+int ctx::place_geofence_provider::__unsubscribe(ctx::Json option)
 {
 	int pid = -1;
 	option.get(NULL, PLACE_STATUS_OPT_MYPLACE_ID, &pid);

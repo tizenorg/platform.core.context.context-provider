@@ -20,7 +20,7 @@
 #include <sstream>
 #include <types_internal.h>
 #include <db_mgr.h>
-#include <json.h>
+#include <Json.h>
 #include "../place_recognition_types.h"
 #include "visit_detector.h"
 #include "user_places_params.h"
@@ -372,7 +372,7 @@ void ctx::VisitDetector::db_create_table()
 	_D("db: visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-void ctx::VisitDetector::json_put_visit_categ(json &data, const char* key, const categs_t &categs, int categ_type)
+void ctx::VisitDetector::json_put_visit_categ(Json &data, const char* key, const categs_t &categs, int categ_type)
 {
 	auto categ_p = categs.find(categ_type);
 	if (categ_p == categs.end()) {
@@ -382,7 +382,7 @@ void ctx::VisitDetector::json_put_visit_categ(json &data, const char* key, const
 	}
 }
 
-void ctx::VisitDetector::json_put_visit_categs(json &data, const categs_t &categs)
+void ctx::VisitDetector::json_put_visit_categs(Json &data, const categs_t &categs)
 {
 	json_put_visit_categ(data, VISIT_COLUMN_CATEG_HOME, categs, PLACE_CATEG_ID_HOME);
 	json_put_visit_categ(data, VISIT_COLUMN_CATEG_WORK, categs, PLACE_CATEG_ID_WORK);
@@ -394,12 +394,12 @@ int ctx::VisitDetector::db_insert_visit(visit_s visit)
 	std::stringstream macs_ss;
 	macs_ss << *visit.mac_set;
 
-	json data;
+	Json data;
 	data.set(NULL, VISIT_COLUMN_WIFI_APS, macs_ss.str().c_str());
 
 	data.set(NULL, VISIT_COLUMN_LOCATION_VALID, visit.location_valid);
-	data.set(NULL, VISIT_COLUMN_LOCATION_LATITUDE, visit.location.latitude, GEO_LOCATION_PRECISION);
-	data.set(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, visit.location.longitude, GEO_LOCATION_PRECISION);
+	data.set(NULL, VISIT_COLUMN_LOCATION_LATITUDE, visit.location.latitude);
+	data.set(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, visit.location.longitude);
 
 	data.set(NULL, VISIT_COLUMN_START_TIME, static_cast<int>(visit.interval.start));
 	data.set(NULL, VISIT_COLUMN_END_TIME, static_cast<int>(visit.interval.end));

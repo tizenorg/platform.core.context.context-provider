@@ -29,10 +29,10 @@ namespace ctx {
 		static bool is_supported(const char *subject);
 		static void submit_trigger_item();
 
-		int subscribe(const char *subject, ctx::json option, ctx::json *request_result);
-		int unsubscribe(const char *subject, ctx::json option);
-		int read(const char *subject, ctx::json option, ctx::json *request_result);
-		int write(const char *subject, ctx::json data, ctx::json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int unsubscribe(const char *subject, ctx::Json option);
+		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
 
 	private:
 		static app_statistics_provider *__instance;

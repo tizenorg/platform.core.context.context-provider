@@ -30,10 +30,10 @@ namespace ctx {
 		static void destroy(void *data);
 		static bool is_supported();
 
-		int subscribe(const char *subject, ctx::json option, ctx::json *request_result);
-		int unsubscribe(const char *subject, ctx::json option);
-		int read(const char *subject, ctx::json option, ctx::json *request_result);
-		int write(const char *subject, ctx::json data, ctx::json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int unsubscribe(const char *subject, ctx::Json option);
+		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
 
 	private:
 		static place_recognition_provider *__instance;

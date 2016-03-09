@@ -17,7 +17,7 @@
 #ifndef __CONTEXT_MEDIA_STATS_TYPES_H__
 #define __CONTEXT_MEDIA_STATS_TYPES_H__
 
-#include <common_types.h>
+#include "../shared/common_types.h"
 
 #define MEDIA_HISTORY_PRIV					"mediahistory.read"
 #define MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC		"stats/music/peak_time"

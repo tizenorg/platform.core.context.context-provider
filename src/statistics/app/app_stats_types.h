@@ -17,7 +17,7 @@
 #ifndef __CONTEXT_APP_STATS_TYPES_H__
 #define __CONTEXT_APP_STATS_TYPES_H__
 
-#include <common_types.h>
+#include "../shared/common_types.h"
 
 #define APP_HISTORY_PRIV			"apphistory.read"
 #define APP_SUBJ_RECENTLY_USED		"stats/app/recently"

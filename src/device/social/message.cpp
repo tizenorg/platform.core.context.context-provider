@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <json.h>
+#include <Json.h>
 #include <context_mgr.h>
 #include "social_types.h"
 #include "message.h"
@@ -59,7 +59,7 @@ void ctx::social_status_message::handle_state_change(msg_struct_t msg)
 	int err;
 	int type;
 	char address[MAX_ADDR_SIZE];
-	ctx::json data;
+	ctx::Json data;
 
 	err = msg_get_int_value(msg, MSG_MESSAGE_TYPE_INT, &type);
 	IF_FAIL_VOID_TAG(err == MSG_SUCCESS, _W, "Getting message type failed");

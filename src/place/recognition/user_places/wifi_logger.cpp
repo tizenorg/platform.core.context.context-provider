@@ -337,7 +337,7 @@ bool ctx::WifiLogger::check_timer_time(time_t now)
 	return true;
 }
 
-bool ctx::WifiLogger::on_timer_expired(int id, void* user_data)
+bool ctx::WifiLogger::onTimerExpired(int id)
 {
 	time_t now = time(nullptr);
 	_D("");
@@ -414,7 +414,7 @@ void ctx::WifiLogger::_stop_logging()
 		// Unset timer
 		timer_on = false;
 		// Remove timer
-		timer_manager::remove(timer_id);
+		__timerManager.remove(timer_id);
 	}
 	if (WIFI_LOGGER_PASSIVE_SCANNING) {
 		wifi_unset_background_scan_cb();
@@ -425,7 +425,7 @@ void ctx::WifiLogger::_stop_logging()
 void ctx::WifiLogger::timer_start(time_t minutes)
 {
 	timer_on = true;
-	timer_id = timer_manager::set_for(minutes, this, NULL);
+	timer_id = __timerManager.setFor(minutes, this);
 	_D("%s (minutes=%d)", timer_id >= 0 ? "SUCCESS" : "ERROR", minutes);
 }
 
@@ -458,7 +458,7 @@ void ctx::WifiLogger::set_interval(place_recog_mode_e energy_mode)
 
 void ctx::WifiLogger::timer_restart()
 {
-	timer_manager::remove(timer_id);
+	__timerManager.remove(timer_id);
 	timer_start(interval_minutes);
 }
 

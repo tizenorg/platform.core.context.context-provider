@@ -17,7 +17,7 @@
 #ifndef __CONTEXT_SOCIAL_STATS_TYPES_H__
 #define __CONTEXT_SOCIAL_STATS_TYPES_H__
 
-#include <common_types.h>
+#include "../shared/common_types.h"
 
 #define SOCIAL_HISTORY_PRIV			"callhistory.read"
 #define SOCIAL_SUBJ_FREQ_ADDRESS	"stats/contact/often"

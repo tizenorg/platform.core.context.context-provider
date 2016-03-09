@@ -19,7 +19,7 @@
 #include "../place_recognition_types.h"
 #include <db_mgr.h>
 #include <sstream>
-#include <json.h>
+#include <Json.h>
 #include "user_places_params.h"
 #include "debug_utils.h"
 
@@ -182,10 +182,10 @@ int ctx::LocationLogger::create_table()
 
 int ctx::LocationLogger::db_insert_log(location_event_s location_event)
 {
-	json data;
-	data.set(NULL, LOCATION_COLUMN_LATITUDE, location_event.coordinates.latitude, GEO_LOCATION_PRECISION);
-	data.set(NULL, LOCATION_COLUMN_LONGITUDE, location_event.coordinates.longitude, GEO_LOCATION_PRECISION);
-	data.set(NULL, LOCATION_COLUMN_ACCURACY, location_event.coordinates.accuracy, GEO_LOCATION_PRECISION);
+	Json data;
+	data.set(NULL, LOCATION_COLUMN_LATITUDE, location_event.coordinates.latitude);
+	data.set(NULL, LOCATION_COLUMN_LONGITUDE, location_event.coordinates.longitude);
+	data.set(NULL, LOCATION_COLUMN_ACCURACY, location_event.coordinates.accuracy);
 	data.set(NULL, LOCATION_COLUMN_TIMESTAMP, static_cast<int>(location_event.timestamp));
 #ifdef TIZEN_ENGINEER_MODE
 	std::string time_human = DebugUtils::human_readable_date_time(location_event.timestamp, "%F %T", 80);
@@ -486,7 +486,7 @@ void ctx::LocationLogger::broadcast(ctx::location_event_s location_event)
 	}
 }
 
-bool ctx::LocationLogger::on_timer_expired(int id, void* user_data)
+bool ctx::LocationLogger::onTimerExpired(int id)
 {
 	time_t now = time(nullptr);
 	double seconds = difftime(now, timer_timestamp);
@@ -564,14 +564,14 @@ void ctx::LocationLogger::passive_interval_timer_start()
 void ctx::LocationLogger::timer_start(time_t minutes)
 {
 	timer_timestamp = time(nullptr);
-	timer_id = timer_manager::set_for(minutes, this, NULL);
+	timer_id = __timerManager.setFor(minutes, this);
 	_D("%s (minutes=%d) timer_id = %d", timer_id >= 0 ? "SUCCESS" : "ERROR", minutes, timer_id);
 }
 
 void ctx::LocationLogger::timer_stop()
 {
 	_D("");
-	timer_manager::remove(timer_id);
+	__timerManager.remove(timer_id);
 }
 
 void ctx::LocationLogger::start_logging()

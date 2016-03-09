@@ -19,7 +19,6 @@
 #include <types_internal.h>
 #include "user_places.h"
 #include "places_detector.h"
-#include "timer_mgr.h"
 #include "../place_recognition_types.h"
 #include "db_mgr.h"
 
@@ -41,10 +40,10 @@ ctx::UserPlaces::UserPlaces(place_recog_mode_e energy_mode)
 		return;
 	}
 
-	places_detector_timer_id = timer_manager::set_at( // execute once every night
+	places_detector_timer_id = __timerManager.setAt( // execute once every night
 			PLACES_DETECTOR_TASK_START_HOUR,
 			PLACES_DETECTOR_TASK_START_MINUTE,
-			timer_types::EVERYDAY,
+			DayOfWeek::EVERYDAY,
 			places_detector);
 	if (places_detector_timer_id < 0) {
 		_E("PlacesDetector timer set FAIL");
@@ -57,7 +56,7 @@ ctx::UserPlaces::UserPlaces(place_recog_mode_e energy_mode)
 ctx::UserPlaces::~UserPlaces()
 {
 	if (places_detector_timer_id >= 0) {
-		timer_manager::remove(places_detector_timer_id);
+		__timerManager.remove(places_detector_timer_id);
 		_D("PlacesDetector timer removed");
 	}
 
@@ -111,21 +110,21 @@ std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::get_places()
  *	  ]
  * }
  */
-ctx::json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> places)
+ctx::Json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> places)
 {
-	ctx::json data;
+	ctx::Json data;
 	for (std::shared_ptr<ctx::Place> place : places) {
-		ctx::json place_j;
+		ctx::Json place_j;
 		place_j.set(NULL, PLACE_CATEG_ID, place->categ_id);
 		place_j.set(NULL, PLACE_CATEG_CONFIDENCE, place->categ_confidence);
 		place_j.set(NULL, PLACE_NAME, place->name);
 		if (place->location_valid) {
-			place_j.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude, GEO_LOCATION_PRECISION);
-			place_j.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude, GEO_LOCATION_PRECISION);
+			place_j.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude);
+			place_j.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude);
 		}
 		place_j.set(NULL, PLACE_WIFI_APS, place->wifi_aps);
 		place_j.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->create_date));
-		data.array_append(NULL, DATA_READ, place_j);
+		data.append(NULL, DATA_READ, place_j);
 	}
 	return data;
 }

@@ -17,7 +17,7 @@
 #include <sstream>
 #include <types_internal.h>
 #include <db_mgr.h>
-#include <json.h>
+#include <Json.h>
 #include "similar.h"
 #include "places_detector.h"
 #include "place_categer.h"
@@ -70,14 +70,14 @@
 	PLACE_COLUMN_WIFI_APS " STRING, "\
 	PLACE_COLUMN_CREATE_DATE " timestamp"
 
-bool ctx::PlacesDetector::on_timer_expired(int timer_id, void* user_data)
+bool ctx::PlacesDetector::onTimerExpired(int timerId)
 {
 	_D("");
 	db_delete_places();
 	return true;
 }
 
-void ctx::PlacesDetector::on_query_result_received(unsigned int query_id, int error, std::vector<json>& records)
+void ctx::PlacesDetector::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	// TODO:
 	// The below "state machine" approach was choosen because it is not possible to use synchronized database queries in the main thread.
@@ -123,7 +123,7 @@ void ctx::PlacesDetector::db_get_places()
 	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-double ctx::PlacesDetector::double_value_from_json(json &row, const char* key)
+double ctx::PlacesDetector::double_value_from_json(Json &row, const char* key)
 {
 	double value;
 	row.get(NULL, key, &value);
@@ -131,7 +131,7 @@ double ctx::PlacesDetector::double_value_from_json(json &row, const char* key)
 	return value;
 }
 
-ctx::categs_t ctx::PlacesDetector::visit_categs_from_json(json &row)
+ctx::categs_t ctx::PlacesDetector::visit_categs_from_json(Json &row)
 {
 	categs_t categs;
 	categs[PLACE_CATEG_ID_HOME] = double_value_from_json(row, VISIT_COLUMN_CATEG_HOME);
@@ -140,7 +140,7 @@ ctx::categs_t ctx::PlacesDetector::visit_categs_from_json(json &row)
 	return categs;
 }
 
-ctx::visit_s ctx::PlacesDetector::visit_from_json(json &row)
+ctx::visit_s ctx::PlacesDetector::visit_from_json(Json &row)
 {
 	int start_time;
 	int end_time;
@@ -170,12 +170,12 @@ ctx::visit_s ctx::PlacesDetector::visit_from_json(json &row)
 	return visit;
 }
 
-ctx::visits_t ctx::PlacesDetector::visits_from_jsons(std::vector<json>& records)
+ctx::visits_t ctx::PlacesDetector::visits_from_jsons(std::vector<Json>& records)
 {
 	visits_t visits;
 	_D("db_result: number of all visits: %d", records.size());
 
-	for (json &row : records) {
+	for (Json &row : records) {
 		visit_s visit = visit_from_json(row);
 		visits.push_back(visit);
 	}
@@ -183,7 +183,7 @@ ctx::visits_t ctx::PlacesDetector::visits_from_jsons(std::vector<json>& records)
 	return visits;
 }
 
-std::shared_ptr<ctx::Place> ctx::PlacesDetector::place_from_json(json &row)
+std::shared_ptr<ctx::Place> ctx::PlacesDetector::place_from_json(Json &row)
 {
 	std::shared_ptr<Place> place = std::make_shared<Place>();
 	{ // category
@@ -211,12 +211,12 @@ std::shared_ptr<ctx::Place> ctx::PlacesDetector::place_from_json(json &row)
 	return place;
 }
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::places_from_jsons(std::vector<json>& records)
+std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::places_from_jsons(std::vector<Json>& records)
 {
 	std::vector<std::shared_ptr<Place>> places;
 	_D("db_result: number of all places: %d", records.size());
 
-	for (json &row : records) {
+	for (Json &row : records) {
 		std::shared_ptr<Place> place = place_from_json(row);
 		places.push_back(place);
 	}
@@ -432,14 +432,14 @@ void ctx::PlacesDetector::db_create_table()
 
 void ctx::PlacesDetector::db_insert_place(const Place &place)
 {
-	json data;
+	Json data;
 	data.set(NULL, PLACE_COLUMN_CATEG_ID, place.categ_id);
 	data.set(NULL, PLACE_COLUMN_CATEG_CONFIDENCE, place.categ_confidence);
 	data.set(NULL, PLACE_COLUMN_NAME, place.name);
 
 	data.set(NULL, PLACE_COLUMN_LOCATION_VALID, place.location_valid);
-	data.set(NULL, PLACE_COLUMN_LOCATION_LATITUDE, place.location.latitude, GEO_LOCATION_PRECISION);
-	data.set(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, place.location.longitude, GEO_LOCATION_PRECISION);
+	data.set(NULL, PLACE_COLUMN_LOCATION_LATITUDE, place.location.latitude);
+	data.set(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, place.location.longitude);
 
 	data.set(NULL, PLACE_COLUMN_WIFI_APS, place.wifi_aps);
 	data.set(NULL, PLACE_COLUMN_CREATE_DATE, static_cast<int>(place.create_date));

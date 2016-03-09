@@ -18,7 +18,7 @@
 #include <types_internal.h>
 #include <context_mgr.h>
 #include <db_mgr.h>
-#include <system_info.h>
+#include "../shared/system_info.h"
 #include "media_stats_types.h"
 #include "db_handle.h"
 
@@ -30,7 +30,7 @@ ctx::media_db_handle::~media_db_handle()
 {
 }
 
-int ctx::media_db_handle::read(const char* subject, ctx::json filter)
+int ctx::media_db_handle::read(const char* subject, ctx::Json filter)
 {
 	//TODO: filter validation (in the API side?)
 	std::string query;
@@ -64,7 +64,7 @@ int ctx::media_db_handle::read(const char* subject, ctx::json filter)
 	return ERR_NONE;
 }
 
-std::string ctx::media_db_handle::create_where_clause(int media_type, ctx::json filter)
+std::string ctx::media_db_handle::create_where_clause(int media_type, ctx::Json filter)
 {
 	std::stringstream where_clause;
 
@@ -74,21 +74,21 @@ std::string ctx::media_db_handle::create_where_clause(int media_type, ctx::json 
 	return where_clause.str();
 }
 
-std::string ctx::media_db_handle::create_sql_peak_time(int media_type, ctx::json filter)
+std::string ctx::media_db_handle::create_sql_peak_time(int media_type, ctx::Json filter)
 {
 	std::string where = create_where_clause(media_type, filter);
 	return stats_db_handle_base::create_sql_peak_time(filter, MEDIA_TABLE_NAME, where);
 }
 
-std::string ctx::media_db_handle::create_sql_common_setting(int media_type, ctx::json filter)
+std::string ctx::media_db_handle::create_sql_common_setting(int media_type, ctx::Json filter)
 {
 	std::string where = create_where_clause(media_type, filter);
 	return stats_db_handle_base::create_sql_common_setting(filter, MEDIA_TABLE_NAME, where);
 }
 
-std::string ctx::media_db_handle::create_sql_frequency(int media_type, ctx::json filter)
+std::string ctx::media_db_handle::create_sql_frequency(int media_type, ctx::Json filter)
 {
-	ctx::json filter_cleaned;
+	ctx::Json filter_cleaned;
 	std::string week_str;
 	std::string time_of_day;
 
@@ -109,12 +109,12 @@ std::string ctx::media_db_handle::create_sql_frequency(int media_type, ctx::json
 	return query.str();
 }
 
-void ctx::media_db_handle::reply_trigger_item(int error, ctx::json &json_result)
+void ctx::media_db_handle::reply_trigger_item(int error, ctx::Json &json_result)
 {
 	IF_FAIL_VOID_TAG(STR_EQ(req_subject.c_str(), MEDIA_SUBJ_MUSIC_FREQUENCY) ||
 		STR_EQ(req_subject.c_str(), MEDIA_SUBJ_VIDEO_FREQUENCY), _E, "Invalid subject");
 
-	ctx::json results;
+	ctx::Json results;
 	int val;
 
 	json_result.get(NULL, STATS_TOTAL_COUNT, &val);

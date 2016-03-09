@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_GEOFENCE_H__
-#define __CONTEXT_PLACE_GEOFENCE_H__
+#ifndef _CUSTOM_BASE_H_
+#define _CUSTOM_BASE_H_
 
-#include <map>
+#include <Json.h>
 #include <provider_iface.h>
-#include "myplace_handle.h"
-#include "place_geofence_types.h"
+#include <types_internal.h>
 
 namespace ctx {
 
-	class place_geofence_provider : public context_provider_iface {
-		typedef std::map<int, ctx::myplace_handle*> handle_map_t;
-
+	class custom_base : public context_provider_iface {
 	public:
-		static context_provider_iface *create(void *data);
-		static void destroy(void *data);
-		static bool is_supported();
-		static void submit_trigger_item();
+		custom_base(std::string subject, std::string name, ctx::Json tmpl, std::string owner);
+		~custom_base();
 
 		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
 		int unsubscribe(const char *subject, ctx::Json option);
 		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
 		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
 
+		static bool is_supported();
+		void submit_trigger_item();
+		void unsubmit_trigger_item();
+
+		void handle_update(ctx::Json data);
+
+		const char* get_subject();
+		std::string get_owner();
+		ctx::Json get_template();
+
 	private:
-		static place_geofence_provider *__instance;
-		handle_map_t __handle_map;
-
-		place_geofence_provider();
-		~place_geofence_provider();
-
-		int __subscribe(ctx::Json option);
-		int __unsubscribe(ctx::Json option);
-		void __destroy_if_unused();
+		std::string _subject;
+		std::string _name;
+		ctx::Json _tmpl;
+		std::string _owner;
+		ctx::Json latest;
 	};
+}
 
-}	/* namespace ctx */
-
-#endif /* __CONTEXT_PLACE_GEOFENCE_H__ */
+#endif // _CUSTOM_BASE_H_

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <shared_vars.h>
+#include <SharedVars.h>
 #include <context_mgr.h>
 #include "system_types.h"
 #include "wifi.h"
@@ -122,7 +122,7 @@ bool ctx::device_status_wifi::get_bssid()
 	if (bssid.empty())
 		_W("Failed to get BSSID");
 
-	ctx::shared::wifi_bssid = bssid;
+	SharedVars().set(ctx::SharedVars::WIFI_BSSID, bssid);
 	_D("BSSID: %s", bssid.c_str());
 
 	return !bssid.empty();
@@ -131,11 +131,11 @@ bool ctx::device_status_wifi::get_bssid()
 void ctx::device_status_wifi::clear_bssid()
 {
 	bssid.clear();
-	ctx::shared::wifi_bssid.clear();
+	SharedVars().clear(ctx::SharedVars::WIFI_BSSID);
 	_D("No WiFi connection");
 }
 
-bool ctx::device_status_wifi::get_response_packet(ctx::json &data)
+bool ctx::device_status_wifi::get_response_packet(ctx::Json &data)
 {
 	switch (last_state) {
 	case _DISABLED:
@@ -162,7 +162,7 @@ int ctx::device_status_wifi::read()
 {
 	IF_FAIL_RETURN(get_current_state(), ERR_OPERATION_FAILED);
 
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	if (get_response_packet(data_read)) {
 		ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, data_read);
@@ -246,7 +246,7 @@ void ctx::device_status_wifi::aggregate_updated_data()
 			clear_bssid();
 		}
 
-		ctx::json data;
+		ctx::Json data;
 		if (being_subscribed && get_response_packet(data))
 			context_manager::publish(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, data);
 	}

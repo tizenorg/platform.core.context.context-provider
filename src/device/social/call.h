@@ -43,7 +43,7 @@ namespace ctx {
 		void release_telephony();
 		bool set_callback();
 		void unset_callback();
-		bool read_current_status(telephony_h& handle, ctx::json& data);
+		bool read_current_status(telephony_h& handle, ctx::Json& data);
 
 		bool get_call_state(telephony_call_h& handle, std::string& state);
 		bool get_call_type(telephony_call_h& handle, std::string& type);

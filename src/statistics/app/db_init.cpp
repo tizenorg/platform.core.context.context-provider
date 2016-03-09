@@ -15,7 +15,7 @@
  */
 
 #include <sstream>
-#include <json.h>
+#include <Json.h>
 #include <types_internal.h>
 #include <db_mgr.h>
 #include "app_stats_types.h"
@@ -78,7 +78,7 @@ bool ctx::app_db_initializer::package_info_cb(package_info_h package_info, void 
 
 bool ctx::app_db_initializer::app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data)
 {
-	json data;
+	Json data;
 	data.set(NULL, STATS_APP_ID, app_id);
 	return db_manager::insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 }
@@ -91,7 +91,7 @@ void ctx::app_db_initializer::on_insertion_result_received(unsigned int query_id
 {
 }
 
-void ctx::app_db_initializer::on_query_result_received(unsigned int query_id, int error, std::vector<json>& records)
+void ctx::app_db_initializer::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	if (query_id != EMPTY_CHECKER_QID) {
 		_E("Unknown Query ID: %d", query_id);

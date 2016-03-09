@@ -30,7 +30,7 @@ ctx::social_db_handle::~social_db_handle()
 {
 }
 
-int ctx::social_db_handle::read(const char* subject, ctx::json filter)
+int ctx::social_db_handle::read(const char* subject, ctx::Json filter)
 {
 	std::string query;
 
@@ -50,7 +50,7 @@ int ctx::social_db_handle::read(const char* subject, ctx::json filter)
 	return ERR_NONE;
 }
 
-std::string ctx::social_db_handle::create_where_clause(ctx::json filter)
+std::string ctx::social_db_handle::create_where_clause(ctx::Json filter)
 {
 	std::stringstream where_clause;
 	int comm_type = -1;
@@ -77,7 +77,7 @@ std::string ctx::social_db_handle::create_where_clause(ctx::json filter)
 	return where_clause.str();
 }
 
-std::string ctx::social_db_handle::create_sql_freq_address(ctx::json filter)
+std::string ctx::social_db_handle::create_sql_freq_address(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -98,9 +98,9 @@ std::string ctx::social_db_handle::create_sql_freq_address(ctx::json filter)
 	return query.str();
 }
 
-std::string ctx::social_db_handle::create_sql_frequency(ctx::json filter)
+std::string ctx::social_db_handle::create_sql_frequency(ctx::Json filter)
 {
-	ctx::json filter_cleaned;
+	ctx::Json filter_cleaned;
 	std::string week_str;
 	std::string time_of_day;
 	std::string address;
@@ -143,11 +143,11 @@ std::string ctx::social_db_handle::create_sql_frequency(ctx::json filter)
 	return query.str();
 }
 
-void ctx::social_db_handle::reply_trigger_item(int error, ctx::json &json_result)
+void ctx::social_db_handle::reply_trigger_item(int error, ctx::Json &json_result)
 {
 	IF_FAIL_VOID_TAG(STR_EQ(req_subject.c_str(), SOCIAL_SUBJ_FREQUENCY), _E, "Invalid subject");
 
-	ctx::json results;
+	ctx::Json results;
 	std::string val_str;
 	int val;
 

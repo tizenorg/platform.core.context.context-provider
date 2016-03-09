@@ -19,9 +19,9 @@
 #include <app_manager.h>
 
 #include <db_mgr.h>
-#include <json.h>
+#include <Json.h>
 #include <types_internal.h>
-#include <system_info.h>
+#include "../shared/system_info.h"
 #include "app_stats_types.h"
 #include "active_window_monitor.h"
 
@@ -85,7 +85,7 @@ void ctx::app_use_monitor::create_record(std::string app_id)
 	int system_volume;
 	int media_volume;
 	std::string bssid;
-	json data;
+	Json data;
 	data.set(NULL, STATS_APP_ID, app_id);
 
 	if (ctx::system_info::get_audio_jack_state(&audiojack))

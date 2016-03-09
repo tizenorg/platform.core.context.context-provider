@@ -41,7 +41,7 @@ int ctx::stats_db_handle_base::generate_qid()
 	return qid;
 }
 
-bool ctx::stats_db_handle_base::execute_query(const char* subject, ctx::json filter, const char* query)
+bool ctx::stats_db_handle_base::execute_query(const char* subject, ctx::Json filter, const char* query)
 {
 	bool ret = db_manager::execute(generate_qid(), query, this);
 	IF_FAIL_RETURN(ret, false);
@@ -52,7 +52,7 @@ bool ctx::stats_db_handle_base::execute_query(const char* subject, ctx::json fil
 	return true;
 }
 
-std::string ctx::stats_db_handle_base::create_where_clause(ctx::json filter)
+std::string ctx::stats_db_handle_base::create_where_clause(ctx::Json filter)
 {
 	std::stringstream where_clause;
 	int week = 0;
@@ -142,7 +142,7 @@ std::string ctx::stats_db_handle_base::create_where_clause(ctx::json filter)
 	return where_clause.str();
 }
 
-std::string ctx::stats_db_handle_base::create_sql_peak_time(ctx::json filter, const char* table_name, std::string where_clause)
+std::string ctx::stats_db_handle_base::create_sql_peak_time(ctx::Json filter, const char* table_name, std::string where_clause)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -161,7 +161,7 @@ std::string ctx::stats_db_handle_base::create_sql_peak_time(ctx::json filter, co
 	return query.str();
 }
 
-std::string ctx::stats_db_handle_base::create_sql_common_setting(ctx::json filter, const char* table_name, std::string where_clause)
+std::string ctx::stats_db_handle_base::create_sql_common_setting(ctx::Json filter, const char* table_name, std::string where_clause)
 {
 	std::stringstream query;
 
@@ -197,28 +197,28 @@ void ctx::stats_db_handle_base::on_insertion_result_received(unsigned int query_
 	delete this;
 }
 
-void ctx::stats_db_handle_base::json_vector_to_array(std::vector<json> &vec_json, ctx::json &json_result)
+void ctx::stats_db_handle_base::json_vector_to_array(std::vector<Json> &vec_json, ctx::Json &json_result)
 {
-	std::vector<json>::iterator json_vec_end = vec_json.end();
+	std::vector<Json>::iterator json_vec_end = vec_json.end();
 
-	for(std::vector<json>::iterator json_vec_pos = vec_json.begin(); json_vec_pos != json_vec_end; ++json_vec_pos) {
-		json origin_j = *json_vec_pos;
-		json_result.array_append(NULL, STATS_QUERY_RESULT, origin_j);
+	for(std::vector<Json>::iterator json_vec_pos = vec_json.begin(); json_vec_pos != json_vec_end; ++json_vec_pos) {
+		Json origin_j = *json_vec_pos;
+		json_result.append(NULL, STATS_QUERY_RESULT, origin_j);
 	}
 }
 
-void ctx::stats_db_handle_base::on_query_result_received(unsigned int query_id, int error, std::vector<json>& records)
+void ctx::stats_db_handle_base::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	if (is_trigger_item) {
 		if (records.size() == 1) {
 			reply_trigger_item(error, records[0]);
 		} else {
 			_E("Invalid query result");
-			json dummy;
+			Json dummy;
 			context_manager::reply_to_read(req_subject.c_str(), req_filter, ERR_OPERATION_FAILED, dummy);
 		}
 	} else {
-		json results = "{\"" STATS_QUERY_RESULT "\":[]}";
+		Json results = "{\"" STATS_QUERY_RESULT "\":[]}";
 		json_vector_to_array(records, results);
 		context_manager::reply_to_read(req_subject.c_str(), req_filter, error, results);
 	}

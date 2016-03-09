@@ -17,12 +17,11 @@
 #ifndef __CONTEXT_PLACE_STATUS_WIFI_LOGGER_H__
 #define __CONTEXT_PLACE_STATUS_WIFI_LOGGER_H__
 
-#include <timer_listener_iface.h>
 #include <wifi.h>
 #include <time.h>
-#include "timer_mgr.h"
 #include <vector>
 #include <set>
+#include <TimerManager.h>
 #include "wifi_listener_iface.h"
 #include "visit_listener_iface.h"
 #include "user_places_params.h"
@@ -48,7 +47,7 @@
 
 namespace ctx {
 
-	class WifiLogger : public timer_listener_iface, public IVisitListener {
+	class WifiLogger : public ITimerListener, public IVisitListener {
 
 	public:
 		WifiLogger(IWifiListener * listener_ = nullptr,
@@ -78,6 +77,7 @@ namespace ctx {
 		bool connected_to_wifi_ap;
 		bool started;
 		bool running;
+		TimerManager __timerManager;
 
 		void _start_logging();
 		void _stop_logging();
@@ -85,7 +85,7 @@ namespace ctx {
 
 		bool check_timer_id(int id);
 		bool check_timer_time(time_t now);
-		bool on_timer_expired(int timer_id, void* user_data);
+		bool onTimerExpired(int timerId);
 		static int create_table();
 		int db_insert_logs();
 		static void wifi_device_state_changed_cb(wifi_device_state_e state, void *user_data);

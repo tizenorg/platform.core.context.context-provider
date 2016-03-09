@@ -37,7 +37,7 @@ namespace ctx {
 
 		void on_creation_result_received(unsigned int query_id, int error) {}
 		void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-		void on_query_result_received(unsigned int query_id, int error, std::vector<json>& records);
+		void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
 
 		static void on_media_content_db_updated(media_content_error_e error, int pid,
 				media_content_db_update_item_type_e update_item,

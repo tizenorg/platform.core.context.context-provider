@@ -58,7 +58,7 @@ void ctx::device_status_battery::handle_update(device_callback_e device_type, vo
 	const char* level_string = trans_to_string(level);
 	IF_FAIL_VOID(level_string);
 
-	ctx::json data_read;
+	ctx::Json data_read;
 	data_read.set(NULL, DEVICE_ST_LEVEL, level_string);
 
 	bool charging_state = false;
@@ -120,7 +120,7 @@ int ctx::device_status_battery::unsubscribe()
 int ctx::device_status_battery::read()
 {
 	device_battery_level_e level;
-	ctx::json data_read;
+	ctx::Json data_read;
 
 	int ret = device_battery_get_level_status(&level);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);

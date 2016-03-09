@@ -15,7 +15,7 @@
  */
 
 #include <stdlib.h>
-#include <json.h>
+#include <Json.h>
 #include <context_mgr.h>
 #include "social_types.h"
 #include "call.h"
@@ -38,7 +38,7 @@ static telephony_noti_e call_noti_ids[] =
    TELEPHONY_NOTI_VIDEO_CALL_STATUS_ALERTING,
    TELEPHONY_NOTI_VIDEO_CALL_STATUS_INCOMING,
 };
-static ctx::json latest;
+static ctx::Json latest;
 
 ctx::social_status_call::social_status_call()
 {
@@ -76,7 +76,7 @@ void ctx::social_status_call::call_event_cb(telephony_h handle, telephony_noti_e
 void ctx::social_status_call::handle_call_event(telephony_h handle, telephony_noti_e noti_id, void* id)
 {
 
-	json data;
+	Json data;
 	unsigned int count;
 	telephony_call_h *call_list;
 
@@ -311,7 +311,7 @@ int ctx::social_status_call::unsubscribe()
 	return ERR_NONE;
 }
 
-bool ctx::social_status_call::read_current_status(telephony_h& handle, ctx::json& data)
+bool ctx::social_status_call::read_current_status(telephony_h& handle, ctx::Json& data)
 {
 	unsigned int count = 0;
 	telephony_call_h *call_list = NULL;
@@ -362,7 +362,7 @@ int ctx::social_status_call::read()
 	}
 
 	bool ret = true;
-	json data;
+	Json data;
 	data.set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_IDLE);
 
 	for (unsigned int i = 0; i < handle_list.count; i++) {

@@ -54,7 +54,7 @@ namespace ctx {
 		bool get_current_state();
 		bool get_bssid();
 		void clear_bssid();
-		bool get_response_packet(json &data);
+		bool get_response_packet(Json &data);
 		void aggregate_updated_data();
 		bool start_monitor();
 		void stop_monitor();

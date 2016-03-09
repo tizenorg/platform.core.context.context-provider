@@ -18,8 +18,8 @@
 #define __CONTEXT_APP_DB_HANDLE_H__
 
 #include <string>
-#include <json.h>
-#include <db_handle_base.h>
+#include <Json.h>
+#include "../shared/db_handle_base.h"
 
 namespace ctx {
 	class app_db_handle : public stats_db_handle_base {
@@ -27,17 +27,17 @@ namespace ctx {
 			app_db_handle();
 			~app_db_handle();
 
-			int read(const char* subject, ctx::json filter);
+			int read(const char* subject, ctx::Json filter);
 
 		private:
-			std::string create_where_clause_with_device_status(ctx::json filter);
-			std::string create_sql_recently_used(ctx::json filter);
-			std::string create_sql_frequently_used(ctx::json filter);
-			std::string create_sql_rarely_used(ctx::json filter);
-			std::string create_sql_peak_time(ctx::json filter);
-			std::string create_sql_common_setting(ctx::json filter);
-			std::string create_sql_frequency(ctx::json filter);
-			void reply_trigger_item(int error, ctx::json &json_result);
+			std::string create_where_clause_with_device_status(ctx::Json filter);
+			std::string create_sql_recently_used(ctx::Json filter);
+			std::string create_sql_frequently_used(ctx::Json filter);
+			std::string create_sql_rarely_used(ctx::Json filter);
+			std::string create_sql_peak_time(ctx::Json filter);
+			std::string create_sql_common_setting(ctx::Json filter);
+			std::string create_sql_frequency(ctx::Json filter);
+			void reply_trigger_item(int error, ctx::Json &json_result);
 	};
 }
 
