@@ -37,6 +37,7 @@
 #include "social/call.h"
 #include "social/email.h"
 #include "social/message.h"
+#include "social/contacts.h"
 #include "activity/activity.h"
 #endif
 
@@ -61,6 +62,7 @@
 #define PRIV_NETWORK	"network.get"
 #define PRIV_TELEPHONY	"telephony"
 #define PRIV_MESSAGE	"message.read"
+#define PRIV_CONTACT	"contact.read"
 
 template<typename provider>
 void register_provider(const char *subject, const char *privilege)
@@ -91,6 +93,7 @@ EXTAPI bool ctx::init_device_context_provider()
 	register_provider<social_status_call>(SOCIAL_ST_SUBJ_CALL, PRIV_TELEPHONY);
 	register_provider<social_status_email>(SOCIAL_ST_SUBJ_EMAIL, NULL);
 	register_provider<social_status_message>(SOCIAL_ST_SUBJ_MESSAGE, PRIV_MESSAGE);
+	register_provider<social_status_contacts>(SOCIAL_ST_SUBJ_CONTACTS, PRIV_CONTACT);
 
 	register_provider<user_activity_stationary>(USER_ACT_SUBJ_STATIONARY, NULL);
 	register_provider<user_activity_walking>(USER_ACT_SUBJ_WALKING, NULL);
