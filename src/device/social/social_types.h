@@ -21,6 +21,7 @@
 #define SOCIAL_ST_SUBJ_CALL		"social/call"
 #define SOCIAL_ST_SUBJ_EMAIL	"social/email"
 #define SOCIAL_ST_SUBJ_MESSAGE	"social/message"
+#define SOCIAL_ST_SUBJ_CONTACTS	"social/contacts"
 
 // Data Key
 #define SOCIAL_ST_STATE			"State"
@@ -28,6 +29,7 @@
 #define SOCIAL_ST_TYPE			"Type"
 #define SOCIAL_ST_MEDIUM		"Medium"
 #define SOCIAL_ST_ADDRESS		"Address"
+#define SOCIAL_ST_VIEW			"View"
 
 // Data Values
 #define SOCIAL_ST_IDLE			"Idle"
@@ -44,5 +46,7 @@
 #define SOCIAL_ST_RECEIVED		"Received"
 #define SOCIAL_ST_SMS			"SMS"
 #define SOCIAL_ST_MMS			"MMS"
+#define SOCIAL_ST_MY_PROFILE	"MyProfile"
+#define SOCIAL_ST_PERSON		"Person"
 
 #endif
