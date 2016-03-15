@@ -44,7 +44,8 @@ void ctx::social_status_contacts::submit_trigger_item()
 {
 	context_manager::register_trigger_item(SOCIAL_ST_SUBJ_CONTACTS, OPS_SUBSCRIBE,
 			"{"
-				"\"View\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
+				"\"Event\":{\"type\":\"string\",\"values\":[\"Changed\"]},"
+				"\"Type\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
 			"}",
 			NULL);
 }
@@ -66,7 +67,8 @@ void ctx::social_status_contacts::handle_db_change(const char* view_uri)
 	IF_FAIL_VOID_TAG(!is_consecutive_change(view_uri), _D, "Ignore consecutive db change: %s", view.c_str());
 
 	ctx::Json data;
-	data.set(NULL, SOCIAL_ST_VIEW, view);
+	data.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_CHANGED);
+	data.set(NULL, SOCIAL_ST_TYPE, view);
 	context_manager::publish(SOCIAL_ST_SUBJ_CONTACTS, NULL, ERR_NONE, data);
 }
 

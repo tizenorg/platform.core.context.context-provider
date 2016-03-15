@@ -29,7 +29,6 @@
 #define SOCIAL_ST_TYPE			"Type"
 #define SOCIAL_ST_MEDIUM		"Medium"
 #define SOCIAL_ST_ADDRESS		"Address"
-#define SOCIAL_ST_VIEW			"View"
 
 // Data Values
 #define SOCIAL_ST_IDLE			"Idle"
@@ -48,5 +47,6 @@
 #define SOCIAL_ST_MMS			"MMS"
 #define SOCIAL_ST_MY_PROFILE	"MyProfile"
 #define SOCIAL_ST_PERSON		"Person"
+#define SOCIAL_ST_CHANGED		"Changed"
 
 #endif
