@@ -301,15 +301,13 @@ void ctx::PlacesDetector::process_visits(ctx::visits_t &visits)
 }
 
 /*
- * Pseudo-atomic operation of old places replacement by new ones.
+ * Replace old places by new ones.
  */
 void ctx::PlacesDetector::detected_places_update(std::vector<std::shared_ptr<Place>> &new_places)
 {
 	_D("");
-	detected_places_access_mutex.lock();
+	// XXX: In case of thread safety issues use std::mutex to protect places list.
 	detected_places = new_places;
-	new_places.clear();
-	detected_places_access_mutex.unlock();
 }
 
 void ctx::PlacesDetector::merge_location(const visits_t &visits, Place &place)
@@ -450,9 +448,6 @@ void ctx::PlacesDetector::db_insert_place(const Place &place)
 
 std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::get_places()
 {
-	detected_places_access_mutex.lock();
-	// indirect ret vector usage due to limit the scope of a mutex to only this single file / class
-	std::vector<std::shared_ptr<Place>> ret = detected_places;
-	detected_places_access_mutex.unlock();
-	return ret;
+	// XXX: In case of thread safety issues use std::mutex to protect places list.
+	return detected_places;
 }

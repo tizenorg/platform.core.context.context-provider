@@ -23,7 +23,6 @@
 #include "db_listener_iface.h"
 #include "user_places_types.h"
 #include <vector>
-#include <mutex>
 
 namespace ctx {
 
@@ -56,7 +55,6 @@ namespace ctx {
 		void db_insert_place(const Place &place);
 		std::shared_ptr<Place> place_from_merged(visits_t &merged_visits);
 		std::vector<std::shared_ptr<Place>> detected_places;
-		std::mutex detected_places_access_mutex;
 		void detected_places_update(std::vector<std::shared_ptr<Place>> &new_places);
 
 	public:
