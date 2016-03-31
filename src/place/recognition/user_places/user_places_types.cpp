@@ -42,19 +42,15 @@ std::istream& ctx::operator>>(std::istream &input, ctx::Mac &mac)
 {
 	int h;
 	char colon;
-	size_t i = 0;
-	while (true) {
+	for (size_t i = 0; i < ctx::Mac::MAC_SIZE; i++) {
 		input >> std::hex;
 		input >> h;
 		mac.c[i] = h;
-		i++;
-		if (i >= ctx::Mac::MAC_SIZE) {
+		if (i + 1 >= ctx::Mac::MAC_SIZE)
 			break;
-		}
 		input >> colon;
-		if (colon != ':') {
+		if (colon != ':')
 			throw std::runtime_error("Invalid mac format");
-		}
 	}
 	input >> std::dec;
 	return input;
