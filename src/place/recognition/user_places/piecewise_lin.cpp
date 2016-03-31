@@ -17,7 +17,7 @@
 #include "piecewise_lin.h"
 #include <types_internal.h>
 
-ctx::PiecewiseLin::PiecewiseLin(std::vector<num_t> _xs, std::vector<num_t> _vs)
+ctx::PiecewiseLin::PiecewiseLin(std::vector<num_t> _xs, std::vector<num_t> _vs) : n(0)
 {
 	if (_xs.size() != _vs.size()) {
 		_E("Input arguments have different sizes");

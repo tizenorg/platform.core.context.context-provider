@@ -72,6 +72,7 @@ ctx::WifiLogger::WifiLogger(IWifiListener * listener_, place_recog_mode_e energy
 	, timer_on(false)
 	, interval_minutes(WIFI_LOGGER_INTERVAL_MINUTES_HIGH_ACCURACY)
 	, during_visit(false)
+	, connected_to_wifi_ap(false)
 	, started(false)
 	, running(false)
 {

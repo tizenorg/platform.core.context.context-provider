@@ -207,6 +207,8 @@ ctx::LocationLogger::LocationLogger(ILocationListener *listener_, bool test_mode
 	, location_count(0)
 	, active_request_succeeded(false)
 	, active_location_succeeded(false)
+	, timer_id(-1)
+	, timer_timestamp(0)
 	, timer_purpose(LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL)
 	, location_service_state(LOCATIONS_SERVICE_DISABLED)
 	, location_method(LOCATION_LOGGER_METHOD)
