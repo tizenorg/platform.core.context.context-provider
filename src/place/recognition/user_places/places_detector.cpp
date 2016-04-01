@@ -74,53 +74,27 @@ bool ctx::PlacesDetector::onTimerExpired(int timerId)
 {
 	_D("");
 	db_delete_places();
+	db_delete_old_visits();
+	std::vector<Json> records = db_get_visits();
+	visits_t visits = visits_from_jsons(records);
+	process_visits(visits);
 	return true;
 }
 
-void ctx::PlacesDetector::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+std::vector<ctx::Json> ctx::PlacesDetector::db_get_visits()
 {
-	// TODO:
-	// The below "state machine" approach was choosen because it is not possible to use synchronized database queries in the main thread.
-	// Probably the more elegant approach would be to use event_driven_thread class where synchronized queries are allowed.
-	// Consider refactoring.
-	if (error != ERR_NONE) {
-		_E("on_query_result_received query_id:%d, error:%d", query_id, error);
-	}
-	else if (query_id == PLACES_DETECTOR_QUERY_ID_DELETE_PLACES) {
-		db_delete_old_visits();
-	}
-	else if (query_id == PLACES_DETECTOR_QUERY_ID_DELETE_OLD_VISITS) {
-		db_get_visits();
-	}
-	else if (query_id == PLACES_DETECTOR_QUERY_ID_GET_VISITS) {
-		visits_t visits = visits_from_jsons(records);
-		process_visits(visits);
-	}
-	else if (query_id == PLACES_DETECTOR_QUERY_ID_INSERT_VISIT) {
-		// Don't do anything. It is fine.
-	}
-	else if (query_id == PLACES_DETECTOR_QUERY_ID_INSERT_PLACE) {
-		// Don't do anything. It is fine.
-	}
-	else if (query_id == PLACES_DETECTOR_QUERY_ID_GET_PLACES) {
-		std::vector<std::shared_ptr<Place>> db_places = places_from_jsons(records);
-		detected_places_update(db_places);
-	}
-	else {
-		_E("on_query_result_received unknown query_id:%d", query_id);
-	}
-}
-
-void ctx::PlacesDetector::db_get_visits()
-{
-	bool ret = db_manager::execute(PLACES_DETECTOR_QUERY_ID_GET_VISITS, GET_VISITS_QUERY, this);
+	std::vector<Json> records;
+	bool ret = db_manager::execute_sync(GET_VISITS_QUERY, &records);
 	_D("load visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
+	return records;
 }
 
-void ctx::PlacesDetector::db_get_places()
+std::vector<ctx::Json> ctx::PlacesDetector::db_get_places()
 {
-	bool ret = db_manager::execute(PLACES_DETECTOR_QUERY_ID_GET_PLACES, GET_PLACES_QUERY, this);
+	std::vector<Json> records;
+	bool ret = db_manager::execute_sync(GET_PLACES_QUERY, &records);
 	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
+	return records;
 }
 
 double ctx::PlacesDetector::double_value_from_json(Json &row, const char* key)
@@ -389,7 +363,8 @@ std::shared_ptr<ctx::graph_t> ctx::PlacesDetector::graph_from_visits(const std::
 
 void ctx::PlacesDetector::db_delete_places()
 {
-	bool ret = db_manager::execute(PLACES_DETECTOR_QUERY_ID_DELETE_PLACES, DELETE_PLACES_QUERY, this);
+	std::vector<Json> records;
+	bool ret = db_manager::execute_sync(DELETE_PLACES_QUERY, &records);
 	_D("delete places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -407,8 +382,9 @@ void ctx::PlacesDetector::db_delete_older_visits(time_t threshold)
 	std::stringstream query;
 	query << "DELETE FROM " << VISIT_TABLE;
 	query << " WHERE " << VISIT_COLUMN_END_TIME << " < " << threshold;
-	// query << " AND 0"; // Always false condition. Uncomment it for not deleting any visit during development.
-	bool ret = db_manager::execute(PLACES_DETECTOR_QUERY_ID_DELETE_OLD_VISITS, query.str().c_str(), this);
+	// query << " AND 0"; // XXX: Always false condition. Uncomment it for not deleting any visit during development.
+	std::vector<Json> records;
+	bool ret = db_manager::execute_sync(query.str().c_str(), &records);
 	_D("delete old visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -419,7 +395,9 @@ ctx::PlacesDetector::PlacesDetector(bool test_mode_)
 		return;
 	}
 	db_create_table();
-	db_get_places();
+	std::vector<Json> records = db_get_places();
+	std::vector<std::shared_ptr<Place>> db_places = places_from_jsons(records);
+	detected_places_update(db_places);
 }
 
 void ctx::PlacesDetector::db_create_table()
@@ -442,7 +420,8 @@ void ctx::PlacesDetector::db_insert_place(const Place &place)
 	data.set(NULL, PLACE_COLUMN_WIFI_APS, place.wifi_aps);
 	data.set(NULL, PLACE_COLUMN_CREATE_DATE, static_cast<int>(place.create_date));
 
-	bool ret = db_manager::insert(PLACES_DETECTOR_QUERY_ID_INSERT_PLACE, PLACE_TABLE, data);
+	int64_t row_id;
+	bool ret = db_manager::insert_sync(PLACE_TABLE, data, &row_id);
 	_D("insert place execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
