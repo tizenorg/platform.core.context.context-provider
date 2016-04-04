@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "system_types.h"
 #include "headphone.h"
 
@@ -44,7 +44,7 @@ bool ctx::device_status_headphone::is_supported()
 
 void ctx::device_status_headphone::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_HEADPHONE, OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_HEADPHONE, OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				TRIG_BOOL_ITEM_DEF("IsConnected") ","
 				"\"Type\":{\"type\":\"string\",\"values\":[\"Normal\",\"Headset\",\"Bluetooth\"]}"
@@ -81,7 +81,7 @@ int ctx::device_status_headphone::read()
 
 	Json data;
 	generate_data_packet(data);
-	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_HEADPHONE, NULL, ERR_NONE, data);
+	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_HEADPHONE, NULL, ERR_NONE, data);
 
 	return ERR_NONE;
 }

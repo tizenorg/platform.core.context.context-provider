@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "custom_base.h"
 
 ctx::custom_base::custom_base(std::string subject, std::string name, ctx::Json tmpl, std::string owner) :
@@ -36,16 +36,16 @@ bool ctx::custom_base::is_supported()
 
 void ctx::custom_base::submit_trigger_item()
 {
-	context_manager::register_trigger_item(_subject.c_str(), OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(_subject.c_str(), OPS_SUBSCRIBE | OPS_READ,
 			_tmpl.str(), NULL, _owner.c_str());
 }
 
 void ctx::custom_base::unsubmit_trigger_item()
 {
-	context_manager::unregister_trigger_item(_subject.c_str());
+	context_manager::unregisterTriggerItem(_subject.c_str());
 }
 
-int ctx::custom_base::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::custom_base::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	return ERR_NONE;
 
@@ -56,14 +56,14 @@ int ctx::custom_base::unsubscribe(const char *subject, ctx::Json option)
 	return ERR_NONE;
 }
 
-int ctx::custom_base::read(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::custom_base::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	ctx::Json data = latest.str();
-	ctx::context_manager::reply_to_read(_subject.c_str(), NULL, ERR_NONE, data);
+	ctx::context_manager::replyToRead(_subject.c_str(), NULL, ERR_NONE, data);
 	return ERR_NONE;
 }
 
-int ctx::custom_base::write(const char *subject, ctx::Json data, ctx::Json *request_result)
+int ctx::custom_base::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
 {
 	return ERR_NONE;
 }

@@ -18,7 +18,7 @@
 #define _CONTEXT_SOCIAL_STATUS_CONTACTS_H_
 
 #include <contacts.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

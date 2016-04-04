@@ -17,7 +17,7 @@
 #ifndef _DEVICE_STATUS_TIME_H_
 #define _DEVICE_STATUS_TIME_H_
 
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

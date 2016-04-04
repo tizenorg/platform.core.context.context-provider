@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "social_types.h"
 #include "call.h"
 
@@ -57,7 +57,7 @@ bool ctx::social_status_call::is_supported()
 
 void ctx::social_status_call::submit_trigger_item()
 {
-	context_manager::register_trigger_item(SOCIAL_ST_SUBJ_CALL, OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_CALL, OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"Medium\":{\"type\":\"string\",\"values\":[\"Voice\",\"Video\"]},"
 				"\"State\":{\"type\":\"string\",\"values\":[\"Idle\",\"Connecting\",\"Connected\"]},"
@@ -381,7 +381,7 @@ int ctx::social_status_call::read()
 		release_telephony();
 
 	if (ret) {
-		ctx::context_manager::reply_to_read(SOCIAL_ST_SUBJ_CALL, NULL, ERR_NONE, data);
+		ctx::context_manager::replyToRead(SOCIAL_ST_SUBJ_CALL, NULL, ERR_NONE, data);
 		return ERR_NONE;
 	}
 

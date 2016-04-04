@@ -18,20 +18,20 @@
 #define _CUSTOM_BASE_H_
 
 #include <Json.h>
-#include <provider_iface.h>
+#include <ContextProviderBase.h>
 #include <types_internal.h>
 
 namespace ctx {
 
-	class custom_base : public context_provider_iface {
+	class custom_base : public ContextProviderBase {
 	public:
 		custom_base(std::string subject, std::string name, ctx::Json tmpl, std::string owner);
 		~custom_base();
 
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
-		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
+		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
+		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 		static bool is_supported();
 		void submit_trigger_item();

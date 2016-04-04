@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include <TimerManager.h>
 #include "system_types.h"
 #include "time.h"
@@ -36,7 +36,7 @@ bool ctx::device_status_time::is_supported()
 
 void ctx::device_status_time::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_TIME, OPS_READ,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_TIME, OPS_READ,
 			"{"
 				"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
 				"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]},"
@@ -68,14 +68,14 @@ int ctx::device_status_time::read()
 	int minute_of_day = timeinfo.tm_hour * 60 + timeinfo.tm_min;
 	std::string day_of_week = ctx::TimerManager::dowToStr(0x01 << timeinfo.tm_wday);
 
-	ctx::Json data_read;
-	data_read.set(NULL, DEVICE_ST_DAY_OF_MONTH, day_of_month);
-	data_read.set(NULL, DEVICE_ST_DAY_OF_WEEK, day_of_week);
-	data_read.set(NULL, DEVICE_ST_TIME_OF_DAY, minute_of_day);
+	ctx::Json dataRead;
+	dataRead.set(NULL, DEVICE_ST_DAY_OF_MONTH, day_of_month);
+	dataRead.set(NULL, DEVICE_ST_DAY_OF_WEEK, day_of_week);
+	dataRead.set(NULL, DEVICE_ST_TIME_OF_DAY, minute_of_day);
 
 	_I("Time: %02d:%02d, Day of Week: %s, Day of Month: %d", timeinfo.tm_hour, timeinfo.tm_min, day_of_week.c_str(), day_of_month);
 
-	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_TIME, NULL, ERR_NONE, data_read);
+	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_TIME, NULL, ERR_NONE, dataRead);
 
 	return ERR_NONE;
 }

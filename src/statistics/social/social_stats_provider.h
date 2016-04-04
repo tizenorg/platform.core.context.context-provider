@@ -17,22 +17,22 @@
 #ifndef __CONTEXT_SOCIAL_STATS_PROVIDER_H__
 #define __CONTEXT_SOCIAL_STATS_PROVIDER_H__
 
-#include <provider_iface.h>
+#include <ContextProviderBase.h>
 #include "social_stats_types.h"
 
 namespace ctx {
 
-	class social_statistics_provider : public context_provider_iface {
+	class social_statistics_provider : public ContextProviderBase {
 	public:
-		static context_provider_iface *create(void *data);
+		static ContextProviderBase *create(void *data);
 		static void destroy(void *data);
 		static bool is_supported(const char *subject);
 		static void submit_trigger_item();
 
-		int subscribe(const char* subject, ctx::Json option, ctx::Json* request_result);
+		int subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult);
 		int unsubscribe(const char* subject, ctx::Json option);
-		int read(const char* subject, ctx::Json option, ctx::Json* request_result);
-		int write(const char* subject, ctx::Json data, ctx::Json* request_result);
+		int read(const char* subject, ctx::Json option, ctx::Json* requestResult);
+		int write(const char* subject, ctx::Json data, ctx::Json* requestResult);
 
 	private:
 		static social_statistics_provider *__instance;

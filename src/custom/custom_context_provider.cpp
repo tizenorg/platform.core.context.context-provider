@@ -17,8 +17,8 @@
 #include <map>
 #include <vector>
 #include <types_internal.h>
-#include <context_mgr.h>
-#include <provider_iface.h>
+#include <ContextManager.h>
+#include <ContextProviderBase.h>
 #include <db_mgr.h>
 #include <custom_context_provider.h>
 #include "custom_base.h"
@@ -29,24 +29,24 @@ static bool is_valid_fact(std::string subject, ctx::Json& fact);
 static bool check_value_int(ctx::Json& tmpl, std::string key, int value);
 static bool check_value_string(ctx::Json& tmpl, std::string key, std::string value);
 
-void register_provider(const char *subject, const char *privilege)
+void registerProvider(const char *subject, const char *privilege)
 {
-	ctx::context_provider_info provider_info(ctx::custom_context_provider::create,
+	ctx::ContextProviderInfo providerInfo(ctx::custom_context_provider::create,
 											ctx::custom_context_provider::destroy,
 											const_cast<char*>(subject), privilege);
-	ctx::context_manager::register_provider(subject, provider_info);
+	ctx::context_manager::registerProvider(subject, providerInfo);
 	custom_map[subject]->submit_trigger_item();
 }
 
-void unregister_provider(const char* subject)
+void unregisterProvider(const char* subject)
 {
 	custom_map[subject]->unsubmit_trigger_item();
-	ctx::context_manager::unregister_provider(subject);
+	ctx::context_manager::unregisterProvider(subject);
 }
 
-EXTAPI ctx::context_provider_iface* ctx::custom_context_provider::create(void *data)
+EXTAPI ctx::ContextProviderBase* ctx::custom_context_provider::create(void *data)
 {
-	// Already created in add_item() function. Return corresponding custom provider
+	// Already created in addItem() function. Return corresponding custom provider
 	return custom_map[static_cast<const char*>(data)];
 }
 
@@ -89,7 +89,7 @@ EXTAPI bool ctx::init_custom_context_provider()
 		elem.get(NULL, "attributes", &attributes);
 		elem.get(NULL, "owner", &owner);
 
-		error = ctx::custom_context_provider::add_item(subject, name, ctx::Json(attributes), owner.c_str(), true);
+		error = ctx::custom_context_provider::addItem(subject, name, ctx::Json(attributes), owner.c_str(), true);
 		if (error != ERR_NONE) {
 			_E("Failed to add custom item(%s): %#x", subject.c_str(), error);
 		}
@@ -98,7 +98,7 @@ EXTAPI bool ctx::init_custom_context_provider()
 	return true;
 }
 
-EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool is_init)
+EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool is_init)
 {
 	std::map<std::string, ctx::custom_base*>::iterator it;
 	it = custom_map.find(subject);
@@ -116,7 +116,7 @@ EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::stri
 	IF_FAIL_RETURN_TAG(custom, ERR_OUT_OF_MEMORY, _E, "Memory allocation failed");
 	custom_map[subject] = custom;
 
-	register_provider(custom->get_subject(), NULL);
+	registerProvider(custom->get_subject(), NULL);
 
 	// Add item to custom template db
 	if (!is_init) {
@@ -130,13 +130,13 @@ EXTAPI int ctx::custom_context_provider::add_item(std::string subject, std::stri
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::remove_item(std::string subject)
+EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
 {
 	std::map<std::string, ctx::custom_base*>::iterator it;
 	it = custom_map.find(subject);
 	IF_FAIL_RETURN_TAG(it != custom_map.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
 
-	unregister_provider(subject.c_str());
+	unregisterProvider(subject.c_str());
 
 	// Remove item from custom template db
 	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
@@ -147,7 +147,7 @@ EXTAPI int ctx::custom_context_provider::remove_item(std::string subject)
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::publish_data(std::string subject, ctx::Json fact)
+EXTAPI int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
 {
 	std::map<std::string, ctx::custom_base*>::iterator it;
 	it = custom_map.find(subject);

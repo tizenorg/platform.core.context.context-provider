@@ -17,7 +17,7 @@
 #include <gio/gio.h>
 #include <email-api-etc.h>
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "social_types.h"
 #include "email.h"
 
@@ -40,7 +40,7 @@ bool ctx::social_status_email::is_supported()
 
 void ctx::social_status_email::submit_trigger_item()
 {
-	context_manager::register_trigger_item(SOCIAL_ST_SUBJ_EMAIL, OPS_SUBSCRIBE,
+	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_EMAIL, OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"Received\",\"Sent\"]}"
 			"}",
@@ -60,15 +60,15 @@ void ctx::social_status_email::onSignal(const char* sender, const char* path, co
 	if (sub_type == NOTI_DOWNLOAD_FINISH) {
 		//TODO: Check if this signal actually means that there are new mails
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", sub_type, gi1, gc, gi2, gi3);
-		ctx::Json data_updated;
-		data_updated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
-		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, data_updated);
+		ctx::Json dataUpdated;
+		dataUpdated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
+		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, dataUpdated);
 
 	} else if (sub_type == NOTI_SEND_FINISH) {
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", sub_type, gi1, gc, gi2, gi3);
-		ctx::Json data_updated;
-		data_updated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_SENT);
-		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, data_updated);
+		ctx::Json dataUpdated;
+		dataUpdated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_SENT);
+		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, dataUpdated);
 	}
 }
 

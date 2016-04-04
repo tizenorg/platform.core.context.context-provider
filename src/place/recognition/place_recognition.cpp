@@ -15,13 +15,13 @@
  */
 
 #include <types_internal.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "place_recognition.h"
 #include "user_places/user_places.h"
 
 ctx::place_recognition_provider *ctx::place_recognition_provider::__instance = NULL;
 
-ctx::context_provider_iface *ctx::place_recognition_provider::create(void *data)
+ctx::ContextProviderBase *ctx::place_recognition_provider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 	__instance = new(std::nothrow) place_recognition_provider();
@@ -38,7 +38,7 @@ void ctx::place_recognition_provider::destroy(void *data)
 	_I(BLUE("Destroyed"));
 }
 
-int ctx::place_recognition_provider::subscribe(const char *subject, ctx::Json option, ctx::Json* request_result)
+int ctx::place_recognition_provider::subscribe(const char *subject, ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
@@ -48,25 +48,25 @@ int ctx::place_recognition_provider::unsubscribe(const char *subject, ctx::Json 
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::place_recognition_provider::read(const char *subject, ctx::Json option, ctx::Json* request_result)
+int ctx::place_recognition_provider::read(const char *subject, ctx::Json option, ctx::Json* requestResult)
 {
 	_I(BLUE("Read"));
 	_J("Option", option);
 
 	std::vector<std::shared_ptr<ctx::Place>> places = engine.get_places();
-	Json data_read = UserPlaces::compose_json(places);
+	Json dataRead = UserPlaces::compose_json(places);
 
 	// The below function needs to be called once.
 	// It does not need to be called within this read() function.
 	// In can be called later, in another scope.
 	// Please just be sure that, the 2nd input parameter "option" should be the same to the
 	// "option" parameter received via ctx::place_recognition_provider::read().
-	ctx::context_manager::reply_to_read(PLACE_SUBJ_RECOGNITION, option, ERR_NONE, data_read);
+	ctx::context_manager::replyToRead(PLACE_SUBJ_RECOGNITION, option, ERR_NONE, dataRead);
 
 	return ERR_NONE;
 }
 
-int ctx::place_recognition_provider::write(const char *subject, ctx::Json data, ctx::Json* request_result)
+int ctx::place_recognition_provider::write(const char *subject, ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }

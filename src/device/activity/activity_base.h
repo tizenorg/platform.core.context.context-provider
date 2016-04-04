@@ -19,7 +19,7 @@
 
 #include <string>
 #include <activity_recognition.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

@@ -15,7 +15,7 @@
  */
 
 #include <types_internal.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "activity_types.h"
 #include "activity_base.h"
 
@@ -44,25 +44,25 @@ void ctx::user_activity_base::handle_event(activity_type_e activity, const activ
 {
 	IF_FAIL_VOID_TAG(activity == activity_type, _E, "Invalid activity: %d", activity);
 
-	ctx::Json data_read;
-	data_read.set(NULL, USER_ACT_EVENT, USER_ACT_DETECTED);
+	ctx::Json dataRead;
+	dataRead.set(NULL, USER_ACT_EVENT, USER_ACT_DETECTED);
 
 	activity_accuracy_e accuracy = ACTIVITY_ACCURACY_LOW;
 	activity_get_accuracy(data, &accuracy);
 
 	switch (accuracy) {
 	case ACTIVITY_ACCURACY_HIGH:
-		data_read.set(NULL, USER_ACT_ACCURACY, USER_ACT_HIGH);
+		dataRead.set(NULL, USER_ACT_ACCURACY, USER_ACT_HIGH);
 		break;
 	case ACTIVITY_ACCURACY_MID:
-		data_read.set(NULL, USER_ACT_ACCURACY, USER_ACT_NORMAL);
+		dataRead.set(NULL, USER_ACT_ACCURACY, USER_ACT_NORMAL);
 		break;
 	default:
-		data_read.set(NULL, USER_ACT_ACCURACY, USER_ACT_LOW);
+		dataRead.set(NULL, USER_ACT_ACCURACY, USER_ACT_LOW);
 		break;
 	}
 
-	context_manager::publish(subject.c_str(), NULL, ERR_NONE, data_read);
+	context_manager::publish(subject.c_str(), NULL, ERR_NONE, dataRead);
 }
 
 int ctx::user_activity_base::subscribe()
