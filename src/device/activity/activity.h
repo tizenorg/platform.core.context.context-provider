@@ -23,7 +23,7 @@
 #define GENERATE_ACTIVITY_PROVIDER(act_prvd, act_subj, act_type) \
 	class act_prvd : public user_activity_base { \
 	public: \
-		static context_provider_iface *create(void *data) \
+		static ContextProviderBase *create(void *data) \
 		{ \
 			CREATE_INSTANCE(ctx::act_prvd); \
 		} \
@@ -37,7 +37,7 @@
 		} \
 		static void submit_trigger_item() \
 		{ \
-			context_manager::register_trigger_item((act_subj), OPS_SUBSCRIBE, \
+			context_manager::registerTriggerItem((act_subj), OPS_SUBSCRIBE, \
 					"{\"Event\":{\"type\":\"string\", \"values\":[\"Detected\"]}}", \
 					"{\"Accuracy\":{\"type\":\"string\", \"values\":[\"Low\", \"Normal\", \"High\"]}}" \
 					); \

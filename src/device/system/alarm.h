@@ -19,21 +19,21 @@
 
 #include <map>
 #include <set>
-#include <provider_iface.h>
+#include <ContextProviderBase.h>
 #include <TimerManager.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 
-	class device_status_alarm : public context_provider_iface, ITimerListener {
+	class device_status_alarm : public ContextProviderBase, ITimerListener {
 
 		GENERATE_PROVIDER_COMMON_DECL(device_status_alarm);
 
 	public:
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
-		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
+		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
+		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 		int subscribe(ctx::Json option);
 		int unsubscribe(ctx::Json option);

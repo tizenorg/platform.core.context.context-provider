@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "../system_types.h"
 #include "usb.h"
 
@@ -36,7 +36,7 @@ bool ctx::device_status_usb::is_supported()
 
 void ctx::device_status_usb::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_USB, OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_USB, OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsConnected") "}", NULL);
 }
 
@@ -47,22 +47,22 @@ void ctx::device_status_usb::handle_update()
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_USB_CONNECTED, &status);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::Json data_read;
-	data_read.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
+	ctx::Json dataRead;
+	dataRead.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
-	context_manager::publish(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, data_read);
+	context_manager::publish(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, dataRead);
 }
 
 int ctx::device_status_usb::read()
 {
 	bool status = false;
-	ctx::Json data_read;
+	ctx::Json dataRead;
 
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_USB_CONNECTED, &status);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");
 
-	data_read.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
+	dataRead.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
-	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, data_read);
+	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

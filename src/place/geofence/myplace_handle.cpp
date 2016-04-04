@@ -16,7 +16,7 @@
 
 #include <types_internal.h>
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "place_geofence_types.h"
 #include "myplace_handle.h"
 

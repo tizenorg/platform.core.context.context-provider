@@ -16,7 +16,7 @@
 
 #include <glib.h>
 #include <string>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "media_stats_provider.h"
 #include "db_handle.h"
 #include "media_content_monitor.h"
@@ -35,7 +35,7 @@ ctx::media_statistics_provider::~media_statistics_provider()
 	content_mon = NULL;
 }
 
-ctx::context_provider_iface *ctx::media_statistics_provider::create(void *data)
+ctx::ContextProviderBase *ctx::media_statistics_provider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 
@@ -67,11 +67,11 @@ bool ctx::media_statistics_provider::is_supported(const char* subject)
 
 void ctx::media_statistics_provider::submit_trigger_item()
 {
-	context_manager::register_trigger_item(MEDIA_SUBJ_MUSIC_FREQUENCY, OPS_READ,
+	context_manager::registerTriggerItem(MEDIA_SUBJ_MUSIC_FREQUENCY, OPS_READ,
 			"{" TRIG_DEF_TOTAL_COUNT "}",
 			"{" TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK "}");
 
-	context_manager::register_trigger_item(MEDIA_SUBJ_VIDEO_FREQUENCY, OPS_READ,
+	context_manager::registerTriggerItem(MEDIA_SUBJ_VIDEO_FREQUENCY, OPS_READ,
 			"{" TRIG_DEF_TOTAL_COUNT "}",
 			"{" TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK "}");
 }
@@ -83,7 +83,7 @@ bool ctx::media_statistics_provider::init()
 	return true;
 }
 
-int ctx::media_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* request_result)
+int ctx::media_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
@@ -93,7 +93,7 @@ int ctx::media_statistics_provider::unsubscribe(const char* subject, ctx::Json o
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::media_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* request_result)
+int ctx::media_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	media_db_handle *handle = new(std::nothrow) media_db_handle();
 	IF_FAIL_RETURN_TAG(handle, ERR_OPERATION_FAILED, _E, "Memory allocation failed");
@@ -107,7 +107,7 @@ int ctx::media_statistics_provider::read(const char* subject, ctx::Json option, 
 	return ERR_NONE;
 }
 
-int ctx::media_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* request_result)
+int ctx::media_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }

@@ -19,7 +19,7 @@
 
 #include <msg.h>
 #include <msg_transport.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

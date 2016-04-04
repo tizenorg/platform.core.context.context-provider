@@ -16,7 +16,7 @@
 
 #include <types_internal.h>
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "app_stats_provider.h"
 #include "db_handle.h"
 
@@ -41,7 +41,7 @@ ctx::app_statistics_provider::~app_statistics_provider()
 	launch_mon = NULL;
 }
 
-ctx::context_provider_iface *ctx::app_statistics_provider::create(void *data)
+ctx::ContextProviderBase *ctx::app_statistics_provider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 
@@ -72,7 +72,7 @@ bool ctx::app_statistics_provider::is_supported(const char* subject)
 
 void ctx::app_statistics_provider::submit_trigger_item()
 {
-	context_manager::register_trigger_item(APP_SUBJ_FREQUENCY, OPS_READ,
+	context_manager::registerTriggerItem(APP_SUBJ_FREQUENCY, OPS_READ,
 			"{" TRIG_DEF_RANK "," TRIG_DEF_TOTAL_COUNT "}",
 			"{"
 				"\"AppId\":{\"type\":\"string\"},"
@@ -98,7 +98,7 @@ CATCH:
 	return false;
 }
 
-int ctx::app_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* request_result)
+int ctx::app_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
@@ -108,7 +108,7 @@ int ctx::app_statistics_provider::unsubscribe(const char* subject, ctx::Json opt
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::app_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* request_result)
+int ctx::app_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	ctx::app_db_handle *handle = new(std::nothrow) ctx::app_db_handle();
 	IF_FAIL_RETURN_TAG(handle, ERR_OPERATION_FAILED, _E, "Memory allocation failed");
@@ -122,7 +122,7 @@ int ctx::app_statistics_provider::read(const char* subject, ctx::Json option, ct
 	return ERR_NONE;
 }
 
-int ctx::app_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* request_result)
+int ctx::app_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }

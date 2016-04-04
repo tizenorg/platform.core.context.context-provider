@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "../system_types.h"
 #include "gps.h"
 
@@ -54,7 +54,7 @@ bool ctx::device_status_gps::is_supported()
 
 void ctx::device_status_gps::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_GPS, OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_GPS, OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Searching\",\"Connected\"]}"
 			"}",
@@ -67,20 +67,20 @@ void ctx::device_status_gps::handle_update()
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gps_status);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::Json data_read;
+	ctx::Json dataRead;
 
 	const char* state_str = get_state_string(gps_status);
 	IF_FAIL_VOID(state_str);
 
-	data_read.set(NULL, DEVICE_ST_STATE, state_str);
+	dataRead.set(NULL, DEVICE_ST_STATE, state_str);
 
-	context_manager::publish(DEVICE_ST_SUBJ_GPS, NULL, ERR_NONE, data_read);
+	context_manager::publish(DEVICE_ST_SUBJ_GPS, NULL, ERR_NONE, dataRead);
 }
 
 int ctx::device_status_gps::read()
 {
 	int gps_status;
-	ctx::Json data_read;
+	ctx::Json dataRead;
 
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gps_status);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");
@@ -88,8 +88,8 @@ int ctx::device_status_gps::read()
 	const char* state_str = get_state_string(gps_status);
 	IF_FAIL_RETURN(state_str, ERR_OPERATION_FAILED);
 
-	data_read.set(NULL, DEVICE_ST_STATE, state_str);
+	dataRead.set(NULL, DEVICE_ST_STATE, state_str);
 
-	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_GPS, NULL, ERR_NONE, data_read);
+	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_GPS, NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

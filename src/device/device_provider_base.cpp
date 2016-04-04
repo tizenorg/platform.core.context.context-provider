@@ -15,14 +15,14 @@
  */
 
 #include <system_info.h>
-#include "provider_base.h"
+#include "device_provider_base.h"
 
 ctx::device_provider_base::device_provider_base()
 	: being_subscribed(false)
 {
 }
 
-int ctx::device_provider_base::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::device_provider_base::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	IF_FAIL_RETURN(!being_subscribed, ERR_NONE);
 
@@ -47,7 +47,7 @@ int ctx::device_provider_base::unsubscribe(const char *subject, ctx::Json option
 	return ret;
 }
 
-int ctx::device_provider_base::read(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::device_provider_base::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	int ret = read();
 
@@ -57,7 +57,7 @@ int ctx::device_provider_base::read(const char *subject, ctx::Json option, ctx::
 	return ret;
 }
 
-int ctx::device_provider_base::write(const char *subject, ctx::Json data, ctx::Json *request_result)
+int ctx::device_provider_base::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
 {
 	int ret = write();
 

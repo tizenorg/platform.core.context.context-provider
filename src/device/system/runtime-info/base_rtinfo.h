@@ -18,7 +18,7 @@
 #define __CONTEXT_DEVICE_STATUS_RUNTIME_INFO_H__
 
 #include <runtime_info.h>
-#include "../../provider_base.h"
+#include "../../device_provider_base.h"
 
 namespace ctx {
 

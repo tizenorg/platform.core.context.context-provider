@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "system_types.h"
 #include "alarm.h"
 
@@ -41,7 +41,7 @@ bool ctx::device_status_alarm::is_supported()
 
 void ctx::device_status_alarm::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_ALARM, OPS_SUBSCRIBE,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_ALARM, OPS_SUBSCRIBE,
 			"{"
 				"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
 				"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
@@ -49,7 +49,7 @@ void ctx::device_status_alarm::submit_trigger_item()
 			NULL);
 }
 
-int ctx::device_status_alarm::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::device_status_alarm::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	int ret = subscribe(option);
 	destroy_if_unused();
@@ -63,13 +63,13 @@ int ctx::device_status_alarm::unsubscribe(const char *subject, ctx::Json option)
 	return ret;
 }
 
-int ctx::device_status_alarm::read(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::device_status_alarm::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	destroy_if_unused();
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::device_status_alarm::write(const char *subject, ctx::Json data, ctx::Json *request_result)
+int ctx::device_status_alarm::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
 {
 	destroy_if_unused();
 	return ERR_NOT_SUPPORTED;
@@ -250,16 +250,16 @@ void ctx::device_status_alarm::on_timer_expired(int hour, int min, int day_of_we
 {
 	_I("Time: %02d:%02d, Day of Week: %#x", hour, min, day_of_week);
 
-	ctx::Json data_read;
+	ctx::Json dataRead;
 	int result_time = hour * 60 + min;
 	std::string result_day = ctx::TimerManager::dowToStr(day_of_week);
-	data_read.set(NULL, DEVICE_ST_TIME_OF_DAY, result_time);
-	data_read.set(NULL, DEVICE_ST_DAY_OF_WEEK, result_day);
+	dataRead.set(NULL, DEVICE_ST_TIME_OF_DAY, result_time);
+	dataRead.set(NULL, DEVICE_ST_DAY_OF_WEEK, result_day);
 
 	for (option_t::iterator it = option_set.begin(); it != option_set.end(); ++it) {
 		ctx::Json option = (**it);
 		if (is_matched(option, result_time, result_day)) {
-			context_manager::publish(DEVICE_ST_SUBJ_ALARM, option, ERR_NONE, data_read);
+			context_manager::publish(DEVICE_ST_SUBJ_ALARM, option, ERR_NONE, dataRead);
 		}
 	}
 }

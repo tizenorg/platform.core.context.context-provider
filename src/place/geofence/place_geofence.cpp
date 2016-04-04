@@ -18,7 +18,7 @@
 
 #include <types_internal.h>
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "place_geofence.h"
 
 ctx::place_geofence_provider *ctx::place_geofence_provider::__instance = NULL;
@@ -36,7 +36,7 @@ ctx::place_geofence_provider::~place_geofence_provider()
 	__handle_map.clear();
 }
 
-ctx::context_provider_iface *ctx::place_geofence_provider::create(void *data)
+ctx::ContextProviderBase *ctx::place_geofence_provider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 	__instance = new(std::nothrow) place_geofence_provider();
@@ -63,7 +63,7 @@ bool ctx::place_geofence_provider::is_supported()
 
 void ctx::place_geofence_provider::submit_trigger_item()
 {
-	context_manager::register_trigger_item(PLACE_SUBJ_GEOFENCE, OPS_SUBSCRIBE,
+	context_manager::registerTriggerItem(PLACE_SUBJ_GEOFENCE, OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"In\",\"Out\"]}"
 			"}",
@@ -79,7 +79,7 @@ void ctx::place_geofence_provider::__destroy_if_unused()
 }
 
 
-int ctx::place_geofence_provider::subscribe(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::place_geofence_provider::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	int ret = __subscribe(option);
 	__destroy_if_unused();
@@ -93,13 +93,13 @@ int ctx::place_geofence_provider::unsubscribe(const char *subject, ctx::Json opt
 	return ret;
 }
 
-int ctx::place_geofence_provider::read(const char *subject, ctx::Json option, ctx::Json *request_result)
+int ctx::place_geofence_provider::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
 {
 	__destroy_if_unused();
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::place_geofence_provider::write(const char *subject, ctx::Json data, ctx::Json *request_result)
+int ctx::place_geofence_provider::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
 {
 	__destroy_if_unused();
 	return ERR_NOT_SUPPORTED;

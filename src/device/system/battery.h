@@ -19,7 +19,7 @@
 
 #include <device/callback.h>
 #include <device/battery.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

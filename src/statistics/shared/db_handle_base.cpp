@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <types_internal.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include <db_mgr.h>
 #include "common_types.h"
 #include "db_handle_base.h"
@@ -215,12 +215,12 @@ void ctx::stats_db_handle_base::on_query_result_received(unsigned int query_id, 
 		} else {
 			_E("Invalid query result");
 			Json dummy;
-			context_manager::reply_to_read(req_subject.c_str(), req_filter, ERR_OPERATION_FAILED, dummy);
+			context_manager::replyToRead(req_subject.c_str(), req_filter, ERR_OPERATION_FAILED, dummy);
 		}
 	} else {
 		Json results = "{\"" STATS_QUERY_RESULT "\":[]}";
 		json_vector_to_array(records, results);
-		context_manager::reply_to_read(req_subject.c_str(), req_filter, error, results);
+		context_manager::replyToRead(req_subject.c_str(), req_filter, error, results);
 	}
 
 	delete this;

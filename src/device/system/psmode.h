@@ -18,7 +18,7 @@
 #define _DEVICE_STATUS_POWER_SAVING_MODE_H_
 
 #include <vconf.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

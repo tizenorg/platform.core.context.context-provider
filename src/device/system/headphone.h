@@ -20,7 +20,7 @@
 #include <glib.h>
 #include <runtime_info.h>
 #include <bluetooth.h>
-#include "../provider_base.h"
+#include "../device_provider_base.h"
 
 namespace ctx {
 

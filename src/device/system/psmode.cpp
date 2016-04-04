@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "system_types.h"
 #include "psmode.h"
 
@@ -35,7 +35,7 @@ bool ctx::device_status_psmode::is_supported()
 
 void ctx::device_status_psmode::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_PSMODE, OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_PSMODE, OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsEnabled") "}", NULL);
 }
 
@@ -48,14 +48,14 @@ void ctx::device_status_psmode::update_cb(keynode_t *node, void* user_data)
 void ctx::device_status_psmode::handle_update(keynode_t *node)
 {
 	int status;
-	ctx::Json data_read;
+	ctx::Json dataRead;
 
 	status = vconf_keynode_get_int(node);
 	IF_FAIL_VOID_TAG(status >= 0, _E, "Getting state failed");
 
-	data_read.set(NULL, DEVICE_ST_IS_ENABLED, status == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
+	dataRead.set(NULL, DEVICE_ST_IS_ENABLED, status == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
 
-	context_manager::publish(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, data_read);
+	context_manager::publish(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, dataRead);
 }
 
 int ctx::device_status_psmode::subscribe()
@@ -78,9 +78,9 @@ int ctx::device_status_psmode::read()
 	int ret = vconf_get_int(VCONFKEY_SETAPPL_PSMODE, &mode);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 
-	ctx::Json data_read;
-	data_read.set(NULL, DEVICE_ST_IS_ENABLED, mode == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
+	ctx::Json dataRead;
+	dataRead.set(NULL, DEVICE_ST_IS_ENABLED, mode == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
 
-	ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, data_read);
+	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

@@ -19,7 +19,7 @@
 
 #include <types_internal.h>
 #include <Json.h>
-#include <provider_iface.h>
+#include <ContextProviderBase.h>
 
 #define CREATE_INSTANCE(prvd) \
 	do { \
@@ -40,7 +40,7 @@
 
 #define GENERATE_PROVIDER_COMMON_DECL(prvd) \
 	public: \
-		static context_provider_iface *create(void *data); \
+		static ContextProviderBase *create(void *data); \
 		static void destroy(void *data); \
 	protected: \
 		void destroy_self(); \
@@ -49,7 +49,7 @@
 
 #define GENERATE_PROVIDER_COMMON_IMPL(prvd) \
 	ctx::prvd *ctx::prvd::__instance = NULL; \
-	ctx::context_provider_iface *ctx::prvd::create(void *data) \
+	ctx::ContextProviderBase *ctx::prvd::create(void *data) \
 	{ \
 		CREATE_INSTANCE(prvd); \
 	} \
@@ -64,12 +64,12 @@
 
 namespace ctx {
 
-	class device_provider_base : public context_provider_iface {
+	class device_provider_base : public ContextProviderBase {
 	public:
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
-		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
+		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
+		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 	protected:
 		bool being_subscribed;

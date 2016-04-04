@@ -15,7 +15,7 @@
  */
 
 #include <SharedVars.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "system_types.h"
 #include "wifi.h"
 
@@ -39,7 +39,7 @@ ctx::device_status_wifi::~device_status_wifi()
 {
 }
 
-ctx::context_provider_iface *ctx::device_status_wifi::create(void *data)
+ctx::ContextProviderBase *ctx::device_status_wifi::create(void *data)
 {
 	CREATE_INSTANCE(device_status_wifi);
 }
@@ -62,7 +62,7 @@ bool ctx::device_status_wifi::is_supported()
 
 void ctx::device_status_wifi::submit_trigger_item()
 {
-	context_manager::register_trigger_item(DEVICE_ST_SUBJ_WIFI, OPS_SUBSCRIBE | OPS_READ,
+	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_WIFI, OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Unconnected\",\"Connected\"]},"
 				"\"BSSID\":{\"type\":\"string\"}"
@@ -162,10 +162,10 @@ int ctx::device_status_wifi::read()
 {
 	IF_FAIL_RETURN(get_current_state(), ERR_OPERATION_FAILED);
 
-	ctx::Json data_read;
+	ctx::Json dataRead;
 
-	if (get_response_packet(data_read)) {
-		ctx::context_manager::reply_to_read(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, data_read);
+	if (get_response_packet(dataRead)) {
+		ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, dataRead);
 		return ERR_NONE;
 	}
 

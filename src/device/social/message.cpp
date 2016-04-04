@@ -15,7 +15,7 @@
  */
 
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "social_types.h"
 #include "message.h"
 
@@ -39,7 +39,7 @@ bool ctx::social_status_message::is_supported()
 
 void ctx::social_status_message::submit_trigger_item()
 {
-	context_manager::register_trigger_item(SOCIAL_ST_SUBJ_MESSAGE, OPS_SUBSCRIBE,
+	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_MESSAGE, OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"Received\"]},"
 				"\"Type\":{\"type\":\"string\",\"values\":[\"SMS\",\"MMS\"]},"

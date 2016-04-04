@@ -15,7 +15,7 @@
  */
 
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "social_types.h"
 #include "contacts.h"
 
@@ -42,7 +42,7 @@ bool ctx::social_status_contacts::is_supported()
 
 void ctx::social_status_contacts::submit_trigger_item()
 {
-	context_manager::register_trigger_item(SOCIAL_ST_SUBJ_CONTACTS, OPS_SUBSCRIBE,
+	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_CONTACTS, OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"Changed\"]},"
 				"\"Type\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
