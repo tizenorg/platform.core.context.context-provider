@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_STATISTICS_CONTEXT_PROVIDER_H__
-#define __CONTEXT_STATISTICS_CONTEXT_PROVIDER_H__
+#ifndef _CONTEXT_STATISTICS_CONTEXT_PROVIDER_H_
+#define _CONTEXT_STATISTICS_CONTEXT_PROVIDER_H_
 
 namespace ctx {
-	bool init_statistics_context_provider();
-}
 
-#endif /* __CONTEXT_STATISTICS_CONTEXT_PROVIDER_H__ */
+	bool initStatisticsContextProvider();
+
+}	/* namespace ctx */
+
+#endif	/* End of _CONTEXT_STATISTICS_CONTEXT_PROVIDER_H_ */

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_CONTEXT_PROVIDER_H__
-#define __CONTEXT_PLACE_CONTEXT_PROVIDER_H__
+#ifndef _CONTEXT_PLACE_CONTEXT_PROVIDER_H_
+#define _CONTEXT_PLACE_CONTEXT_PROVIDER_H_
 
 namespace ctx {
-	bool init_place_context_provider();
-}
 
-#endif /* __CONTEXT_PLACE_CONTEXT_PROVIDER_H__ */
+	bool initPlaceContextProvider();
+
+}	/* namespace ctx */
+
+#endif	/* End of _CONTEXT_PLACE_CONTEXT_PROVIDER_H_ */

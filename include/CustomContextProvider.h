@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_CUSTOM_CONTEXT_PROVIDER_H__
-#define __CONTEXT_CUSTOM_CONTEXT_PROVIDER_H__
+#ifndef _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
+#define _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
 
 namespace ctx {
-	bool init_custom_context_provider();
+
+	bool initCustomContextProvider();
 
 	namespace custom_context_provider {
-	int addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool is_init = false);
-	int removeItem(std::string subject);
-	int publishData(std::string subject, ctx::Json fact);
 
-	ContextProviderBase* create(void* data);
-	void destroy(void* data);
-	}
-}
+		int addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit = false);
+		int removeItem(std::string subject);
+		int publishData(std::string subject, ctx::Json fact);
 
-#endif //__CONTEXT_CUSTOM_CONTEXT_PROVIDER_H__
+		ContextProviderBase* create(void* data);
+		void destroy(void* data);
+
+	}	/* namespace custom_context_provider */
+
+}	/* namespace ctx */
+
+#endif	/* End of _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_ */

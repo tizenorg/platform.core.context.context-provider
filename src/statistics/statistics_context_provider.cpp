@@ -16,7 +16,7 @@
 #include <types_internal.h>
 #include <ContextManager.h>
 #include <ContextProviderBase.h>
-#include <statistics_context_provider.h>
+#include <StatisticsContextProvider.h>
 
 #include "app/app_stats_provider.h"
 
@@ -43,7 +43,7 @@ void registerProvider(const char *subject, const char *privilege)
 	ctx::context_manager::registerProvider(subject, providerInfo);
 }
 
-EXTAPI bool ctx::init_statistics_context_provider()
+EXTAPI bool ctx::initStatisticsContextProvider()
 {
 	app_statistics_provider::create(NULL);
 	registerProvider<app_statistics_provider>(APP_SUBJ_RECENTLY_USED, APP_HISTORY_PRIV);

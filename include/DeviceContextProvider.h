@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_DEVICE_CONTEXT_PROVIDER_H__
-#define __CONTEXT_DEVICE_CONTEXT_PROVIDER_H__
+#ifndef _CONTEXT_DEVICE_CONTEXT_PROVIDER_H_
+#define _CONTEXT_DEVICE_CONTEXT_PROVIDER_H_
 
 namespace ctx {
-	bool init_device_context_provider();
-}
 
-#endif //__CONTEXT_DEVICE_CONTEXT_PROVIDER_H__
+	bool initDeviceContextProvider();
+
+}	/* namespace ctx */
+
+#endif	/* End of _CONTEXT_DEVICE_CONTEXT_PROVIDER_H_ */

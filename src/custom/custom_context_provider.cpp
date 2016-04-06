@@ -20,7 +20,7 @@
 #include <ContextManager.h>
 #include <ContextProviderBase.h>
 #include <db_mgr.h>
-#include <custom_context_provider.h>
+#include <CustomContextProvider.h>
 #include "custom_base.h"
 
 std::map<std::string, ctx::custom_base*> custom_map;
@@ -59,7 +59,7 @@ EXTAPI void ctx::custom_context_provider::destroy(void *data)
 	}
 }
 
-EXTAPI bool ctx::init_custom_context_provider()
+EXTAPI bool ctx::initCustomContextProvider()
 {
 	// Create custom template db
 	std::string q = std::string("CREATE TABLE IF NOT EXISTS context_trigger_custom_template ")
