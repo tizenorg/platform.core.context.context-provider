@@ -21,13 +21,13 @@
 #include <ContextProviderBase.h>
 #include <db_mgr.h>
 #include <CustomContextProvider.h>
-#include "custom_base.h"
+#include "CustomBase.h"
 
-std::map<std::string, ctx::custom_base*> custom_map;
+static std::map<std::string, ctx::CustomBase*> __customMap;
 
-static bool is_valid_fact(std::string subject, ctx::Json& fact);
-static bool check_value_int(ctx::Json& tmpl, std::string key, int value);
-static bool check_value_string(ctx::Json& tmpl, std::string key, std::string value);
+static bool __isValidFact(std::string subject, ctx::Json& fact);
+static bool __checkValueInt(ctx::Json& tmpl, std::string key, int value);
+static bool __checkValueString(ctx::Json& tmpl, std::string key, std::string value);
 
 void registerProvider(const char *subject, const char *privilege)
 {
@@ -35,27 +35,27 @@ void registerProvider(const char *subject, const char *privilege)
 											ctx::custom_context_provider::destroy,
 											const_cast<char*>(subject), privilege);
 	ctx::context_manager::registerProvider(subject, providerInfo);
-	custom_map[subject]->submit_trigger_item();
+	__customMap[subject]->submitTriggerItem();
 }
 
 void unregisterProvider(const char* subject)
 {
-	custom_map[subject]->unsubmit_trigger_item();
+	__customMap[subject]->unsubmitTriggerItem();
 	ctx::context_manager::unregisterProvider(subject);
 }
 
 EXTAPI ctx::ContextProviderBase* ctx::custom_context_provider::create(void *data)
 {
 	// Already created in addItem() function. Return corresponding custom provider
-	return custom_map[static_cast<const char*>(data)];
+	return __customMap[static_cast<const char*>(data)];
 }
 
 EXTAPI void ctx::custom_context_provider::destroy(void *data)
 {
-	std::map<std::string, ctx::custom_base*>::iterator it = custom_map.find(static_cast<char*>(data));
-	if (it != custom_map.end()) {
+	std::map<std::string, ctx::CustomBase*>::iterator it = __customMap.find(static_cast<char*>(data));
+	if (it != __customMap.end()) {
 		delete it->second;
-		custom_map.erase(it);
+		__customMap.erase(it);
 	}
 }
 
@@ -71,15 +71,15 @@ EXTAPI bool ctx::initCustomContextProvider()
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
 
 	// Register custom items
-	std::string q_select = "SELECT * FROM context_trigger_custom_template";
-	ret = db_manager::execute_sync(q_select.c_str(), &record);
+	std::string qSelect = "SELECT * FROM context_trigger_custom_template";
+	ret = db_manager::execute_sync(qSelect.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	IF_FAIL_RETURN(record.size() > 0, true);
 
 	int error;
-	std::vector<Json>::iterator vec_end = record.end();
-	for (std::vector<Json>::iterator vec_pos = record.begin(); vec_pos != vec_end; ++vec_pos) {
-		ctx::Json elem = *vec_pos;
+	std::vector<Json>::iterator vedEnd = record.end();
+	for (auto vecPos = record.begin(); vecPos != vedEnd; ++vecPos) {
+		ctx::Json elem = *vecPos;
 		std::string subject;
 		std::string name;
 		std::string attributes;
@@ -98,13 +98,13 @@ EXTAPI bool ctx::initCustomContextProvider()
 	return true;
 }
 
-EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool is_init)
+EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit)
 {
-	std::map<std::string, ctx::custom_base*>::iterator it;
-	it = custom_map.find(subject);
+	std::map<std::string, ctx::CustomBase*>::iterator it;
+	it = __customMap.find(subject);
 
-	if (it != custom_map.end()) {
-		if ((it->second)->get_template() != tmpl) {	// Same item name, but different template
+	if (it != __customMap.end()) {
+		if ((it->second)->getTemplate() != tmpl) {	// Same item name, but different template
 			return ERR_DATA_EXIST;
 		}
 		// Same item name with same template
@@ -112,14 +112,14 @@ EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::strin
 	}
 
 	// Create custom base
-	ctx::custom_base* custom = new(std::nothrow) custom_base(subject, name, tmpl, owner);
+	ctx::CustomBase* custom = new(std::nothrow) CustomBase(subject, name, tmpl, owner);
 	IF_FAIL_RETURN_TAG(custom, ERR_OUT_OF_MEMORY, _E, "Memory allocation failed");
-	custom_map[subject] = custom;
+	__customMap[subject] = custom;
 
-	registerProvider(custom->get_subject(), NULL);
+	registerProvider(custom->getSubject(), NULL);
 
 	// Add item to custom template db
-	if (!is_init) {
+	if (!isInit) {
 		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
 				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
 		std::vector<Json> record;
@@ -132,9 +132,9 @@ EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::strin
 
 EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
 {
-	std::map<std::string, ctx::custom_base*>::iterator it;
-	it = custom_map.find(subject);
-	IF_FAIL_RETURN_TAG(it != custom_map.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
+	std::map<std::string, ctx::CustomBase*>::iterator it;
+	it = __customMap.find(subject);
+	IF_FAIL_RETURN_TAG(it != __customMap.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
 
 	unregisterProvider(subject.c_str());
 
@@ -149,20 +149,20 @@ EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
 
 EXTAPI int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
 {
-	std::map<std::string, ctx::custom_base*>::iterator it;
-	it = custom_map.find(subject);
-	IF_FAIL_RETURN_TAG(it != custom_map.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
+	std::map<std::string, ctx::CustomBase*>::iterator it;
+	it = __customMap.find(subject);
+	IF_FAIL_RETURN_TAG(it != __customMap.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
 
-	bool ret = is_valid_fact(subject, fact);
+	bool ret = __isValidFact(subject, fact);
 	IF_FAIL_RETURN_TAG(ret, ERR_INVALID_DATA, _E, "Invalid fact(%s)", subject.c_str());
 
-	custom_map[subject]->handle_update(fact);
+	__customMap[subject]->handleUpdate(fact);
 	return ERR_NONE;
 }
 
-bool is_valid_fact(std::string subject, ctx::Json& fact)
+bool __isValidFact(std::string subject, ctx::Json& fact)
 {
-	ctx::Json tmpl = custom_map[subject]->get_template();
+	ctx::Json tmpl = __customMap[subject]->getTemplate();
 	IF_FAIL_RETURN_TAG(tmpl != EMPTY_JSON_OBJECT, false, _E, "Failed to get template");
 
 	bool ret;
@@ -179,14 +179,14 @@ bool is_valid_fact(std::string subject, ctx::Json& fact)
 			ret = fact.get(NULL, key.c_str(), &val);
 			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid data type");
 
-			ret = check_value_int(tmpl, key, val);
+			ret = __checkValueInt(tmpl, key, val);
 			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid value");
 		} else if (type == "string") {
 			std::string val_str;
 			ret = fact.get(NULL, key.c_str(), &val_str);
 			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid data type");
 
-			ret = check_value_string(tmpl, key, val_str);
+			ret = __checkValueString(tmpl, key, val_str);
 			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid value");
 		} else {
 			_E("Custom fact: invalid data type");
@@ -197,7 +197,7 @@ bool is_valid_fact(std::string subject, ctx::Json& fact)
 	return true;
 }
 
-bool check_value_int(ctx::Json& tmpl, std::string key, int value)
+bool __checkValueInt(ctx::Json& tmpl, std::string key, int value)
 {
 	int min, max;
 
@@ -212,16 +212,16 @@ bool check_value_int(ctx::Json& tmpl, std::string key, int value)
 	return true;
 }
 
-bool check_value_string(ctx::Json& tmpl, std::string key, std::string value)
+bool __checkValueString(ctx::Json& tmpl, std::string key, std::string value)
 {
 	// case1: any value is accepted
 	if (tmpl.getSize(key.c_str(), "values") <= 0)
 		return true;
 
 	// case2: check acceptable value
-	std::string t_val;
-	for (int i = 0; tmpl.getAt(key.c_str(), "values", i, &t_val); i++) {
-		if (t_val == value)
+	std::string tmplValue;
+	for (int i = 0; tmpl.getAt(key.c_str(), "values", i, &tmplValue); i++) {
+		if (tmplValue == value)
 			return true;
 	}
 
