@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_GEOFENCE_H__
-#define __CONTEXT_PLACE_GEOFENCE_H__
+#ifndef _CONTEXT_PLACE_GEOFENCE_PROVIDER_H_
+#define _CONTEXT_PLACE_GEOFENCE_PROVIDER_H_
 
 #include <map>
 #include <ContextProviderBase.h>
-#include "myplace_handle.h"
-#include "place_geofence_types.h"
+#include "GeofenceMonitorHandle.h"
+#include "PlaceGeofenceTypes.h"
 
 namespace ctx {
 
-	class place_geofence_provider : public ContextProviderBase {
-		typedef std::map<int, ctx::myplace_handle*> handle_map_t;
+	class PlaceGeofenceProvider : public ContextProviderBase {
 
 	public:
 		static ContextProviderBase *create(void *data);
 		static void destroy(void *data);
-		static bool is_supported();
-		static void submit_trigger_item();
+		static bool isSupported();
+		static void submitTriggerItem();
 
 		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);
@@ -39,17 +38,17 @@ namespace ctx {
 		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 	private:
-		static place_geofence_provider *__instance;
-		handle_map_t __handle_map;
+		static PlaceGeofenceProvider *__instance;
+		std::map<int, ctx::GeofenceMonitorHandle*> __handleMap;
 
-		place_geofence_provider();
-		~place_geofence_provider();
+		PlaceGeofenceProvider();
+		~PlaceGeofenceProvider();
 
 		int __subscribe(ctx::Json option);
 		int __unsubscribe(ctx::Json option);
-		void __destroy_if_unused();
+		void __destroyIfUnused();
 	};
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_GEOFENCE_H__ */
+#endif /* End of _CONTEXT_PLACE_GEOFENCE_PROVIDER_H_ */
