@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_GEOFENCE_TYPES__
-#define __CONTEXT_PLACE_GEOFENCE_TYPES__
+#ifndef _CONTEXT_PLACE_GEOFENCE_TYPES_H_
+#define _CONTEXT_PLACE_GEOFENCE_TYPES_H_
 
-// Context Items
+// Subject
 #define PLACE_SUBJ_GEOFENCE		"place/geofence"
 
+// Privilege
 #define PLACE_PRIV_GEOFENCE		"location"
 
-// Option Keys
-#define PLACE_STATUS_OPT_MYPLACE_ID		"PlaceId"
+// Option & Data Key
+#define PLACE_GEOFENCE_PLACE_ID	"PlaceId"
+#define PLACE_GEOFENCE_EVENT	"Event"
 
-// Data Keys
-#define PLACE_STATUS_DATA_MYPLACE_ID	"PlaceId"
-#define PLACE_STATUS_DATA_MYPLACE_EVENT	"Event"
+// Data Value
+#define	PLACE_GEOFENCE_UNCERTAIN	"Uncertain"
+#define	PLACE_GEOFENCE_IN		"In"
+#define	PLACE_GEOFENCE_OUT		"Out"
 
-// Data Values
-#define	MYPLACE_EVENT_UNCERTAIN	"Uncertain"
-#define	MYPLACE_EVENT_IN		"In"
-#define	MYPLACE_EVENT_OUT		"Out"
-
-#endif
+#endif	/* End of _CONTEXT_PLACE_GEOFENCE_TYPES_H_ */

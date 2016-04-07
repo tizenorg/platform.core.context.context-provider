@@ -28,7 +28,7 @@ namespace ctx {
 	public:
 		static ContextProviderBase *create(void *data);
 		static void destroy(void *data);
-		static bool is_supported();
+		static bool isSupported();
 
 		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);

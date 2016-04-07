@@ -20,27 +20,27 @@
 #include <PlaceContextProvider.h>
 
 #ifdef _MOBILE_
-#include "geofence/place_geofence.h"
+#include "geofence/PlaceGeofenceProvider.h"
 #ifndef _DISABLE_RECOG_ENGINE_
 #include "recognition/place_recognition.h"
 #endif	/* _DISABLE_RECOG_ENGINE_ */
 #endif	/* _MOBILE_ */
 
-template<typename provider>
+template<typename Provider>
 void registerProvider(const char *subject, const char *privilege)
 {
-	if (!provider::is_supported())
+	if (!Provider::isSupported())
 		return;
 
-	ctx::ContextProviderInfo providerInfo(provider::create, provider::destroy, NULL, privilege);
+	ctx::ContextProviderInfo providerInfo(Provider::create, Provider::destroy, NULL, privilege);
 	ctx::context_manager::registerProvider(subject, providerInfo);
 }
 
 EXTAPI bool ctx::initPlaceContextProvider()
 {
 #ifdef _MOBILE_
-	registerProvider<place_geofence_provider>(PLACE_SUBJ_GEOFENCE, PLACE_PRIV_GEOFENCE);
-	place_geofence_provider::submit_trigger_item();
+	registerProvider<PlaceGeofenceProvider>(PLACE_SUBJ_GEOFENCE, PLACE_PRIV_GEOFENCE);
+	PlaceGeofenceProvider::submitTriggerItem();
 
 #ifndef _DISABLE_RECOG_ENGINE_
 	place_recognition_provider::create(NULL);
