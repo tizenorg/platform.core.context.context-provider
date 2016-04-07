@@ -18,22 +18,22 @@
 #include <Json.h>
 #include <types_internal.h>
 #include <db_mgr.h>
-#include "app_stats_types.h"
-#include "db_init.h"
+#include "AppStatisticsTypes.h"
+#include "DbInit.h"
 
 #define EMPTY_CHECKER_QID 999
 
-ctx::app_db_initializer::app_db_initializer()
+ctx::AppDbInitializer::AppDbInitializer()
 {
-	create_table();
-	check_app_list();
+	__createTable();
+	__checkAppList();
 }
 
-ctx::app_db_initializer::~app_db_initializer()
+ctx::AppDbInitializer::~AppDbInitializer()
 {
 }
 
-void ctx::app_db_initializer::create_table()
+void ctx::AppDbInitializer::__createTable()
 {
 	static bool done = false;
 	IF_FAIL_VOID(!done);
@@ -45,12 +45,12 @@ void ctx::app_db_initializer::create_table()
 	done = true;
 }
 
-void ctx::app_db_initializer::check_app_list()
+void ctx::AppDbInitializer::__checkAppList()
 {
 	db_manager::execute(EMPTY_CHECKER_QID, "SELECT * FROM " APP_TABLE_REMOVABLE_APP " LIMIT 1", this);
 }
 
-void ctx::app_db_initializer::duplicate_app_list()
+void ctx::AppDbInitializer::__duplicateAppList()
 {
 	int err;
 	package_manager_filter_h filter;
@@ -61,7 +61,7 @@ void ctx::app_db_initializer::duplicate_app_list()
 	err = package_manager_filter_add_bool(filter, PACKAGE_MANAGER_PKGINFO_PROP_REMOVABLE, true);
 	IF_FAIL_CATCH_TAG(err == PACKAGE_MANAGER_ERROR_NONE, _E, "package_manager_filter_add_bool() failed");
 
-	err = package_manager_filter_foreach_package_info(filter, package_info_cb, this);
+	err = package_manager_filter_foreach_package_info(filter, __packageInfoCb, this);
 	IF_FAIL_CATCH_TAG(err == PACKAGE_MANAGER_ERROR_NONE, _E, "package_manager_filter_foreach_package_info() failed");
 
 CATCH:
@@ -69,38 +69,38 @@ CATCH:
 		package_manager_filter_destroy(filter);
 }
 
-bool ctx::app_db_initializer::package_info_cb(package_info_h package_info, void *user_data)
+bool ctx::AppDbInitializer::__packageInfoCb(package_info_h packageInfo, void *userData)
 {
-	int err = package_info_foreach_app_from_package(package_info, PACKAGE_INFO_UIAPP, app_info_cb, user_data);
+	int err = package_info_foreach_app_from_package(packageInfo, PACKAGE_INFO_UIAPP, __appInfoCb, userData);
 	IF_FAIL_RETURN_TAG(err == PACKAGE_MANAGER_ERROR_NONE, false, _E, "package_info_foreach_app_from_package() failed");
 	return true;
 }
 
-bool ctx::app_db_initializer::app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data)
+bool ctx::AppDbInitializer::__appInfoCb(package_info_app_component_type_e compType, const char *appId, void *userData)
 {
 	Json data;
-	data.set(NULL, STATS_APP_ID, app_id);
+	data.set(NULL, STATS_APP_ID, appId);
 	return db_manager::insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 }
 
-void ctx::app_db_initializer::on_creation_result_received(unsigned int query_id, int error)
+void ctx::AppDbInitializer::on_creation_result_received(unsigned int queryId, int error)
 {
 }
 
-void ctx::app_db_initializer::on_insertion_result_received(unsigned int query_id, int error, int64_t row_id)
+void ctx::AppDbInitializer::on_insertion_result_received(unsigned int queryId, int error, int64_t rowId)
 {
 }
 
-void ctx::app_db_initializer::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::AppDbInitializer::on_query_result_received(unsigned int queryId, int error, std::vector<Json>& records)
 {
-	if (query_id != EMPTY_CHECKER_QID) {
-		_E("Unknown Query ID: %d", query_id);
+	if (queryId != EMPTY_CHECKER_QID) {
+		_E("Unknown Query ID: %d", queryId);
 		delete this;
 		return;
 	}
 
 	if (records.empty())
-		duplicate_app_list();
+		__duplicateAppList();
 
 	delete this;
 }

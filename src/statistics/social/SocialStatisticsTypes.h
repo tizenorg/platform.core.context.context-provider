@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_SOCIAL_STATS_TYPES_H__
-#define __CONTEXT_SOCIAL_STATS_TYPES_H__
+#ifndef _CONTEXT_STATS_SOCIAL_TYPES_H_
+#define _CONTEXT_STATS_SOCIAL_TYPES_H_
 
-#include "../shared/common_types.h"
+#include "../shared/CommonTypes.h"
 
 #define SOCIAL_HISTORY_PRIV			"callhistory.read"
 #define SOCIAL_SUBJ_FREQ_ADDRESS	"stats/contact/often"
@@ -40,10 +40,10 @@
 #define SOCIAL_PHONE_LOG_TYPE		"PLogType"
 #define TIME_DIFFERENCE				"TimeDIff"
 
-enum _social_comm_type_e {
+enum SocialCommType {
 	SOCIAL_COMMUNICATION_TYPE_CALL = 1,
 	SOCIAL_COMMUNICATION_TYPE_MESSAGE,
 	SOCIAL_COMMUNICATION_TYPE_ALL
 };
 
-#endif
+#endif	/* End of _CONTEXT_STATS_SOCIAL_TYPES_ */

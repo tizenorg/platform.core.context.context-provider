@@ -17,37 +17,37 @@
 #include <time.h>
 #include <types_internal.h>
 #include <db_mgr.h>
-#include "../shared/system_info.h"
-#include "media_stats_types.h"
-#include "db_handle.h"
-#include "media_content_monitor.h"
+#include "../shared/SystemInfo.h"
+#include "MediaStatisticsTypes.h"
+#include "DbHandle.h"
+#include "MediaContentMonitor.h"
 
 #define PLAYCOUNT_RETENTION_PERIOD 259200	/* 1 month in secs */
 #define ONE_DAY_IN_SEC 86400
 
-ctx::media_content_monitor::media_content_monitor()
-	: started(false)
-	, last_cleanup_time(0)
+ctx::MediaContentMonitor::MediaContentMonitor() :
+	__started(false),
+	__lastCleanupTime(0)
 {
 	db_manager::create_table(0, MEDIA_TABLE_NAME, MEDIA_TABLE_COLUMNS, NULL, NULL);
 	db_manager::execute(0, MEDIA_PLAYCOUNT_TABLE_SCHEMA, NULL);
 
-	started = start_monitoring();
+	__started = __startMonitoring();
 }
 
-ctx::media_content_monitor::~media_content_monitor()
+ctx::MediaContentMonitor::~MediaContentMonitor()
 {
-	if (started)
-		stop_monitoring();
+	if (__started)
+		__stopMonitoring();
 }
 
-bool ctx::media_content_monitor::start_monitoring()
+bool ctx::MediaContentMonitor::__startMonitoring()
 {
 	int err;
 	err = media_content_connect();
 	IF_FAIL_RETURN_TAG(err == MEDIA_CONTENT_ERROR_NONE, false, _E, "media_content_connect() failed");
 
-	err = media_content_set_db_updated_cb(on_media_content_db_updated, this);
+	err = media_content_set_db_updated_cb(__onMediaContentDbUpdated, this);
 	if (err != MEDIA_CONTENT_ERROR_NONE) {
 		media_content_disconnect();
 		_E("media_content_set_db_updated_cb() failed");
@@ -57,22 +57,22 @@ bool ctx::media_content_monitor::start_monitoring()
 	return true;
 }
 
-void ctx::media_content_monitor::stop_monitoring()
+void ctx::MediaContentMonitor::__stopMonitoring()
 {
 	media_content_unset_db_updated_cb();
 	media_content_disconnect();
 }
 
-void ctx::media_content_monitor::on_media_content_db_updated(
+void ctx::MediaContentMonitor::__onMediaContentDbUpdated(
 		media_content_error_e error, int pid,
-		media_content_db_update_item_type_e update_item,
-		media_content_db_update_type_e update_type,
-		media_content_type_e media_type,
-		char *uuid, char *path, char *mime_type, void *user_data)
+		media_content_db_update_item_type_e updateItem,
+		media_content_db_update_type_e updateType,
+		media_content_type_e mediaType,
+		char *uuid, char *path, char *mimeType, void *userData)
 {
 	IF_FAIL_VOID(error == MEDIA_CONTENT_ERROR_NONE && uuid != NULL);
-	IF_FAIL_VOID(update_item == MEDIA_ITEM_FILE && update_type == MEDIA_CONTENT_UPDATE);
-	IF_FAIL_VOID(media_type == MEDIA_CONTENT_TYPE_MUSIC || media_type == MEDIA_CONTENT_TYPE_VIDEO);
+	IF_FAIL_VOID(updateItem == MEDIA_ITEM_FILE && updateType == MEDIA_CONTENT_UPDATE);
+	IF_FAIL_VOID(mediaType == MEDIA_CONTENT_TYPE_MUSIC || mediaType == MEDIA_CONTENT_TYPE_VIDEO);
 
 	media_info_h media = NULL;
 	media_info_get_media_from_db(uuid, &media);
@@ -83,25 +83,25 @@ void ctx::media_content_monitor::on_media_content_db_updated(
 	media_info_destroy(media);
 	IF_FAIL_VOID_TAG(cnt >= 0, _E, "Invalid play count");
 
-	media_content_monitor *instance = static_cast<media_content_monitor*>(user_data);
-	instance->update_play_count(uuid,
-			(media_type == MEDIA_CONTENT_TYPE_MUSIC) ? MEDIA_TYPE_MUSIC : MEDIA_TYPE_VIDEO,
+	MediaContentMonitor *instance = static_cast<MediaContentMonitor*>(userData);
+	instance->__updatePlayCount(uuid,
+			(mediaType == MEDIA_CONTENT_TYPE_MUSIC) ? MEDIA_TYPE_MUSIC : MEDIA_TYPE_VIDEO,
 			cnt);
 }
 
-void ctx::media_content_monitor::append_cleanup_query(std::stringstream &query)
+void ctx::MediaContentMonitor::__appendCleanupQuery(std::stringstream &query)
 {
 	int timestamp = static_cast<int>(time(NULL));
-	IF_FAIL_VOID(timestamp - last_cleanup_time >= ONE_DAY_IN_SEC);
+	IF_FAIL_VOID(timestamp - __lastCleanupTime >= ONE_DAY_IN_SEC);
 
-	last_cleanup_time = timestamp;
+	__lastCleanupTime = timestamp;
 
 	query <<
 		"DELETE FROM Log_MediaPlayCount WHERE UTC < strftime('%s', 'now') - " << PLAYCOUNT_RETENTION_PERIOD << ";" \
 		"DELETE FROM " MEDIA_TABLE_NAME " WHERE UTC < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD << ";";
 }
 
-void ctx::media_content_monitor::update_play_count(const char *uuid, int type, int count)
+void ctx::MediaContentMonitor::__updatePlayCount(const char *uuid, int type, int count)
 {
 	std::stringstream query;
 	query <<
@@ -112,7 +112,7 @@ void ctx::media_content_monitor::update_play_count(const char *uuid, int type, i
 		"UPDATE Log_MediaPlayCount SET Diff = " << count << " - Count," \
 		" Count = " << count << ", UTC = strftime('%s', 'now')" \
 		" WHERE UUID = '" << uuid << "';";
-	append_cleanup_query(query);
+	__appendCleanupQuery(query);
 	query <<
 		/* Checking whether the play count changes */
 		"SELECT MediaType FROM Log_MediaPlayCount" \
@@ -121,29 +121,29 @@ void ctx::media_content_monitor::update_play_count(const char *uuid, int type, i
 	db_manager::execute(0, query.str().c_str(), this);
 }
 
-void ctx::media_content_monitor::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::MediaContentMonitor::on_query_result_received(unsigned int queryId, int error, std::vector<Json>& records)
 {
 	IF_FAIL_VOID(!records.empty());
 
-	int media_type = 0;
-	records[0].get(NULL, CX_MEDIA_TYPE, &media_type);
+	int mediaType = 0;
+	records[0].get(NULL, CX_MEDIA_TYPE, &mediaType);
 
-	insert_log(media_type);
+	__insertLog(mediaType);
 }
 
-void ctx::media_content_monitor::insert_log(int media_type)
+void ctx::MediaContentMonitor::__insertLog(int mediaType)
 {
-	int system_volume = -1, media_volume = -1, audiojack = -1;
+	int systemVolume = -1, mediaVolume = -1, audioJack = -1;
 
 	Json data;
-	data.set(NULL, CX_MEDIA_TYPE, media_type);
+	data.set(NULL, CX_MEDIA_TYPE, mediaType);
 
-	if (ctx::system_info::get_audio_jack_state(&audiojack))
-		data.set(NULL, STATS_AUDIO_JACK, audiojack);
+	if (ctx::system_info::getAudioJackState(&audioJack))
+		data.set(NULL, STATS_AUDIO_JACK, audioJack);
 
-	if (ctx::system_info::get_volume(&system_volume, &media_volume)) {
-		data.set(NULL, STATS_SYSTEM_VOLUME, system_volume);
-		data.set(NULL, STATS_MEDIA_VOLUME, media_volume);
+	if (ctx::system_info::getVolume(&systemVolume, &mediaVolume)) {
+		data.set(NULL, STATS_SYSTEM_VOLUME, systemVolume);
+		data.set(NULL, STATS_MEDIA_VOLUME, mediaVolume);
 	}
 
 	db_manager::insert(0, MEDIA_TABLE_NAME, data, NULL);

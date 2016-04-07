@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_STATS_COMMON_TYPES_H__
-#define __CONTEXT_STATS_COMMON_TYPES_H__
+#ifndef _CONTEXT_STATS_COMMON_TYPES_H_
+#define _CONTEXT_STATS_COMMON_TYPES_H_
 
 #define LOG_RETENTION_PERIOD	7776000		/* 90 days in secs */
 
@@ -24,7 +24,7 @@
 
 #define STATS_QUERY_RESULT		"QueryResult"
 #define STATS_RESULT_SIZE		"ResultSize"
-#define STATS_COL_ROW_ID		"row_id"
+#define STATS_COL_ROW_ID		"rowId"
 
 #define STATS_TIMESPAN			"TimeSpan"
 #define STATS_START_TIME		"StartTime"
@@ -58,7 +58,7 @@
 #define STATS_WEEKDAY	"Weekday"
 #define STATS_WEEKEND	"Weekend"
 
-enum stats_day_of_week_e {
+enum StatsDayOfWeek_e {
 	STATS_DAY_OF_WEEK_WEEKDAY = 1,
 	STATS_DAY_OF_WEEK_WEEKEND,
 	STATS_DAY_OF_WEEK_ALL,
@@ -76,4 +76,4 @@ enum stats_day_of_week_e {
 #define TRIG_DEF_TIME_OF_DAY	"\"TimeOfDay\":{\"type\":\"string\"}"
 #define TRIG_DEF_DAY_OF_WEEK	"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
 
-#endif
+#endif	/* End of _CONTEXT_STATS_COMMMON_TYPES_ */

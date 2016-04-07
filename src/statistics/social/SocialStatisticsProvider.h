@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_MEDIA_STATS_PROVIDER_H__
-#define __CONTEXT_MEDIA_STATS_PROVIDER_H__
+#ifndef _CONTEXT_STATS_SOCIAL_STATS_PROVIDER_H_
+#define _CONTEXT_STATS_SOCIAL_STATS_PROVIDER_H_
 
 #include <ContextProviderBase.h>
-#include "media_stats_types.h"
+#include "SocialStatisticsTypes.h"
 
 namespace ctx {
 
-	class media_statistics_provider : public ContextProviderBase {
+	class SocialStatisticsProvider : public ContextProviderBase {
 	public:
 		static ContextProviderBase *create(void *data);
 		static void destroy(void *data);
-		static bool is_supported(const char *subject);
-		static void submit_trigger_item();
+		static bool isSupported(const char *subject);
+		static void submitTriggerItem();
 
 		int subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult);
 		int unsubscribe(const char* subject, ctx::Json option);
@@ -35,14 +35,14 @@ namespace ctx {
 		int write(const char* subject, ctx::Json data, ctx::Json* requestResult);
 
 	private:
-		static media_statistics_provider *__instance;
+		static SocialStatisticsProvider *__instance;
 
-		media_statistics_provider();
-		~media_statistics_provider();
-		bool init();
+		SocialStatisticsProvider();
+		~SocialStatisticsProvider();
+		bool __init();
 
-	};	/* class media_statistics_provider */
+	};	/* class SocialStatisticsProvider */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_CONTEXT_MEDIA_STATS_PROVIDER_H__ */
+#endif /* __CONTEXT_SOCIAL_STATS_PROVIDER_H__ */
