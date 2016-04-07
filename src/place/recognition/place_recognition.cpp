@@ -71,7 +71,7 @@ int ctx::place_recognition_provider::write(const char *subject, ctx::Json data, 
 	return ERR_NOT_SUPPORTED;
 }
 
-bool ctx::place_recognition_provider::is_supported()
+bool ctx::place_recognition_provider::isSupported()
 {
 	return true;
 }
