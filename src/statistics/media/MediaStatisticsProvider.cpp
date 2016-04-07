@@ -17,34 +17,34 @@
 #include <glib.h>
 #include <string>
 #include <ContextManager.h>
-#include "media_stats_provider.h"
-#include "db_handle.h"
-#include "media_content_monitor.h"
+#include "MediaStatisticsProvider.h"
+#include "DbHandle.h"
+#include "MediaContentMonitor.h"
 
-static ctx::media_content_monitor *content_mon = NULL;
+static ctx::MediaContentMonitor *__contentMon = NULL;
 
-ctx::media_statistics_provider *ctx::media_statistics_provider::__instance = NULL;
+ctx::MediaStatisticsProvider *ctx::MediaStatisticsProvider::__instance = NULL;
 
-ctx::media_statistics_provider::media_statistics_provider()
+ctx::MediaStatisticsProvider::MediaStatisticsProvider()
 {
 }
 
-ctx::media_statistics_provider::~media_statistics_provider()
+ctx::MediaStatisticsProvider::~MediaStatisticsProvider()
 {
-	delete content_mon;
-	content_mon = NULL;
+	delete __contentMon;
+	__contentMon = NULL;
 }
 
-ctx::ContextProviderBase *ctx::media_statistics_provider::create(void *data)
+ctx::ContextProviderBase *ctx::MediaStatisticsProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 
-	__instance = new(std::nothrow) media_statistics_provider();
+	__instance = new(std::nothrow) MediaStatisticsProvider();
 	IF_FAIL_RETURN_TAG(__instance, NULL, _E, "Memory allocation failed");
 
 	_I(BLUE("Created"));
 
-	if (!__instance->init()) {
+	if (!__instance->__init()) {
 		destroy(data);
 		return NULL;
 	}
@@ -52,7 +52,7 @@ ctx::ContextProviderBase *ctx::media_statistics_provider::create(void *data)
 	return __instance;
 }
 
-void ctx::media_statistics_provider::destroy(void *data)
+void ctx::MediaStatisticsProvider::destroy(void *data)
 {
 	IF_FAIL_VOID(__instance);
 	delete __instance;
@@ -60,12 +60,12 @@ void ctx::media_statistics_provider::destroy(void *data)
 	_I(BLUE("Destroyed"));
 }
 
-bool ctx::media_statistics_provider::is_supported(const char* subject)
+bool ctx::MediaStatisticsProvider::isSupported(const char* subject)
 {
 	return true;
 }
 
-void ctx::media_statistics_provider::submit_trigger_item()
+void ctx::MediaStatisticsProvider::submitTriggerItem()
 {
 	context_manager::registerTriggerItem(MEDIA_SUBJ_MUSIC_FREQUENCY, OPS_READ,
 			"{" TRIG_DEF_TOTAL_COUNT "}",
@@ -76,26 +76,26 @@ void ctx::media_statistics_provider::submit_trigger_item()
 			"{" TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK "}");
 }
 
-bool ctx::media_statistics_provider::init()
+bool ctx::MediaStatisticsProvider::__init()
 {
-	content_mon = new(std::nothrow) ctx::media_content_monitor();
-	IF_FAIL_RETURN_TAG(content_mon, false, _E, "Memory allocation failed");
+	__contentMon = new(std::nothrow) ctx::MediaContentMonitor();
+	IF_FAIL_RETURN_TAG(__contentMon, false, _E, "Memory allocation failed");
 	return true;
 }
 
-int ctx::media_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
+int ctx::MediaStatisticsProvider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::media_statistics_provider::unsubscribe(const char* subject, ctx::Json option)
+int ctx::MediaStatisticsProvider::unsubscribe(const char* subject, ctx::Json option)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::media_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
+int ctx::MediaStatisticsProvider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
-	media_db_handle *handle = new(std::nothrow) media_db_handle();
+	MediaDbHandle *handle = new(std::nothrow) MediaDbHandle();
 	IF_FAIL_RETURN_TAG(handle, ERR_OPERATION_FAILED, _E, "Memory allocation failed");
 
 	int err = handle->read(subject, option);
@@ -107,7 +107,7 @@ int ctx::media_statistics_provider::read(const char* subject, ctx::Json option, 
 	return ERR_NONE;
 }
 
-int ctx::media_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
+int ctx::MediaStatisticsProvider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }

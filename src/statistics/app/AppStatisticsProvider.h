@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_SOCIAL_STATS_PROVIDER_H__
-#define __CONTEXT_SOCIAL_STATS_PROVIDER_H__
+#ifndef _CONTEXT_STATS_APP_STATS_PROVIDER_H_
+#define _CONTEXT_STATS_APP_STATS_PROVIDER_H_
 
 #include <ContextProviderBase.h>
-#include "social_stats_types.h"
+#include "AppStatisticsTypes.h"
 
 namespace ctx {
 
-	class social_statistics_provider : public ContextProviderBase {
+	class AppStatisticsProvider : public ContextProviderBase {
 	public:
 		static ContextProviderBase *create(void *data);
 		static void destroy(void *data);
-		static bool is_supported(const char *subject);
-		static void submit_trigger_item();
+		static bool isSupported(const char *subject);
+		static void submitTriggerItem();
 
-		int subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult);
-		int unsubscribe(const char* subject, ctx::Json option);
-		int read(const char* subject, ctx::Json option, ctx::Json* requestResult);
-		int write(const char* subject, ctx::Json data, ctx::Json* requestResult);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
+		int unsubscribe(const char *subject, ctx::Json option);
+		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
+		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 	private:
-		static social_statistics_provider *__instance;
+		static AppStatisticsProvider *__instance;
 
-		social_statistics_provider();
-		~social_statistics_provider();
-		bool init();
+		AppStatisticsProvider();
+		~AppStatisticsProvider();
+		bool __init();
 
-	};	/* class social_statistics_provider */
+	};	/* class AppStatisticsProvider */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_SOCIAL_STATS_PROVIDER_H__ */
+#endif	/* End of _CONTEXT_STATS_APP_STATS_PROVIDER_H_ */
