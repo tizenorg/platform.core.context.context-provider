@@ -17,95 +17,95 @@
 #include <sstream>
 #include <types_internal.h>
 #include <ContextManager.h>
-#include "app_stats_types.h"
-#include "db_handle.h"
+#include "AppStatisticsTypes.h"
+#include "DbHandle.h"
 
-ctx::app_db_handle::app_db_handle()
+ctx::AppDbHandle::AppDbHandle()
 {
 }
 
-ctx::app_db_handle::~app_db_handle()
+ctx::AppDbHandle::~AppDbHandle()
 {
 }
 
-int ctx::app_db_handle::read(const char* subject, ctx::Json filter)
+int ctx::AppDbHandle::read(const char* subject, ctx::Json filter)
 {
 	std::string query;
 
 	if (STR_EQ(subject, APP_SUBJ_RECENTLY_USED)) {
-		query = create_sql_recently_used(filter);
+		query = createSqlRecentlyUsed(filter);
 
 	} else if (STR_EQ(subject, APP_SUBJ_FREQUENTLY_USED)) {
-		query = create_sql_frequently_used(filter);
+		query = createSqlFrequentlyUsed(filter);
 
 	} else if (STR_EQ(subject, APP_SUBJ_RARELY_USED)) {
-		query = create_sql_rarely_used(filter);
+		query = createSqlRarelyUsed(filter);
 
 	} else if (STR_EQ(subject, APP_SUBJ_PEAK_TIME)) {
-		query = create_sql_peak_time(filter);
+		query = createSqlPeakTime(filter);
 
 	} else if (STR_EQ(subject, APP_SUBJ_COMMON_SETTING)) {
-		query = create_sql_common_setting(filter);
+		query = createSqlCommonSetting(filter);
 
 	} else if (STR_EQ(subject, APP_SUBJ_FREQUENCY)) {
-		is_trigger_item = true;
-		query = create_sql_frequency(filter);
+		__isTriggerItem = true;
+		query = createSqlFrequency(filter);
 	}
 
 	IF_FAIL_RETURN(!query.empty(), ERR_OPERATION_FAILED);
 
-	bool ret = execute_query(subject, filter, query.c_str());
+	bool ret = executeQuery(subject, filter, query.c_str());
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 
 	return ERR_NONE;
 }
 
-std::string ctx::app_db_handle::create_where_clause_with_device_status(ctx::Json filter)
+std::string ctx::AppDbHandle::createWhereClauseWithDeviceStatus(ctx::Json filter)
 {
-	std::stringstream where_clause;
+	std::stringstream whereClause;
 	std::string bssid;
-	int audio_jack;
+	int audioJack;
 
-	where_clause << stats_db_handle_base::create_where_clause(filter);
+	whereClause << StatsDbHandleBase::createWhereClause(filter);
 
 	if (filter.get(NULL, STATS_BSSID, &bssid))
-		where_clause << " AND " STATS_BSSID " = '" << bssid << "'";
+		whereClause << " AND " STATS_BSSID " = '" << bssid << "'";
 
-	if (filter.get(NULL, STATS_AUDIO_JACK, &audio_jack))
-		where_clause << " AND " STATS_AUDIO_JACK " = " << audio_jack;
+	if (filter.get(NULL, STATS_AUDIO_JACK, &audioJack))
+		whereClause << " AND " STATS_AUDIO_JACK " = " << audioJack;
 
-	return where_clause.str();
+	return whereClause.str();
 }
 
-std::string ctx::app_db_handle::create_sql_peak_time(ctx::Json filter)
+std::string ctx::AppDbHandle::createSqlPeakTime(ctx::Json filter)
 {
-	return stats_db_handle_base::create_sql_peak_time(filter, APP_TABLE_USAGE_LOG, create_where_clause(filter));
+	return StatsDbHandleBase::createSqlPeakTime(filter, APP_TABLE_USAGE_LOG, createWhereClause(filter));
 }
 
-std::string ctx::app_db_handle::create_sql_common_setting(ctx::Json filter)
+std::string ctx::AppDbHandle::createSqlCommonSetting(ctx::Json filter)
 {
-	return stats_db_handle_base::create_sql_common_setting(filter, APP_TABLE_USAGE_LOG, create_where_clause(filter));
+	return StatsDbHandleBase::createSqlCommonSetting(filter, APP_TABLE_USAGE_LOG, createWhereClause(filter));
 }
 
-std::string ctx::app_db_handle::create_sql_frequency(ctx::Json filter)
+std::string ctx::AppDbHandle::createSqlFrequency(ctx::Json filter)
 {
-	ctx::Json filter_cleaned;
-	std::string week_str;
-	std::string time_of_day;
-	std::string app_id;
+	ctx::Json filterCleaned;
+	std::string weekStr;
+	std::string timeOfDay;
+	std::string appId;
 
-	if (!filter.get(NULL, STATS_APP_ID, &app_id)) {
+	if (!filter.get(NULL, STATS_APP_ID, &appId)) {
 		_E("Invalid parameter");
 		return "";
 	}
 
-	if (filter.get(NULL, STATS_DAY_OF_WEEK, &week_str))
-		filter_cleaned.set(NULL, STATS_DAY_OF_WEEK, week_str);
+	if (filter.get(NULL, STATS_DAY_OF_WEEK, &weekStr))
+		filterCleaned.set(NULL, STATS_DAY_OF_WEEK, weekStr);
 
-	if (filter.get(NULL, STATS_TIME_OF_DAY, &time_of_day))
-		filter_cleaned.set(NULL, STATS_TIME_OF_DAY, time_of_day);
+	if (filter.get(NULL, STATS_TIME_OF_DAY, &timeOfDay))
+		filterCleaned.set(NULL, STATS_TIME_OF_DAY, timeOfDay);
 
-	std::string where_clause = create_where_clause(filter_cleaned);
+	std::string whereClause = createWhereClause(filterCleaned);
 
 	std::stringstream query;
 
@@ -116,24 +116,24 @@ std::string ctx::app_db_handle::create_sql_frequency(ctx::Json filter)
 		"INSERT INTO " APP_TEMP_USAGE_FREQ \
 		" SELECT " STATS_APP_ID ", COUNT(*) AS " STATS_TOTAL_COUNT \
 		" FROM " APP_TABLE_USAGE_LOG \
-		" WHERE " << where_clause <<
+		" WHERE " << whereClause <<
 		" GROUP BY " STATS_APP_ID ";";
 
 	query <<
 		"INSERT OR IGNORE INTO " APP_TEMP_USAGE_FREQ " (" STATS_APP_ID ")" \
-		" VALUES ('" << app_id << "');";
+		" VALUES ('" << appId << "');";
 
 	query <<
 		"SELECT S." STATS_APP_ID ", S." STATS_TOTAL_COUNT ", 1+COUNT(lesser." STATS_TOTAL_COUNT ") AS " STATS_RANK \
 		" FROM " APP_TEMP_USAGE_FREQ " AS S" \
 		" LEFT JOIN " APP_TEMP_USAGE_FREQ " AS lesser" \
 		" ON S." STATS_TOTAL_COUNT " < lesser." STATS_TOTAL_COUNT \
-		" WHERE S." STATS_APP_ID " = '" << app_id << "'";
+		" WHERE S." STATS_APP_ID " = '" << appId << "'";
 
 	return query.str();
 }
 
-std::string ctx::app_db_handle::create_sql_recently_used(ctx::Json filter)
+std::string ctx::AppDbHandle::createSqlRecentlyUsed(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -146,7 +146,7 @@ std::string ctx::app_db_handle::create_sql_recently_used(ctx::Json filter)
 			"SUM(" STATS_DURATION ") AS " STATS_TOTAL_DURATION ", " \
 			"MAX(" STATS_UNIV_TIME ") AS " STATS_LAST_TIME \
 		" FROM " APP_TABLE_USAGE_LOG \
-		" WHERE " << create_where_clause_with_device_status(filter) <<
+		" WHERE " << createWhereClauseWithDeviceStatus(filter) <<
 		" GROUP BY " STATS_APP_ID \
 		" ORDER BY MAX(" STATS_UNIV_TIME ") DESC" \
 		" LIMIT " << limit;
@@ -154,7 +154,7 @@ std::string ctx::app_db_handle::create_sql_recently_used(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::app_db_handle::create_sql_frequently_used(ctx::Json filter)
+std::string ctx::AppDbHandle::createSqlFrequentlyUsed(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -167,7 +167,7 @@ std::string ctx::app_db_handle::create_sql_frequently_used(ctx::Json filter)
 			"SUM(" STATS_DURATION ") AS " STATS_TOTAL_DURATION ", " \
 			"MAX(" STATS_UNIV_TIME ") AS " STATS_LAST_TIME \
 		" FROM " APP_TABLE_USAGE_LOG \
-		" WHERE " << create_where_clause_with_device_status(filter) <<
+		" WHERE " << createWhereClauseWithDeviceStatus(filter) <<
 		" GROUP BY " STATS_APP_ID \
 		" ORDER BY COUNT(*) DESC" \
 		" LIMIT " << limit;
@@ -175,7 +175,7 @@ std::string ctx::app_db_handle::create_sql_frequently_used(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::app_db_handle::create_sql_rarely_used(ctx::Json filter)
+std::string ctx::AppDbHandle::createSqlRarelyUsed(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -189,7 +189,7 @@ std::string ctx::app_db_handle::create_sql_rarely_used(ctx::Json filter)
 			"IFNULL(MAX(u." STATS_UNIV_TIME "),-1) AS " STATS_LAST_TIME \
 		" FROM " APP_TABLE_REMOVABLE_APP " i LEFT OUTER JOIN (" \
 			" SELECT * FROM " APP_TABLE_USAGE_LOG \
-			" WHERE " << create_where_clause_with_device_status(filter) << ") u" \
+			" WHERE " << createWhereClauseWithDeviceStatus(filter) << ") u" \
 			" ON i." STATS_APP_ID " = u." STATS_APP_ID \
 		" GROUP BY i." STATS_APP_ID \
 		" ORDER BY " STATS_TOTAL_COUNT " ASC" \
@@ -198,20 +198,20 @@ std::string ctx::app_db_handle::create_sql_rarely_used(ctx::Json filter)
 	return query.str();
 }
 
-void ctx::app_db_handle::reply_trigger_item(int error, ctx::Json &json_result)
+void ctx::AppDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
 {
-	IF_FAIL_VOID_TAG(STR_EQ(req_subject.c_str(), APP_SUBJ_FREQUENCY), _E, "Invalid subject");
+	IF_FAIL_VOID_TAG(STR_EQ(__reqSubject.c_str(), APP_SUBJ_FREQUENCY), _E, "Invalid subject");
 
 	ctx::Json results;
-	std::string val_str;
+	std::string valStr;
 	int val;
 
-	json_result.get(NULL, STATS_APP_ID, &val_str);
-	results.set(NULL, STATS_APP_ID, val_str);
-	json_result.get(NULL, STATS_TOTAL_COUNT, &val);
+	jsonResult.get(NULL, STATS_APP_ID, &valStr);
+	results.set(NULL, STATS_APP_ID, valStr);
+	jsonResult.get(NULL, STATS_TOTAL_COUNT, &val);
 	results.set(NULL, STATS_TOTAL_COUNT, val);
-	json_result.get(NULL, STATS_RANK, &val);
+	jsonResult.get(NULL, STATS_RANK, &val);
 	results.set(NULL, STATS_RANK, val);
 
-	context_manager::replyToRead(req_subject.c_str(), req_filter, error, results);
+	context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, error, results);
 }

@@ -27,7 +27,7 @@
 
 /*int ctx::inactive_detector_storage::create_table()
 {
-	bool ret = __dbManager.create_table(0, WIFI_TABLE_NAME, WIFI_CREATE_TABLE_COLUMNS, NULL, NULL);
+	bool ret = __dbManager.createTable(0, WIFI_TABLE_NAME, WIFI_CREATE_TABLE_COLUMNS, NULL, NULL);
 	_D("Table Creation Request: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }*/
@@ -168,7 +168,7 @@ void ctx::inactive_detector_storage::onExecuted(unsigned int query_id,
 	std::vector<Json>& records)
 {
 	if (error != ERR_NONE) {
-		_E("on_query_result_received query_id:%d, error:%d", query_id, error);
+		_E("query_id:%d, error:%d", query_id, error);
 		return;
 	}
 
@@ -197,7 +197,7 @@ void ctx::inactive_detector_storage::onExecuted(unsigned int query_id,
 			}
 			else
 			{
-				_E("on_query_result_received/classification query_id:%d, error:%d",
+				_E("classification query_id:%d, error:%d",
 					query_id, _error);
 			}
 		}
@@ -206,7 +206,7 @@ void ctx::inactive_detector_storage::onExecuted(unsigned int query_id,
 		_D("UPDATE_CLUSTERS execute query id: %d", query_id);
 	}
 	else {
-		_E("on_query_result_received unknown query_id:%d", query_id);
+		_E("unknown query_id:%d", query_id);
 	}
 }
 

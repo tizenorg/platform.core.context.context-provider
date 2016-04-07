@@ -17,33 +17,33 @@
 #include <types_internal.h>
 #include <Json.h>
 #include <ContextManager.h>
-#include "social_stats_provider.h"
-#include "db_handle.h"
-#include "log_aggregator.h"
+#include "SocialStatisticsProvider.h"
+#include "DbHandle.h"
+#include "LogAggregator.h"
 
-static ctx::contact_log_aggregator *aggregator = NULL;
+static ctx::ContactLogAggregator *__aggregator = NULL;
 
-ctx::social_statistics_provider *ctx::social_statistics_provider::__instance = NULL;
+ctx::SocialStatisticsProvider *ctx::SocialStatisticsProvider::__instance = NULL;
 
-ctx::social_statistics_provider::social_statistics_provider()
+ctx::SocialStatisticsProvider::SocialStatisticsProvider()
 {
 }
 
-ctx::social_statistics_provider::~social_statistics_provider()
+ctx::SocialStatisticsProvider::~SocialStatisticsProvider()
 {
-	delete aggregator;
+	delete __aggregator;
 }
 
-ctx::ContextProviderBase *ctx::social_statistics_provider::create(void *data)
+ctx::ContextProviderBase *ctx::SocialStatisticsProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 
-	__instance = new(std::nothrow) social_statistics_provider();
+	__instance = new(std::nothrow) SocialStatisticsProvider();
 	IF_FAIL_RETURN_TAG(__instance, NULL, _E, "Memory allocation failed");
 
 	_I(BLUE("Created"));
 
-	if (!__instance->init()) {
+	if (!__instance->__init()) {
 		destroy(data);
 		return NULL;
 	}
@@ -51,7 +51,7 @@ ctx::ContextProviderBase *ctx::social_statistics_provider::create(void *data)
 	return __instance;
 }
 
-void ctx::social_statistics_provider::destroy(void *data)
+void ctx::SocialStatisticsProvider::destroy(void *data)
 {
 	IF_FAIL_VOID(__instance);
 	delete __instance;
@@ -59,12 +59,12 @@ void ctx::social_statistics_provider::destroy(void *data)
 	_I(BLUE("Destroyed"));
 }
 
-bool ctx::social_statistics_provider::is_supported(const char* subject)
+bool ctx::SocialStatisticsProvider::isSupported(const char* subject)
 {
 	return true;
 }
 
-void ctx::social_statistics_provider::submit_trigger_item()
+void ctx::SocialStatisticsProvider::submitTriggerItem()
 {
 	context_manager::registerTriggerItem(SOCIAL_SUBJ_FREQUENCY, OPS_READ,
 			"{" TRIG_DEF_RANK "," TRIG_DEF_TOTAL_COUNT "}",
@@ -74,26 +74,26 @@ void ctx::social_statistics_provider::submit_trigger_item()
 			"}");
 }
 
-bool ctx::social_statistics_provider::init()
+bool ctx::SocialStatisticsProvider::__init()
 {
-	aggregator = new(std::nothrow) contact_log_aggregator();
-	IF_FAIL_RETURN_TAG(aggregator, false, _E, "Memory allocation failed");
+	__aggregator = new(std::nothrow) ContactLogAggregator();
+	IF_FAIL_RETURN_TAG(__aggregator, false, _E, "Memory allocation failed");
 	return true;
 }
 
-int ctx::social_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
+int ctx::SocialStatisticsProvider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::social_statistics_provider::unsubscribe(const char* subject, ctx::Json option)
+int ctx::SocialStatisticsProvider::unsubscribe(const char* subject, ctx::Json option)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::social_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
+int ctx::SocialStatisticsProvider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
-	ctx::social_db_handle *handle = new(std::nothrow) ctx::social_db_handle();
+	ctx::SocialDbHandle *handle = new(std::nothrow) ctx::SocialDbHandle();
 	IF_FAIL_RETURN_TAG(handle, ERR_OPERATION_FAILED, _E, "Memory allocation failed");
 
 	int err = handle->read(subject, option);
@@ -105,7 +105,7 @@ int ctx::social_statistics_provider::read(const char* subject, ctx::Json option,
 	return ERR_NONE;
 }
 
-int ctx::social_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
+int ctx::SocialStatisticsProvider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }

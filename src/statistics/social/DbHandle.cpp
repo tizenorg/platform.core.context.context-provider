@@ -18,54 +18,54 @@
 #include <contacts.h>
 #include <types_internal.h>
 #include <ContextManager.h>
-#include "social_stats_types.h"
-#include "db_handle.h"
+#include "SocialStatisticsTypes.h"
+#include "DbHandle.h"
 
-ctx::social_db_handle::social_db_handle()
+ctx::SocialDbHandle::SocialDbHandle()
 {
 }
 
-ctx::social_db_handle::~social_db_handle()
+ctx::SocialDbHandle::~SocialDbHandle()
 {
 }
 
-int ctx::social_db_handle::read(const char* subject, ctx::Json filter)
+int ctx::SocialDbHandle::read(const char* subject, ctx::Json filter)
 {
 	std::string query;
 
 	if (STR_EQ(subject, SOCIAL_SUBJ_FREQ_ADDRESS)) {
-		query = create_sql_freq_address(filter);
+		query = createSqlFreqAddress(filter);
 
 	} else if (STR_EQ(subject, SOCIAL_SUBJ_FREQUENCY)) {
-		is_trigger_item = true;
-		query = create_sql_frequency(filter);
+		__isTriggerItem = true;
+		query = createSqlFrequency(filter);
 	}
 
 	IF_FAIL_RETURN(!query.empty(), ERR_OPERATION_FAILED);
 
-	bool ret = execute_query(subject, filter, query.c_str());
+	bool ret = executeQuery(subject, filter, query.c_str());
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 
 	return ERR_NONE;
 }
 
-std::string ctx::social_db_handle::create_where_clause(ctx::Json filter)
+std::string ctx::SocialDbHandle::createWhereClause(ctx::Json filter)
 {
-	std::stringstream where_clause;
-	int comm_type = -1;
+	std::stringstream whereClause;
+	int commType = -1;
 
-	where_clause << stats_db_handle_base::create_where_clause(filter);
+	whereClause << StatsDbHandleBase::createWhereClause(filter);
 
-	filter.get(NULL, SOCIAL_COMMUNICATION_TYPE, &comm_type);
+	filter.get(NULL, SOCIAL_COMMUNICATION_TYPE, &commType);
 
-	switch(comm_type) {
+	switch(commType) {
 	case SOCIAL_COMMUNICATION_TYPE_CALL:
-		where_clause <<
+		whereClause <<
 			" AND " SOCIAL_PHONE_LOG_TYPE " >= " << CONTACTS_PLOG_TYPE_VOICE_INCOMING <<
 			" AND " SOCIAL_PHONE_LOG_TYPE " <= " << CONTACTS_PLOG_TYPE_VIDEO_BLOCKED;
 		break;
 	case SOCIAL_COMMUNICATION_TYPE_MESSAGE:
-		where_clause <<
+		whereClause <<
 			" AND " SOCIAL_PHONE_LOG_TYPE " >= " << CONTACTS_PLOG_TYPE_MMS_INCOMING <<
 			" AND " SOCIAL_PHONE_LOG_TYPE " <= " << CONTACTS_PLOG_TYPE_MMS_BLOCKED;
 		break;
@@ -73,10 +73,10 @@ std::string ctx::social_db_handle::create_where_clause(ctx::Json filter)
 		break;
 	}
 
-	return where_clause.str();
+	return whereClause.str();
 }
 
-std::string ctx::social_db_handle::create_sql_freq_address(ctx::Json filter)
+std::string ctx::SocialDbHandle::createSqlFreqAddress(ctx::Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -89,7 +89,7 @@ std::string ctx::social_db_handle::create_sql_freq_address(ctx::Json filter)
 			"SUM(" STATS_DURATION ") AS " STATS_TOTAL_DURATION ", " \
 			"MAX(" STATS_UNIV_TIME ") AS " STATS_LAST_TIME \
 		" FROM " SOCIAL_TABLE_CONTACT_LOG \
-		" WHERE " << create_where_clause(filter) <<
+		" WHERE " << createWhereClause(filter) <<
 		" GROUP BY " SOCIAL_ADDRESS \
 		" ORDER BY COUNT(*) DESC" \
 		" LIMIT " << limit;
@@ -97,11 +97,11 @@ std::string ctx::social_db_handle::create_sql_freq_address(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::social_db_handle::create_sql_frequency(ctx::Json filter)
+std::string ctx::SocialDbHandle::createSqlFrequency(ctx::Json filter)
 {
-	ctx::Json filter_cleaned;
-	std::string week_str;
-	std::string time_of_day;
+	ctx::Json filterCleaned;
+	std::string weekStr;
+	std::string timeOfDay;
 	std::string address;
 
 	if (!filter.get(NULL, SOCIAL_ADDRESS, &address)) {
@@ -109,11 +109,11 @@ std::string ctx::social_db_handle::create_sql_frequency(ctx::Json filter)
 		return "";
 	}
 
-	if (filter.get(NULL, STATS_DAY_OF_WEEK, &week_str))
-		filter_cleaned.set(NULL, STATS_DAY_OF_WEEK, week_str);
+	if (filter.get(NULL, STATS_DAY_OF_WEEK, &weekStr))
+		filterCleaned.set(NULL, STATS_DAY_OF_WEEK, weekStr);
 
-	if (filter.get(NULL, STATS_TIME_OF_DAY, &time_of_day))
-		filter_cleaned.set(NULL, STATS_TIME_OF_DAY, time_of_day);
+	if (filter.get(NULL, STATS_TIME_OF_DAY, &timeOfDay))
+		filterCleaned.set(NULL, STATS_TIME_OF_DAY, timeOfDay);
 
 	std::stringstream query;
 
@@ -124,7 +124,7 @@ std::string ctx::social_db_handle::create_sql_frequency(ctx::Json filter)
 		"INSERT INTO " SOCIAL_TEMP_CONTACT_FREQ \
 		" SELECT " SOCIAL_ADDRESS ", COUNT(*) AS " STATS_TOTAL_COUNT \
 		" FROM " SOCIAL_TABLE_CONTACT_LOG \
-		" WHERE " << create_where_clause(filter_cleaned) <<
+		" WHERE " << createWhereClause(filterCleaned) <<
 		" GROUP BY " SOCIAL_ADDRESS ";";
 
 	query <<
@@ -142,20 +142,20 @@ std::string ctx::social_db_handle::create_sql_frequency(ctx::Json filter)
 	return query.str();
 }
 
-void ctx::social_db_handle::reply_trigger_item(int error, ctx::Json &json_result)
+void ctx::SocialDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
 {
-	IF_FAIL_VOID_TAG(STR_EQ(req_subject.c_str(), SOCIAL_SUBJ_FREQUENCY), _E, "Invalid subject");
+	IF_FAIL_VOID_TAG(STR_EQ(__reqSubject.c_str(), SOCIAL_SUBJ_FREQUENCY), _E, "Invalid subject");
 
 	ctx::Json results;
-	std::string val_str;
+	std::string valStr;
 	int val;
 
-	json_result.get(NULL, SOCIAL_ADDRESS, &val_str);
-	results.set(NULL, SOCIAL_ADDRESS, val_str);
-	json_result.get(NULL, STATS_TOTAL_COUNT, &val);
+	jsonResult.get(NULL, SOCIAL_ADDRESS, &valStr);
+	results.set(NULL, SOCIAL_ADDRESS, valStr);
+	jsonResult.get(NULL, STATS_TOTAL_COUNT, &val);
 	results.set(NULL, STATS_TOTAL_COUNT, val);
-	json_result.get(NULL, STATS_RANK, &val);
+	jsonResult.get(NULL, STATS_RANK, &val);
 	results.set(NULL, STATS_RANK, val);
 
-	context_manager::replyToRead(req_subject.c_str(), req_filter, error, results);
+	context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, error, results);
 }

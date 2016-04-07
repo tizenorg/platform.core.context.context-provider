@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_SYSTEM_INFO_READER_H__
-#define __CONTEXT_SYSTEM_INFO_READER_H__
+#ifndef _CONTEXT_STATS_SOCIAL_DB_HANDLE_H_
+#define _CONTEXT_STATS_SOCIAL_DB_HANDLE_H_
 
 #include <string>
+#include <Json.h>
+#include "../shared/DbHandleBase.h"
 
 namespace ctx {
-	namespace system_info {
-		bool get_audio_jack_state(int* state);
-		bool get_volume(int* system_volume, int* media_volume);
-		bool get_wifi_bssid(std::string& bssid);
-	}
+	class SocialDbHandle : public StatsDbHandleBase {
+	public:
+		SocialDbHandle();
+		~SocialDbHandle();
+
+		int read(const char* subject, ctx::Json filter);
+
+	protected:
+		std::string createWhereClause(ctx::Json filter);
+		std::string createSqlFreqAddress(ctx::Json filter);
+		std::string createSqlFrequency(ctx::Json filter);
+		void replyTriggerItem(int error, ctx::Json &jsonResult);
+	};
 }
 
-#endif /* __CONTEXT_SYSTEM_INFO_READER_H__ */
+#endif	/* End of _CONTEXT_STATS_SOCIAL_DB_HANDLE_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_APP_USE_MONITOR_H__
-#define __CONTEXT_APP_USE_MONITOR_H__
+#ifndef _CONTEXT_STATS_APP_USE_MONITOR_H_
+#define _CONTEXT_STATS_APP_USE_MONITOR_H_
 
 #include <string>
 #include <sstream>
@@ -24,27 +24,27 @@
 
 namespace ctx {
 
-	class app_use_monitor : public IDBusSignalListener {
+	class AppUseMonitor : public IDBusSignalListener {
 	private:
-		int64_t signal_id;
-		int last_cleanup_time;
+		int64_t __signalId;
+		int __lastCleanupTime;
 		DBusSignalWatcher __dbusWatcher;
 		DatabaseManager __dbManager;
 
-		bool start_logging(void);
-		void stop_logging(void);
+		bool __startLogging(void);
+		void __stopLogging(void);
 
-		bool is_skippable(std::string app_id);
-		void create_record(std::string app_id);
-		void finish_record(std::string app_id);
-		void remove_expired();
+		bool __isSkippable(std::string appId);
+		void __createRecord(std::string appId);
+		void __finishRecord(std::string appId);
+		void __removeExpired();
 		void onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param);
 
 	public:
-		app_use_monitor();
-		~app_use_monitor();
-	};	/* class app_use_monitor */
+		AppUseMonitor();
+		~AppUseMonitor();
+	};	/* class AppUseMonitor */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_APP_USE_MONITOR_H__ */
+#endif	/* End of _CONTEXT_STATS_APP_USE_MONITOR_H_ */
