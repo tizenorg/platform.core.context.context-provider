@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_MEDIA_STATS_TYPES_H__
-#define __CONTEXT_MEDIA_STATS_TYPES_H__
+#ifndef _CONTEXT_STATS_MEDIA_TYPES_H_
+#define _CONTEXT_STATS_MEDIA_TYPES_H_
 
-#include "../shared/common_types.h"
+#include "../shared/CommonTypes.h"
 
 #define MEDIA_HISTORY_PRIV					"mediahistory.read"
 #define MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC		"stats/music/peak_time"
@@ -42,9 +42,9 @@
 
 #define CX_MEDIA_TYPE		"MediaType"
 
-enum media_type_e {
+enum mediaType_e {
 	MEDIA_TYPE_MUSIC = 1,
 	MEDIA_TYPE_VIDEO,
 };
 
-#endif
+#endif	/* End of _CONTEXT_STATS_MEDIA_TYPES_H_ */

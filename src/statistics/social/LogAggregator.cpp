@@ -18,23 +18,23 @@
 #include <Json.h>
 #include <db_mgr.h>
 #include <types_internal.h>
-#include "social_stats_types.h"
-#include "log_aggregator.h"
+#include "SocialStatisticsTypes.h"
+#include "LogAggregator.h"
 
-ctx::contact_log_aggregator::contact_log_aggregator()
-	: timer_id(-1)
-	, time_diff(0)
+ctx::ContactLogAggregator::ContactLogAggregator() :
+	__timerId(-1),
+	__timeDiff(0)
 {
-	create_table();
-	timer_id = __timerManager.setAt(3, 0, DayOfWeek::EVERYDAY, this);
+	__createTable();
+	__timerId = __timerManager.setAt(3, 0, DayOfWeek::EVERYDAY, this);
 }
 
-ctx::contact_log_aggregator::~contact_log_aggregator()
+ctx::ContactLogAggregator::~ContactLogAggregator()
 {
-	__timerManager.remove(timer_id);
+	__timerManager.remove(__timerId);
 }
 
-void ctx::contact_log_aggregator::create_table()
+void ctx::ContactLogAggregator::__createTable()
 {
 	static bool done = false;
 	IF_FAIL_VOID(!done);
@@ -45,13 +45,13 @@ void ctx::contact_log_aggregator::create_table()
 	done = true;
 }
 
-bool ctx::contact_log_aggregator::onTimerExpired(int timer)
+bool ctx::ContactLogAggregator::onTimerExpired(int timerId)
 {
-	aggregate_contact_log();
+	aggregateContactLog();
 	return true;
 }
 
-void ctx::contact_log_aggregator::aggregate_contact_log()
+void ctx::ContactLogAggregator::aggregateContactLog()
 {
 	db_manager::execute(0,
 			"SELECT IFNULL(MAX(" STATS_UNIV_TIME "),0) AS " STATS_LAST_TIME \
@@ -59,27 +59,27 @@ void ctx::contact_log_aggregator::aggregate_contact_log()
 			" FROM " SOCIAL_TABLE_CONTACT_LOG, this);
 }
 
-void ctx::contact_log_aggregator::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::ContactLogAggregator::on_query_result_received(unsigned int queryId, int error, std::vector<Json>& records)
 {
 	IF_FAIL_VOID_TAG(!records.empty(), _E, "Invalid query result");
 
-	int last_time = 0;
-	records[0].get(NULL, STATS_LAST_TIME, &last_time);
-	records[0].get(NULL, TIME_DIFFERENCE, &time_diff);
+	int lastTime = 0;
+	records[0].get(NULL, STATS_LAST_TIME, &lastTime);
+	records[0].get(NULL, TIME_DIFFERENCE, &__timeDiff);
 
-	_D("Last Time: %d / Local - UTC: %d", last_time, time_diff);
+	_D("Last Time: %d / Local - UTC: %d", lastTime, __timeDiff);
 
 	contacts_list_h list = NULL;
 
-	get_updated_contact_log_list(last_time, &list);
+	__getUpdatedContactLogList(lastTime, &list);
 	IF_FAIL_VOID(list);
 
-	remove_expired_log();
-	insert_contact_log_list(list);
-	destroy_contact_log_list(list);
+	__removeExpiredLog();
+	__insertContactLogList(list);
+	__destroyContactLogList(list);
 }
 
-void ctx::contact_log_aggregator::get_updated_contact_log_list(int last_time, contacts_list_h *list)
+void ctx::ContactLogAggregator::__getUpdatedContactLogList(int lastTime, contacts_list_h *list)
 {
 	contacts_filter_h filter = NULL;
 	contacts_query_h query = NULL;
@@ -94,7 +94,7 @@ void ctx::contact_log_aggregator::get_updated_contact_log_list(int last_time, co
 	contacts_filter_add_operator(filter, CONTACTS_FILTER_OPERATOR_AND);
 	contacts_filter_add_int(filter, _contacts_phone_log.log_type, CONTACTS_MATCH_LESS_THAN_OR_EQUAL, CONTACTS_PLOG_TYPE_MMS_BLOCKED);
 	contacts_filter_add_operator(filter, CONTACTS_FILTER_OPERATOR_AND);
-	contacts_filter_add_int(filter, _contacts_phone_log.log_time , CONTACTS_MATCH_GREATER_THAN, last_time);
+	contacts_filter_add_int(filter, _contacts_phone_log.log_time , CONTACTS_MATCH_GREATER_THAN, lastTime);
 	contacts_filter_add_operator(filter, CONTACTS_FILTER_OPERATOR_AND);
 
 	err = contacts_query_create(_contacts_phone_log._uri, &query);
@@ -113,7 +113,7 @@ CATCH:
 		contacts_query_destroy(query);
 }
 
-void ctx::contact_log_aggregator::destroy_contact_log_list(contacts_list_h list)
+void ctx::ContactLogAggregator::__destroyContactLogList(contacts_list_h list)
 {
 	if (list)
 		contacts_list_destroy(list, true);
@@ -121,7 +121,7 @@ void ctx::contact_log_aggregator::destroy_contact_log_list(contacts_list_h list)
 	contacts_disconnect();
 }
 
-void ctx::contact_log_aggregator::insert_contact_log_list(contacts_list_h list)
+void ctx::ContactLogAggregator::__insertContactLogList(contacts_list_h list)
 {
 	IF_FAIL_VOID(contacts_list_first(list) == CONTACTS_ERROR_NONE);
 
@@ -133,9 +133,9 @@ void ctx::contact_log_aggregator::insert_contact_log_list(contacts_list_h list)
 		ctx::Json data;
 
 		char* address = NULL;
-		int log_type;
+		int logType;
 		int duration = 0;
-		int accesstime = 0;
+		int accessTime = 0;
 
 		contacts_record_get_str_p(record, _contacts_phone_log.address, &address);
 
@@ -144,22 +144,22 @@ void ctx::contact_log_aggregator::insert_contact_log_list(contacts_list_h list)
 			continue;
 		}
 
-		contacts_record_get_int(record, _contacts_phone_log.log_type, &log_type);
+		contacts_record_get_int(record, _contacts_phone_log.log_type, &logType);
 		contacts_record_get_int(record, _contacts_phone_log.extra_data1, &duration);
-		contacts_record_get_int(record, _contacts_phone_log.log_time, &accesstime);
+		contacts_record_get_int(record, _contacts_phone_log.log_time, &accessTime);
 
 		data.set(NULL, SOCIAL_ADDRESS, address);
-		data.set(NULL, SOCIAL_PHONE_LOG_TYPE, log_type);
+		data.set(NULL, SOCIAL_PHONE_LOG_TYPE, logType);
 		data.set(NULL, STATS_DURATION, duration);
-		data.set(NULL, STATS_UNIV_TIME, accesstime);
-		data.set(NULL, STATS_LOCAL_TIME, accesstime + time_diff);
+		data.set(NULL, STATS_UNIV_TIME, accessTime);
+		data.set(NULL, STATS_LOCAL_TIME, accessTime + __timeDiff);
 
 		db_manager::insert(0, SOCIAL_TABLE_CONTACT_LOG, data, NULL);
 
 	} while(contacts_list_next(list) == CONTACTS_ERROR_NONE);
 }
 
-void ctx::contact_log_aggregator::remove_expired_log()
+void ctx::ContactLogAggregator::__removeExpiredLog()
 {
 	std::stringstream query;
 	query << "DELETE FROM " SOCIAL_TABLE_CONTACT_LOG " WHERE " \

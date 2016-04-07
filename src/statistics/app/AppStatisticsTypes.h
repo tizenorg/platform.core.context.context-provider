@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_APP_STATS_TYPES_H__
-#define __CONTEXT_APP_STATS_TYPES_H__
+#ifndef _CONTEXT_STATS_APP_TYPES_H_
+#define _CONTEXT_STATS_APP_TYPES_H_
 
-#include "../shared/common_types.h"
+#include "../shared/CommonTypes.h"
 
 #define APP_HISTORY_PRIV			"apphistory.read"
 #define APP_SUBJ_RECENTLY_USED		"stats/app/recently"
@@ -44,4 +44,4 @@
 	"CREATE TABLE IF NOT EXISTS " APP_TEMP_USAGE_FREQ \
 	" (AppId TEXT NOT NULL UNIQUE, TotalCount INTEGER DEFAULT 0);"
 
-#endif
+#endif	/* End of _CONTEXT_STATS_APP_TYPES_H_ */

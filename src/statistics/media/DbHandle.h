@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_SOCIAL_DB_HANDLE_H__
-#define __CONTEXT_SOCIAL_DB_HANDLE_H__
+#ifndef _CONTEXT_STATS_MEDIA_DB_HANDLE_H_
+#define _CONTEXT_STATS_MEDIA_DB_HANDLE_H_
 
 #include <string>
 #include <Json.h>
-#include "../shared/db_handle_base.h"
+#include "../shared/DbHandleBase.h"
 
 namespace ctx {
-	class social_db_handle : public stats_db_handle_base {
-		public:
-			social_db_handle();
-			~social_db_handle();
+	class MediaDbHandle : public StatsDbHandleBase {
+	public:
+		MediaDbHandle();
+		~MediaDbHandle();
 
-			int read(const char* subject, ctx::Json filter);
+		int read(const char* subject, ctx::Json filter);
 
-		private:
-			std::string create_where_clause(ctx::Json filter);
-			std::string create_sql_freq_address(ctx::Json filter);
-			std::string create_sql_frequency(ctx::Json filter);
-			void reply_trigger_item(int error, ctx::Json &json_result);
+	protected:
+		std::string createWhereClause(int mediaType, ctx::Json filter);
+		std::string createSqlPeakTime(int mediaType, ctx::Json filter);
+		std::string createSqlCommonSetting(int mediaType, ctx::Json filter);
+		std::string createSqlFrequency(int mediaType, ctx::Json filter);
+		void replyTriggerItem(int error, ctx::Json &jsonResult);
 	};
 }
 
-#endif /* __CONTEXT_SOCIAL_DB_HANDLE_H__ */
+#endif /* End of _CONTEXT_STATS_MEDIA_DB_HANDLE_H_ */

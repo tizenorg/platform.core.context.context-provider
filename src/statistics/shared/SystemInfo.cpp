@@ -19,12 +19,12 @@
 #include <sound_manager.h>
 #include <types_internal.h>
 #include <SharedVars.h>
-#include "system_info.h"
+#include "SystemInfo.h"
 
 #define CONNECTED		1
 #define NOT_CONNECTED	0
 
-bool ctx::system_info::get_audio_jack_state(int* state)
+bool ctx::system_info::getAudioJackState(int* state)
 {
 	int value = NOT_CONNECTED;
 	int err = runtime_info_get_value_int(RUNTIME_INFO_KEY_AUDIO_JACK_STATUS, &value);
@@ -35,25 +35,25 @@ bool ctx::system_info::get_audio_jack_state(int* state)
 	return true;
 }
 
-bool ctx::system_info::get_volume(int* system_volume, int* media_volume)
+bool ctx::system_info::getVolume(int* systemVolume, int* mediaVolume)
 {
 	int err;
 
-	err = sound_manager_get_volume(SOUND_TYPE_SYSTEM, system_volume);
+	err = sound_manager_get_volume(SOUND_TYPE_SYSTEM, systemVolume);
 	IF_FAIL_RETURN(err == RUNTIME_INFO_ERROR_NONE, false);
 
-	err = sound_manager_get_volume(SOUND_TYPE_MEDIA, media_volume);
+	err = sound_manager_get_volume(SOUND_TYPE_MEDIA, mediaVolume);
 	IF_FAIL_RETURN(err == RUNTIME_INFO_ERROR_NONE, false);
 
 	return true;
 }
 
-bool ctx::system_info::get_wifi_bssid(std::string& bssid)
+bool ctx::system_info::getWifiBssid(std::string& bssid)
 {
 #if 0
 	/* NOTE: This routine does not work, because the wifi API does not support multi-sessions in one process */
 	int err;
-	char *str_buf = NULL;
+	char *strBuf = NULL;
 	wifi_ap_h ap = NULL;
 
 	err = wifi_initialize();
@@ -66,9 +66,9 @@ bool ctx::system_info::get_wifi_bssid(std::string& bssid)
 		return false;
 	}
 
-	wifi_ap_get_bssid(ap, &str_buf);
-	bssid = (str_buf != NULL ? str_buf : "");
-	g_free(str_buf);
+	wifi_ap_get_bssid(ap, &strBuf);
+	bssid = (strBuf != NULL ? strBuf : "");
+	g_free(strBuf);
 
 	wifi_ap_destroy(ap);
 	wifi_deinitialize();
