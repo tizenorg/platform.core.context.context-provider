@@ -420,7 +420,8 @@ int ctx::VisitDetector::db_insert_visit(visit_s visit)
 	_D("db: visit table insert interval: (%d, %d)", visit.interval.start, visit.interval.end);
 #endif /* TIZEN_ENGINEER_MODE */
 
-	bool ret = db_manager::insert(0, VISIT_TABLE, data);
+	int64_t row_id;
+	bool ret = db_manager::insert_sync(VISIT_TABLE, data, &row_id);
 	_D("db: visit table insert result: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }

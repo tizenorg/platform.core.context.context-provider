@@ -17,23 +17,23 @@
 #ifndef __CONTEXT_PLACE_RECOGNITION_H__
 #define __CONTEXT_PLACE_RECOGNITION_H__
 
-#include <provider_iface.h>
+#include <ContextProviderBase.h>
 #include "place_recognition_types.h"
 #include "user_places/user_places.h"
 
 namespace ctx {
 
-	class place_recognition_provider : public context_provider_iface {
+	class place_recognition_provider : public ContextProviderBase {
 
 	public:
-		static context_provider_iface *create(void *data);
+		static ContextProviderBase *create(void *data);
 		static void destroy(void *data);
-		static bool is_supported();
+		static bool isSupported();
 
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
+		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *request_result);
-		int write(const char *subject, ctx::Json data, ctx::Json *request_result);
+		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
+		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 	private:
 		static place_recognition_provider *__instance;

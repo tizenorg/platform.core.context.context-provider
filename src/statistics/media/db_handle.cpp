@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <types_internal.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include <db_mgr.h>
 #include "../shared/system_info.h"
 #include "media_stats_types.h"
@@ -120,5 +120,5 @@ void ctx::media_db_handle::reply_trigger_item(int error, ctx::Json &json_result)
 	json_result.get(NULL, STATS_TOTAL_COUNT, &val);
 	results.set(NULL, STATS_TOTAL_COUNT, val);
 
-	context_manager::reply_to_read(req_subject.c_str(), req_filter, error, results);
+	context_manager::replyToRead(req_subject.c_str(), req_filter, error, results);
 }

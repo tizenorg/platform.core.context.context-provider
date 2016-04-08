@@ -1,12 +1,13 @@
 Name:       context-provider
 Summary:    Context Provider
-Version:    0.7.4
+Version:    0.7.5
 Release:    1
 Group:      Service/Context
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 
 %define BUILD_PROFILE %{?profile}%{!?profile:%{?tizen_profile_name}}
+%define keepstatic 1
 
 BuildRequires: cmake
 
@@ -64,8 +65,8 @@ MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
 export   CFLAGS+=" -Wextra -Wcast-align -Wshadow -Wwrite-strings -Wswitch-default -Wno-unused-parameter"
 export CXXFLAGS+=" -Wextra -Wcast-align -Wshadow -Wwrite-strings -Wswitch-default -Wno-unused-parameter"
 
-export   CFLAGS+=" -Wno-empty-body -fno-omit-frame-pointer -fno-optimize-sibling-calls"
-export CXXFLAGS+=" -Wno-empty-body -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+export   CFLAGS+=" -Wno-empty-body -fomit-frame-pointer -fno-optimize-sibling-calls"
+export CXXFLAGS+=" -Wno-empty-body -fomit-frame-pointer -fno-optimize-sibling-calls"
 
 export   CFLAGS+=" -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict-overflow"
 export CXXFLAGS+=" -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict-overflow"
@@ -100,7 +101,6 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 %files
 %manifest packaging/%{name}.manifest
 %defattr(-,root,root,-)
-%{_libdir}/*.so*
 /usr/share/license/%{name}
 
 %package devel
@@ -115,3 +115,4 @@ Context Provider (Development)
 %defattr(-,root,root,-)
 %{_includedir}/context-service/internal/*.h
 %{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/*.a

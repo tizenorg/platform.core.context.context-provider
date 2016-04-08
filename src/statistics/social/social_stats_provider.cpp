@@ -16,7 +16,7 @@
 
 #include <types_internal.h>
 #include <Json.h>
-#include <context_mgr.h>
+#include <ContextManager.h>
 #include "social_stats_provider.h"
 #include "db_handle.h"
 #include "log_aggregator.h"
@@ -34,7 +34,7 @@ ctx::social_statistics_provider::~social_statistics_provider()
 	delete aggregator;
 }
 
-ctx::context_provider_iface *ctx::social_statistics_provider::create(void *data)
+ctx::ContextProviderBase *ctx::social_statistics_provider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 
@@ -66,7 +66,7 @@ bool ctx::social_statistics_provider::is_supported(const char* subject)
 
 void ctx::social_statistics_provider::submit_trigger_item()
 {
-	context_manager::register_trigger_item(SOCIAL_SUBJ_FREQUENCY, OPS_READ,
+	context_manager::registerTriggerItem(SOCIAL_SUBJ_FREQUENCY, OPS_READ,
 			"{" TRIG_DEF_RANK "," TRIG_DEF_TOTAL_COUNT "}",
 			"{"
 				"\"Address\":{\"type\":\"string\"},"
@@ -81,7 +81,7 @@ bool ctx::social_statistics_provider::init()
 	return true;
 }
 
-int ctx::social_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* request_result)
+int ctx::social_statistics_provider::subscribe(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
@@ -91,7 +91,7 @@ int ctx::social_statistics_provider::unsubscribe(const char* subject, ctx::Json 
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::social_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* request_result)
+int ctx::social_statistics_provider::read(const char* subject, ctx::Json option, ctx::Json* requestResult)
 {
 	ctx::social_db_handle *handle = new(std::nothrow) ctx::social_db_handle();
 	IF_FAIL_RETURN_TAG(handle, ERR_OPERATION_FAILED, _E, "Memory allocation failed");
@@ -105,7 +105,7 @@ int ctx::social_statistics_provider::read(const char* subject, ctx::Json option,
 	return ERR_NONE;
 }
 
-int ctx::social_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* request_result)
+int ctx::social_statistics_provider::write(const char* subject, ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }

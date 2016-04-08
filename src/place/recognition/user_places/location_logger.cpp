@@ -193,7 +193,8 @@ int ctx::LocationLogger::db_insert_log(location_event_s location_event)
 	data.set(NULL, LOCATION_COLUMN_METHOD, static_cast<int>(location_event.method));
 #endif /* TIZEN_ENGINEER_MODE */
 
-	bool ret = ctx::db_manager::insert(0, LOCATION_TABLE_NAME, data);
+	int64_t row_id;
+	bool ret = db_manager::insert_sync(LOCATION_TABLE_NAME, data, &row_id);
 	_D("%s -> DB: location table insert result", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
@@ -207,6 +208,8 @@ ctx::LocationLogger::LocationLogger(ILocationListener *listener_, bool test_mode
 	, location_count(0)
 	, active_request_succeeded(false)
 	, active_location_succeeded(false)
+	, timer_id(-1)
+	, timer_timestamp(0)
 	, timer_purpose(LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL)
 	, location_service_state(LOCATIONS_SERVICE_DISABLED)
 	, location_method(LOCATION_LOGGER_METHOD)

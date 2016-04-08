@@ -8,7 +8,8 @@ SET(compile_defs "LOG_TAG=\"CONTEXT\"")
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-ADD_DEFINITIONS(-O2 -Wall -fPIC -fvisibility=hidden -Wl,--as-needed)
+ADD_DEFINITIONS(-O2 -Wall -fPIC -fdata-sections -ffunction-sections -fvisibility=hidden)
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC -Wl,--as-needed -Wl,--gc-section -Wl,--print-gc-section")
 
 # Base Dependency
 SET(dependencies libcontext-shared libcontext-server)
@@ -38,7 +39,7 @@ FOREACH(flag ${DEPS_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
 ENDFOREACH(flag)
 
-ADD_LIBRARY(${target} SHARED ${sources})
+ADD_LIBRARY(${target} STATIC ${sources})
 TARGET_LINK_LIBRARIES(${target} ${DEPS_LDFLAGS})
 SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_FLAGS ${EXTRA_CFLAGS})
 SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "${compile_defs}")

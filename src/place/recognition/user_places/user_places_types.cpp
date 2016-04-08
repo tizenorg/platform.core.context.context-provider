@@ -24,36 +24,43 @@
 #include "user_places_params.h"
 #include "debug_utils.h"
 
+#define MAC_STRING_COMPONENTS_SEPARATOR ':'
 #define MAC_SET_STRING_DELIMITER ','
 
 ctx::Mac::Mac(const std::string& str)
 {
 	std::stringstream ss(str);
-	ss >> *this;
+	try {
+		ss >> *this;
+	} catch (std::runtime_error &e) {
+		_E("%s", e.what());
+	}
 }
 
 ctx::Mac::Mac(const char *str)
 {
 	std::stringstream ss(str);
-	ss >> *this;
+	try {
+		ss >> *this;
+	} catch (std::runtime_error &e) {
+		_E("%s", e.what());
+	}
 }
 
 std::istream& ctx::operator>>(std::istream &input, ctx::Mac &mac)
 {
 	int h;
 	char colon;
-	size_t i = 0;
-	while (true) {
+	for (size_t i = 0; i < ctx::Mac::MAC_SIZE; i++) {
 		input >> std::hex;
 		input >> h;
 		mac.c[i] = h;
-		i++;
-		if (i >= ctx::Mac::MAC_SIZE) {
+		if (i + 1 >= ctx::Mac::MAC_SIZE) {
 			break;
 		}
 		input >> colon;
-		if (colon != ':') {
-			throw std::runtime_error("Invalid mac format");
+		if (colon != MAC_STRING_COMPONENTS_SEPARATOR) {
+			throw std::runtime_error("Invalid MAC format");
 		}
 	}
 	input >> std::dec;
@@ -70,7 +77,7 @@ std::ostream& ctx::operator<<(std::ostream &output, const ctx::Mac &mac)
 		if (i >= Mac::MAC_SIZE) {
 			break;
 		}
-		output << ":";
+		output << MAC_STRING_COMPONENTS_SEPARATOR;
 	}
 	output << std::dec;
 	return output;
@@ -119,7 +126,12 @@ std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &mac_set)
 	Mac mac;
 	char delimeter;
 	while (!input.eof()) {
-		input >> mac;
+		try {
+			input >> mac;
+		} catch (std::runtime_error &e) {
+			_E("Cannot read mac_set. Exception: %s", e.what());
+			break;
+		}
 		mac_set.insert(mac);
 		if (input.eof()) {
 			break;
