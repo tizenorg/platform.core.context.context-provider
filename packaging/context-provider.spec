@@ -1,6 +1,6 @@
 Name:       context-provider
 Summary:    Context Provider
-Version:    0.7.4
+Version:    0.7.5
 Release:    1
 Group:      Service/Context
 License:    Apache-2.0
