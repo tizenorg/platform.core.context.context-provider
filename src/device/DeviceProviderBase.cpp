@@ -17,8 +17,8 @@
 #include <system_info.h>
 #include "DeviceProviderBase.h"
 
-ctx::DeviceProviderBase::DeviceProviderBase()
-	: __beingSubscribed(false)
+ctx::DeviceProviderBase::DeviceProviderBase() :
+	__beingSubscribed(false)
 {
 }
 
