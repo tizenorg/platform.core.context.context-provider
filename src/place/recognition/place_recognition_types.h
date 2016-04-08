@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_RECOGNITION_TYPES__
-#define __CONTEXT_PLACE_RECOGNITION_TYPES__
+#ifndef _CONTEXT_PLACE_RECOGNITION_TYPES_
+#define _CONTEXT_PLACE_RECOGNITION_TYPES_
 
 // Context Items
 #define PLACE_SUBJ_RECOGNITION                 "place/pattern/personal_poi"
@@ -74,16 +74,16 @@
 #define PLACE_CREATE_DATE                      "CreateDate"
 
 // Data values
-typedef enum {
+enum PlaceCategId {
 	PLACE_CATEG_ID_NONE = 0,
 	PLACE_CATEG_ID_HOME = 1,
 	PLACE_CATEG_ID_WORK = 2,
 	PLACE_CATEG_ID_OTHER = 3
-} place_categ_id_e;
+};
 
 typedef enum {
 	PLACE_RECOG_HIGH_ACCURACY_MODE = 0,
 	PLACE_RECOG_LOW_POWER_MODE = 1
 } place_recog_mode_e;
 
-#endif
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_TYPES_ */

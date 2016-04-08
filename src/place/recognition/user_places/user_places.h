@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_USER_PLACES_ENGINE_H__
-#define __CONTEXT_PLACE_STATUS_USER_PLACES_ENGINE_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_USER_PLACES_H_
+#define _CONTEXT_PLACE_RECOGNITION_USER_PLACES_H_
 
 #include <vector>
 #include <Json.h>
@@ -29,22 +29,21 @@ namespace ctx {
 	class UserPlaces {
 
 	private:
-		VisitDetector *visit_detector;
-		PlacesDetector *places_detector;
-		int places_detector_timer_id;
+		VisitDetector *__visitDetector;
+		PlacesDetector *__placesDetector;
+		int __placesDetectorTimerId;
 		TimerManager __timerManager;
 
 	public:
-		UserPlaces(place_recog_mode_e energy_mode = PLACE_RECOG_HIGH_ACCURACY_MODE);
+		UserPlaces(place_recog_mode_e energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);
 		~UserPlaces();
 
-		void set_mode(place_recog_mode_e energy_mode);
-		std::vector<std::shared_ptr<Place>> get_places();
-		static Json compose_json(std::vector<std::shared_ptr<Place>> places);
+		void setMode(place_recog_mode_e energyMode);
+		std::vector<std::shared_ptr<Place>> getPlaces();
+		static Json composeJson(std::vector<std::shared_ptr<Place>> places);
 
 	};	/* class UserPlaces */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_USER_PLACES_ENGINE_H__ */
-
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_USER_PLACES_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_WIFI_LOGGER_H__
-#define __CONTEXT_PLACE_STATUS_WIFI_LOGGER_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_
+#define _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_
 
 #include <wifi.h>
 #include <time.h>
@@ -50,65 +50,72 @@ namespace ctx {
 	class WifiLogger : public ITimerListener, public IVisitListener {
 
 	public:
-		WifiLogger(IWifiListener * listener_ = nullptr,
+		WifiLogger(IWifiListener * listener = nullptr,
 				place_recog_mode_e mode = PLACE_RECOG_HIGH_ACCURACY_MODE,
-				bool test_mode_ = false);
+				bool testMode = false);
 		~WifiLogger();
 
-		void start_logging();
-		void stop_logging();
-		void set_mode(place_recog_mode_e energy_mode);
-
-		/* INPUT */
-		void on_visit_start();
-		void on_visit_end();
+		void startLogging();
+		void stopLogging();
+		void setMode(place_recog_mode_e energyMode);
 
 	private:
-		bool test_mode;
-		IWifiListener * const listener;
-		std::vector<mac_event_s> logs;
-		std::set<std::string> last_scans_pool;
-		time_t last_scan_time;
-		time_t last_timer_callback_time;
-		bool timer_on;
-		int timer_id;
-		int interval_minutes;
-		bool during_visit;
-		bool connected_to_wifi_ap;
-		bool started;
-		bool running;
-		TimerManager __timerManager;
+		/* INPUT */
+		void onVisitStart();
+		void onVisitEnd();
 
-		void _start_logging();
-		void _stop_logging();
-		void set_interval(place_recog_mode_e energy_mode);
-
-		bool check_timer_id(int id);
-		bool check_timer_time(time_t now);
 		bool onTimerExpired(int timerId);
-		static int create_table();
-		int db_insert_logs();
-		static void wifi_device_state_changed_cb(wifi_device_state_e state, void *user_data);
-		static void wifi_connection_state_changed_cb(wifi_connection_state_e state, wifi_ap_h ap, void *user_data);
-		static bool wifi_found_ap_cb(wifi_ap_h ap, void *user_data);
-		static void wifi_scan_finished_cb(wifi_error_e error_code, void *user_data);
-		static bool check_wifi_is_activated();
-		void wifi_scan_request();
-		static int wifi_foreach_found_aps_request(void *user_data);
-		static wifi_connection_state_e wifi_get_connection_state_request();
-		void wifi_set_background_scan_cb_request();
-		void wifi_set_device_state_changed_cb_request();
-		void wifi_set_connection_state_changed_cb_request();
-		static int wifi_ap_get_bssid_request(wifi_ap_h ap, char **bssid);
-		void wifi_initialize_request();
-		void wifi_deinitialize_request();
-		static const char* wifi_error_str(int error);
 
-		void timer_start(time_t minutes);
-		void timer_restart();
+		/* TIMER */
+		bool __timerOn;
+		int __timerId;
+		int __intervalMinutes;
+		TimerManager __timerManager;
+		void __setInterval(place_recog_mode_e energyMode);
+		bool __checkTimerId(int id);
+		bool __checkTimerTime(time_t now);
+		void __timerStart(time_t minutes);
+		void __timerRestart();
+
+		/* DATABASE */
+		static int __dbCreateTable();
+		int __dbInsertLogs();
+
+		/* SYSTEM CAPI WRAPPERS */
+		void __wifiSetBackgroundScanCbRequest();
+		void __wifiSetDeviceStateChangedCbRequest();
+		void __wifiSetConnectionStateChangedCbRequest();
+		static bool __checkWifiIsActivated();
+		void __wifiScanRequest();
+		static int __wifiForeachFoundApsRequest(void *user_data);
+		static wifi_connection_state_e __wifiGetConnectionStateRequest();
+		static int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
+		void __wifiInitializeRequest();
+		void __wifiDeinitializeRequest();
+
+		/* SYSTEM CAPI CALLBACKS */
+		static void __wifiDeviceStateChangedCb(wifi_device_state_e state, void *user_data);
+		static void __wifiConnectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *user_data);
+		static bool __wifiFoundApCb(wifi_ap_h ap, void *user_data);
+		static void __wifiScanFinishedCb(wifi_error_e error_code, void *user_data);
+
+		bool __testMode;
+		IWifiListener * const __listener;
+		std::vector<MacEvent> __logs;
+		std::set<std::string> __lastScansPool;
+		time_t __lastScanTime;
+		time_t __lasTimerCallbackTime;
+		bool __duringVisit;
+		bool __connectedToWifiAp;
+		bool __started;
+		bool __running;
+
+		void __startLogging();
+		void __stopLogging();
+		static const char* __wifiError2Str(int error);
 
 	};	/* class WifiLogger */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_WIFI_LOGGER_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_ */

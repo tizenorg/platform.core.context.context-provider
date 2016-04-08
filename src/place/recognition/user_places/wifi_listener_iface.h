@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_WIFI_LISTENER_IFACE_H__
-#define __CONTEXT_PLACE_STATUS_WIFI_LISTENER_IFACE_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
+#define _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
 
 #include "user_places_types.h"
 
@@ -25,10 +25,10 @@ namespace ctx {
 
 	public:
 		virtual ~IWifiListener() {};
-		virtual void on_wifi_scan(ctx::mac_event_s e) = 0;
+		virtual void onWifiScan(ctx::MacEvent e) = 0;
 
 	};	/* IWifiListener */
 
 }	/* namespace ctx */
 
-#endif	/* __CONTEXT_PLACE_STATUS_WIFI_LISTENER_IFACE_H__ */
+#endif	/* End of _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_ */

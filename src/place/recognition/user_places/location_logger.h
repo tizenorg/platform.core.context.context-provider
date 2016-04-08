@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_LOCATION_LOGGER_H__
-#define __CONTEXT_PLACE_STATUS_LOCATION_LOGGER_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_LOCATION_LOGGER_H_
+#define _CONTEXT_PLACE_RECOGNITION_LOCATION_LOGGER_H_
 
 #include <locations.h>
 #include <TimerManager.h>
@@ -54,112 +54,112 @@
 
 namespace ctx {
 
-	typedef enum {
+	enum TimerPurpose {
 		LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST = 0,
 		LOCATION_LOGGER_WAITING_FOR_SERVICE_START = 1,
 		LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON = 2,
 		LOCATION_LOGGER_WAITING_FOR_ACTIVE_INTERVAL = 3,
 		LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL = 4
-	} timer_purpose_e;
+	};
 
 	class LocationLogger : public ITimerListener, public IVisitListener {
 
 	public:
-		LocationLogger(ILocationListener *listener_ = nullptr,
-				bool test_mode_ = false);
+		LocationLogger(ILocationListener *listener = nullptr,
+				bool testMode = false);
 		~LocationLogger();
 
-		/* INPUT */
-		void on_visit_start();
-		void on_visit_end();
-
 	private:
+		/* INPUT */
+		void onVisitStart();
+		void onVisitEnd();
+
 		/* OUTPUT */
-		ILocationListener * const listener;
-		void broadcast(location_event_s location_event);
+		ILocationListener * const __listener;
+		void __broadcast(LocationEvent location_event);
 
 		/* INTERNAL */
-		bool test_mode;
-		void start_logging();
-		void stop_logging();
-		void location_request();
-		void on_active_request_succeeded();
-		void on_active_location_succeeded();
+		bool __testMode;
+		void __startLogging();
+		void __stopLogging();
+		void __locationRequest();
+		void __onActiveRequestSucceeded();
+		void __onActiveLocationSucceeded();
 
 		/* INTERNAL : COUNTERS (LIMITS) */
-		int active_request_attempts;
-		int active_attempts;
-		int all_attempts;
-		int location_count;
-		bool check_general_limits();
-		bool check_active_limits();
-		bool check_active_request_limits();
+		int __activeRequestAttempts;
+		int __activeAttempts;
+		int __allAttempts;
+		int __locationCount;
+		bool __checkGeneralLimits();
+		bool __checkActiveLimits();
+		bool __checkActiveRequestLimits();
 
 		/* INTERNAL : FLAGS */
-		bool active_request_succeeded;
-		bool active_location_succeeded;
+		bool __activeRequestSucceeded;
+		bool __activeLocationSucceeded;
 
 		/* TIMER */
-		int timer_id;
-		time_t timer_timestamp;
+		int __timerId;
+		time_t __timerTimestamp;
 		TimerManager __timerManager;
-		timer_purpose_e timer_purpose;
-		void set_next_timer();
-		void active_request_timer_start();
-		void start_service_timer_start();
-		void active_interval_timer_start();
-		void passive_interval_timer_start();
-		void timer_start(time_t minutes);
-		void timer_stop();
+		TimerPurpose __timerPurpose;
+		void __setNextTimer();
+		void __activeRequestTimerStart();
+		void __startServiceTimerStart();
+		void __activeIntervalTimerStart();
+		void __passiveIntervalTimerStart();
+		void __timerStart(time_t minutes);
+		void __timerStop();
 		bool onTimerExpired(int timerId);
 
 		/* DATABASE */
-		static int create_table();
-		int db_insert_log(location_event_s location_event);
+		static int __dbCreateTable();
+		int __dbInsertLog(LocationEvent location_event);
 
 		/* DEBUG */
-		static const char* location_error_str(int error);
-		static void log(location_accessibility_state_e state);
+		static const char* __locationError2Str(int error);
+		static void __log(location_accessibility_state_e state);
 
 		/* LOCATION MANAGER */
-		location_manager_h manager;
-		void manager_create();
-		void manager_destroy();
-		void manager_start();
-		void manager_stop();
-		location_accessibility_state_e manager_get_accessibility_state();
+		location_manager_h __locationManager;
+		void __locationManagerCreate();
+		void __locationManagerDestroy();
+		void __locationManagerStart();
+		void __locationManagerStop();
+		location_accessibility_state_e __locationManagerGetAccessibilityState();
 
 		/* LOCATION MANAGER : LOCATION SERVICE STATE */
-		location_service_state_e location_service_state;
-		static void location_service_state_changed_cb(location_service_state_e state, void *user_data);
-		void manager_set_service_state_changed_cb();
-		void manager_unset_service_state_changed_cb();
+		location_service_state_e __locationServiceState;
+		static void __locationServiceStateChangedCb(location_service_state_e state, void *user_data);
+		void __locationManagerSetServiceStateChangedCb();
+		void __locationManagerUnsetServiceStateChangedCb();
 
 		/* LOCATION MANAGER : LOCATION METHOD SETTINGS */
-		location_method_e location_method;
-		bool location_method_state;
-		bool manager_is_enabled_method(location_method_e method);
-		static void location_setting_changed_cb(location_method_e method, bool enable, void *user_data);
-		void manager_set_setting_changed_cb();
-		void manager_unset_setting_changed_cb();
+		location_method_e __locationMethod;
+		bool __locationMethodState;
+		bool __locationManagerIsEnabledMethod(location_method_e method);
+		static void __locationSettingChangedCb(location_method_e method, bool enable, void *user_data);
+		void __locationManagerSetSettingChangedCb();
+		void __locationManagerUnsetSettingChangedCb();
 
 		/* LOCATION MANAGER : LOCATION */
+		double __locationManagerGetHorizontalAccuracy();
 
 		/* LOCATION MANAGER : LOCATION : SYNCHRONOUS */
-		bool manager_get_location();
-		void manager_get_last_location();
-		double manager_get_horizontal_accuracy();
+		bool __locationManagerGetLocation();
+		void __locationManagerGetLastLocation();
 
 		/* LOCATION MANAGER : LOCATION : ASYNCHRONOUS */
-		static void position_updated_cb(double latitude, double longitude,
+		static void __positionUpdatedCb(double latitude, double longitude,
 				double altitude, time_t timestamp, void *user_data);
-		static void location_updated_cb(location_error_e error, double latitude,
+		static void __locationUpdatedCb(location_error_e error, double latitude,
 				double longitude, double altitude, time_t timestamp, double speed,
 				double direction, double climb, void *user_data);
-		bool manager_request_single_location();
+		bool __locationManagerRequestSingleLocation();
 
 	};	/* class LocationLogger */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_LOCATION_LOGGER_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_LOCATION_LOGGER_H_ */

@@ -25,7 +25,7 @@
 #include "visit_detector.h"
 #include "user_places_params.h"
 #include "visit_categer.h"
-#include "similar.h"
+#include "similarity.h"
 #include "median.h"
 #include "debug_utils.h"
 
@@ -55,190 +55,184 @@
 	VISIT_COLUMN_CATEG_OTHER " REAL"
 #endif /* TIZEN_ENGINEER_MODE */
 
-
-ctx::VisitDetector::VisitDetector(time_t t_start_scan, place_recog_mode_e energy_mode, bool test_mode_)
-	: test_mode(test_mode_)
-	, location_logger(this, test_mode_)
-	, wifi_logger(this, energy_mode, test_mode_)
-	, current_interval(t_start_scan, t_start_scan + VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY)
-	, stable_counter(0)
-	, tolerance(VISIT_DETECTOR_TOLERANCE_DEPTH)
-	, entrance_to_place(false)
-	, period_seconds(VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY)
-	, entrance_time(0)
-	, departure_time(0)
+ctx::VisitDetector::VisitDetector(time_t t_start_scan, place_recog_mode_e energyMode, bool testMode) :
+	__testMode(testMode),
+	__locationLogger(this, testMode),
+	__wifiLogger(this, energyMode, testMode),
+	__currentInterval(t_start_scan, t_start_scan + VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
+	__stableCounter(0),
+	__tolerance(VISIT_DETECTOR_TOLERANCE_DEPTH),
+	__entranceToPlace(false),
+	__periodSeconds(VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
+	__entranceTime(0),
+	__departureTime(0)
 {
-	set_period(energy_mode);
-	current_interval = interval_s(t_start_scan, t_start_scan + period_seconds);
-	current_logger = std::make_shared<mac_events>();
-	stay_macs = std::make_shared<mac_set_t>();
+	__setPeriod(energyMode);
+	__currentInterval = Interval(t_start_scan, t_start_scan + __periodSeconds);
+	__currentLogger = std::make_shared<mac_events>();
+	__stayMacs = std::make_shared<mac_set_t>();
 
-	if (test_mode) {
-		detected_visits = std::make_shared<ctx::visits_t>();
+	if (__testMode) {
+		__detectedVisits = std::make_shared<ctx::visits_t>();
 		return;
 	}
 
-	listeners.push_back(&location_logger);
-	listeners.push_back(&wifi_logger);
-	db_create_table();
-	wifi_logger.start_logging();
+	__listeners.push_back(&__locationLogger);
+	__listeners.push_back(&__wifiLogger);
+	__dbCreateTable();
+	__wifiLogger.startLogging();
 }
 
 ctx::VisitDetector::~VisitDetector()
 {
 }
 
-ctx::interval_s ctx::VisitDetector::get_current_interval()
-{
-	return current_interval;
-}
-
-bool ctx::VisitDetector::is_valid(const ctx::Mac &mac)
+bool ctx::VisitDetector::__isValid(const ctx::Mac &mac)
 {
 	return mac != "00:00:00:00:00:00";
 }
 
-void ctx::VisitDetector::on_wifi_scan(ctx::mac_event_s e)
+void ctx::VisitDetector::onWifiScan(ctx::MacEvent e)
 {
-	_D("timestamp=%d, curent_interval.end=%d, mac=%s", e.timestamp, current_interval.end, std::string(e.mac).c_str());
-	if (is_valid(e.mac)) {
-		while (e.timestamp > current_interval.end) {
-			process_current_logger();
-			shift_current_interval();
+	_D("timestamp=%d, curent_interval.end=%d, mac=%s", e.timestamp, __currentInterval.end, std::string(e.mac).c_str());
+	if (__isValid(e.mac)) {
+		while (e.timestamp > __currentInterval.end) {
+			__processCurrentLogger();
+			__shiftCurrentInterval();
 		}
-		current_logger->push_back(e);
+		__currentLogger->push_back(e);
 	}
 }
 
-void ctx::VisitDetector::process_current_logger()
+void ctx::VisitDetector::__processCurrentLogger()
 {
 	_D("");
-	std::shared_ptr<ctx::frame_s> frame = make_frame(this->current_logger, this->current_interval);
-	detect_entrance_or_departure(frame);
-	current_logger->clear();
+	std::shared_ptr<ctx::Frame> frame = __makeFrame(__currentLogger, __currentInterval);
+	__detectEntranceOrDeparture(frame);
+	__currentLogger->clear();
 }
 
-std::shared_ptr<ctx::frame_s> ctx::VisitDetector::make_frame(std::shared_ptr<ctx::mac_events> logger, ctx::interval_s interval)
+std::shared_ptr<ctx::Frame> ctx::VisitDetector::__makeFrame(std::shared_ptr<ctx::mac_events> logger, ctx::Interval interval)
 {
 	std::set<time_t> timestamps;
-	std::shared_ptr<frame_s> frame = std::make_shared<frame_s>(interval);
+	std::shared_ptr<Frame> frame = std::make_shared<Frame>(interval);
 	for (auto log : *logger) {
 		timestamps.insert(log.timestamp);
-		if (frame->mac_counts.find(log.mac) == frame->mac_counts.end()) {
-			frame->mac_counts[log.mac] = 1;
+		if (frame->macCountsMap.find(log.mac) == frame->macCountsMap.end()) {
+			frame->macCountsMap[log.mac] = 1;
 		} else {
-			frame->mac_counts[log.mac] += 1;
+			frame->macCountsMap[log.mac] += 1;
 		}
 	}
-	frame->no_timestamps = timestamps.size();
+	frame->numberOfTimestamps = timestamps.size();
 	return frame;
 }
 
-void ctx::VisitDetector::shift_current_interval()
+void ctx::VisitDetector::__shiftCurrentInterval()
 {
-	current_interval.end += period_seconds;
-	current_interval.start += period_seconds;
+	__currentInterval.end += __periodSeconds;
+	__currentInterval.start += __periodSeconds;
 }
 
-void ctx::VisitDetector::detect_entrance_or_departure(std::shared_ptr<ctx::frame_s> frame)
+void ctx::VisitDetector::__detectEntranceOrDeparture(std::shared_ptr<ctx::Frame> frame)
 {
-	entrance_to_place ? detect_departure(frame) : detect_entrance(frame);
+	__entranceToPlace ? __detectDeparture(frame) : __detectEntrance(frame);
 }
 
-bool ctx::VisitDetector::is_disjoint(const ctx::mac_counts_t &mac_counts, const ctx::mac_set_t &mac_set)
+bool ctx::VisitDetector::__isDisjoint(const ctx::mac_counts_t &macCountsMap, const ctx::mac_set_t &macSet)
 {
-	for (auto &mac : mac_set) {
-		if (mac_counts.find(mac) != mac_counts.end()) {
+	for (auto &mac : macSet) {
+		if (macCountsMap.find(mac) != macCountsMap.end()) {
 			return false;
 		}
 	}
 	return true;
 }
 
-bool ctx::VisitDetector::protrudes_from(const ctx::mac_counts_t &mac_counts, const ctx::mac_set_t &mac_set)
+bool ctx::VisitDetector::__protrudesFrom(const ctx::mac_counts_t &macCountsMap, const ctx::mac_set_t &macSet)
 {
-	for (auto &m : mac_counts) {
-		if (mac_set.find(m.first) == mac_set.end()) {
+	for (auto &m : macCountsMap) {
+		if (macSet.find(m.first) == macSet.end()) {
 			return true;
 		}
 	}
 	return false;
 }
 
-void ctx::VisitDetector::detect_departure(std::shared_ptr<ctx::frame_s> frame)
+void ctx::VisitDetector::__detectDeparture(std::shared_ptr<ctx::Frame> frame)
 {
-	if (tolerance == VISIT_DETECTOR_TOLERANCE_DEPTH) {
-		departure_time = frame->interval.start;
-		buffered_frames.clear();
-	} else { // tolerance < VISIT_DETECTOR_TOLERANCE_DEPTH
-		buffered_frames.push_back(frame);
+	if (__tolerance == VISIT_DETECTOR_TOLERANCE_DEPTH) {
+		__departureTime = frame->interval.start;
+		__bufferedFrames.clear();
+	} else { // __tolerance < VISIT_DETECTOR_TOLERANCE_DEPTH
+		__bufferedFrames.push_back(frame);
 	}
-	if (is_disjoint(frame->mac_counts, *rep_macs)) {
-		if (frame->mac_counts.empty() || protrudes_from(frame->mac_counts, *stay_macs)) {
-			tolerance--;
+	if (__isDisjoint(frame->macCountsMap, *__representativesMacs)) {
+		if (frame->macCountsMap.empty() || __protrudesFrom(frame->macCountsMap, *__stayMacs)) {
+			__tolerance--;
 		} else { // no new macs
-			buffered_frames.clear();
+			__bufferedFrames.clear();
 		}
-		if (tolerance == 0) { // departure detected
-			visit_end_detected();
-			buffer_processing(frame);
+		if (__tolerance == 0) { // departure detected
+			__visitEndDetected();
+			__processBuffer(frame);
 		}
-	} else if (tolerance < VISIT_DETECTOR_TOLERANCE_DEPTH) {
-		tolerance++;
+	} else if (__tolerance < VISIT_DETECTOR_TOLERANCE_DEPTH) {
+		__tolerance++;
 	}
 }
 
-void ctx::VisitDetector::visit_start_detected()
+void ctx::VisitDetector::__visitStartDetected()
 {
-	entrance_to_place = true;
+	__entranceToPlace = true;
 
-	locations.clear();
-	if (!test_mode) {
-		for (IVisitListener* listener : listeners) {
-			listener->on_visit_start();
+	__locationEvents.clear();
+	if (!__testMode) {
+		for (IVisitListener* listener : __listeners) {
+			listener->onVisitStart();
 		}
 	}
-	rep_macs = select_representatives(history_frames);
-	entrance_time = history_frames[0]->interval.start;
-	_I("Entrance detected, timestamp: %d", entrance_time);
-	history_reset();
+	__representativesMacs = __selectRepresentatives(__historyFrames);
+	__entranceTime = __historyFrames[0]->interval.start;
+	_I("Entrance detected, timestamp: %d", __entranceTime);
+	__resetHistory();
 }
 
-void ctx::VisitDetector::visit_end_detected()
+void ctx::VisitDetector::__visitEndDetected()
 {
-	if (!test_mode) {
-		for (IVisitListener* listener : listeners) {
-			listener->on_visit_end();
+	if (!__testMode) {
+		for (IVisitListener* listener : __listeners) {
+			listener->onVisitEnd();
 		}
 	}
-	_I("Departure detected, timestamp: %d", departure_time);
+	_I("Departure detected, timestamp: %d", __departureTime);
 
-	interval_s interval(entrance_time, departure_time);
-	visit_s visit(interval, rep_macs);
+	Interval interval(__entranceTime, __departureTime);
+	Visit visit(interval, __representativesMacs);
 	VisitCateger::categorize(visit);
 
-	put_visit_location(visit);
+	__putLocationToVisit(visit);
 
-	if (test_mode) {
-		detected_visits->push_back(visit);
+	if (__testMode) {
+		__detectedVisits->push_back(visit);
 	} else {
-		db_insert_visit(visit);
+		__dbInsertVisit(visit);
 	}
 
 	// cleaning
-	entrance_to_place = false;
-	rep_macs.reset();
-	tolerance = VISIT_DETECTOR_TOLERANCE_DEPTH;
+	__entranceToPlace = false;
+	__representativesMacs.reset();
+	__tolerance = VISIT_DETECTOR_TOLERANCE_DEPTH;
 }
 
-void ctx::VisitDetector::put_visit_location(ctx::visit_s &visit)
+void ctx::VisitDetector::__putLocationToVisit(ctx::Visit &visit)
 {
 	// TODO: remove small accuracy locations from vectors?
 	std::vector<double> latitudes;
 	std::vector<double> longitudes;
 	visit.location_valid = false;
-	for (location_event_s location : locations) {
-		if (location.timestamp >= entrance_time && location.timestamp <= departure_time) {
+	for (LocationEvent location : __locationEvents) {
+		if (location.timestamp >= __entranceTime && location.timestamp <= __departureTime) {
 			latitudes.push_back(location.coordinates.latitude);
 			longitudes.push_back(location.coordinates.longitude);
 			visit.location_valid = true;
@@ -253,84 +247,84 @@ void ctx::VisitDetector::put_visit_location(ctx::visit_s &visit)
 	}
 }
 
-void ctx::VisitDetector::buffer_processing(std::shared_ptr<ctx::frame_s> frame)
+void ctx::VisitDetector::__processBuffer(std::shared_ptr<ctx::Frame> frame)
 {
-	if (buffered_frames.empty()) {
-		history_frames.push_back(frame);
+	if (__bufferedFrames.empty()) {
+		__historyFrames.push_back(frame);
 	} else {
-		history_frames.push_back(buffered_frames[0]);
-		for (size_t i = 1; i < buffered_frames.size(); i++) {
-			detect_entrance(buffered_frames[i]);
-			if (entrance_to_place) {
+		__historyFrames.push_back(__bufferedFrames[0]);
+		for (size_t i = 1; i < __bufferedFrames.size(); i++) {
+			__detectEntrance(__bufferedFrames[i]);
+			if (__entranceToPlace) {
 				break;
 			}
 		}
 	}
 }
 
-void ctx::VisitDetector::detect_entrance(std::shared_ptr<ctx::frame_s> current_frame)
+void ctx::VisitDetector::__detectEntrance(std::shared_ptr<ctx::Frame> current_frame)
 {
-	if (current_frame->mac_counts.empty() || history_frames.empty()) {
-		history_reset(current_frame);
+	if (current_frame->macCountsMap.empty() || __historyFrames.empty()) {
+		__resetHistory(current_frame);
 		return;
 	}
 
-	if (stable_counter == 0) {
-		std::shared_ptr<frame_s> oldest_history_frame = history_frames[0];
-		stay_macs = mac_set_from_mac_counts(oldest_history_frame->mac_counts);
+	if (__stableCounter == 0) {
+		std::shared_ptr<Frame> oldest_history_frame = __historyFrames[0];
+		__stayMacs = mac_set_from_mac_counts(oldest_history_frame->macCountsMap);
 	}
 
-	std::shared_ptr<mac_set_t> current_beacons = mac_set_from_mac_counts(current_frame->mac_counts);
+	std::shared_ptr<mac_set_t> current_beacons = mac_set_from_mac_counts(current_frame->macCountsMap);
 
-	if (overlap_bigger_over_smaller(*current_beacons, *stay_macs) > VISIT_DETECTOR_OVERLAP) {
-		stable_counter++;
-		history_frames.push_back(current_frame);
+	if (similarity::overlapBiggerOverSmaller(*current_beacons, *__stayMacs) > VISIT_DETECTOR_OVERLAP) {
+		__stableCounter++;
+		__historyFrames.push_back(current_frame);
 
-		if (stable_counter == VISIT_DETECTOR_STABLE_DEPTH) { // entrance detected
-			visit_start_detected();
+		if (__stableCounter == VISIT_DETECTOR_STABLE_DEPTH) { // entrance detected
+			__visitStartDetected();
 		}
 	} else {
-		history_reset(current_frame);
+		__resetHistory(current_frame);
 	}
 	return;
 }
 
-void ctx::VisitDetector::history_reset()
+void ctx::VisitDetector::__resetHistory()
 {
-	stable_counter = 0;
-	history_frames.clear();
+	__stableCounter = 0;
+	__historyFrames.clear();
 }
 
-void ctx::VisitDetector::history_reset(std::shared_ptr<frame_s> frame)
+void ctx::VisitDetector::__resetHistory(std::shared_ptr<Frame> frame)
 {
-	history_reset();
-	history_frames.push_back(frame);
+	__resetHistory();
+	__historyFrames.push_back(frame);
 }
 
-std::shared_ptr<ctx::mac_set_t> ctx::VisitDetector::select_representatives(const std::vector<std::shared_ptr<frame_s>> &frames)
+std::shared_ptr<ctx::mac_set_t> ctx::VisitDetector::__selectRepresentatives(const std::vector<std::shared_ptr<Frame>> &frames)
 {
 	mac_counts_t repr_counts;
 	count_t all_count = 0;
 
 	for (auto frame : frames) {
-		all_count += frame->no_timestamps;
-		for (auto &c : frame->mac_counts) {
+		all_count += frame->numberOfTimestamps;
+		for (auto &c : frame->macCountsMap) {
 			repr_counts[c.first] += c.second;
 		}
 	}
 
-	std::shared_ptr<mac_shares_t> repr_shares = mac_shares_from_counts(repr_counts, all_count);
+	std::shared_ptr<mac_shares_t> repr_shares = __macSharesFromCounts(repr_counts, all_count);
 
-	share_t max_share = calc_max_share(*repr_shares);
+	share_t max_share = __calcMaxShare(*repr_shares);
 	share_t threshold = max_share < VISIT_DETECTOR_REP_THRESHOLD ?
 		max_share : VISIT_DETECTOR_REP_THRESHOLD;
 
-	std::shared_ptr<mac_set_t> repr_mac_set = mac_set_of_greater_or_equal_share(*repr_shares, threshold);
+	std::shared_ptr<mac_set_t> repr_mac_set = __macSetOfGreaterOrEqualShare(*repr_shares, threshold);
 
 	return repr_mac_set;
 }
 
-ctx::share_t ctx::VisitDetector::calc_max_share(const ctx::mac_shares_t &mac_shares)
+ctx::share_t ctx::VisitDetector::__calcMaxShare(const ctx::mac_shares_t &mac_shares)
 {
 	ctx::share_t max_value = 0.0;
 	for (auto &ms : mac_shares) {
@@ -341,38 +335,38 @@ ctx::share_t ctx::VisitDetector::calc_max_share(const ctx::mac_shares_t &mac_sha
 	return max_value;
 }
 
-std::shared_ptr<ctx::mac_set_t> ctx::VisitDetector::mac_set_of_greater_or_equal_share(const ctx::mac_shares_t &mac_shares, ctx::share_t threshold)
+std::shared_ptr<ctx::mac_set_t> ctx::VisitDetector::__macSetOfGreaterOrEqualShare(const ctx::mac_shares_t &mac_shares, ctx::share_t threshold)
 {
-	std::shared_ptr<mac_set_t> mac_set = std::make_shared<mac_set_t>();
+	std::shared_ptr<mac_set_t> macSet = std::make_shared<mac_set_t>();
 	for (auto &ms : mac_shares) {
 		if (ms.second >= threshold) {
-			mac_set->insert(ms.first);
+			macSet->insert(ms.first);
 		}
 	}
-	return mac_set;
+	return macSet;
 }
 
-std::shared_ptr<ctx::mac_shares_t> ctx::VisitDetector::mac_shares_from_counts(ctx::mac_counts_t const &mac_counts, ctx::count_t denominator)
+std::shared_ptr<ctx::mac_shares_t> ctx::VisitDetector::__macSharesFromCounts(ctx::mac_counts_t const &macCountsMap, ctx::count_t denominator)
 {
 	std::shared_ptr<mac_shares_t> mac_shares(std::make_shared<mac_shares_t>());
-	for (auto mac_count : mac_counts) {
+	for (auto mac_count : macCountsMap) {
 		(*mac_shares)[mac_count.first] = (share_t) mac_count.second / denominator;
 	}
 	return mac_shares;
 }
 
-std::shared_ptr<ctx::visits_t> ctx::VisitDetector::get_visits()
+std::shared_ptr<ctx::visits_t> ctx::VisitDetector::getVisits()
 {
-	return detected_visits;
+	return __detectedVisits;
 }
 
-void ctx::VisitDetector::db_create_table()
+void ctx::VisitDetector::__dbCreateTable()
 {
 	bool ret = db_manager::create_table(0, VISIT_TABLE, VISIT_TABLE_COLUMNS);
 	_D("db: visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-void ctx::VisitDetector::json_put_visit_categ(Json &data, const char* key, const categs_t &categs, int categ_type)
+void ctx::VisitDetector::__putVisitCategToJson(const char* key, const categs_t &categs, int categ_type, Json &data)
 {
 	auto categ_p = categs.find(categ_type);
 	if (categ_p == categs.end()) {
@@ -382,17 +376,17 @@ void ctx::VisitDetector::json_put_visit_categ(Json &data, const char* key, const
 	}
 }
 
-void ctx::VisitDetector::json_put_visit_categs(Json &data, const categs_t &categs)
+void ctx::VisitDetector::__putVisitCategsToJson(const categs_t &categs, Json &data)
 {
-	json_put_visit_categ(data, VISIT_COLUMN_CATEG_HOME, categs, PLACE_CATEG_ID_HOME);
-	json_put_visit_categ(data, VISIT_COLUMN_CATEG_WORK, categs, PLACE_CATEG_ID_WORK);
-	json_put_visit_categ(data, VISIT_COLUMN_CATEG_OTHER, categs, PLACE_CATEG_ID_OTHER);
+	__putVisitCategToJson(VISIT_COLUMN_CATEG_HOME, categs, PLACE_CATEG_ID_HOME, data);
+	__putVisitCategToJson(VISIT_COLUMN_CATEG_WORK, categs, PLACE_CATEG_ID_WORK, data);
+	__putVisitCategToJson(VISIT_COLUMN_CATEG_OTHER, categs, PLACE_CATEG_ID_OTHER, data);
 }
 
-int ctx::VisitDetector::db_insert_visit(visit_s visit)
+int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 {
 	std::stringstream macs_ss;
-	macs_ss << *visit.mac_set;
+	macs_ss << *visit.macSet;
 
 	Json data;
 	data.set(NULL, VISIT_COLUMN_WIFI_APS, macs_ss.str().c_str());
@@ -405,20 +399,17 @@ int ctx::VisitDetector::db_insert_visit(visit_s visit)
 	data.set(NULL, VISIT_COLUMN_END_TIME, static_cast<int>(visit.interval.end));
 
 #ifdef TIZEN_ENGINEER_MODE
-	std::string start_time_human = DebugUtils::human_readable_date_time(visit.interval.start, "%F %T", 80);
-	std::string end_time_human = DebugUtils::human_readable_date_time(visit.interval.end, "%F %T", 80);
+	std::string start_time_human = DebugUtils::humanReadableDateTime(visit.interval.start, "%F %T", 80);
+	std::string end_time_human = DebugUtils::humanReadableDateTime(visit.interval.end, "%F %T", 80);
 	data.set(NULL, VISIT_COLUMN_START_TIME_HUMAN, start_time_human.c_str());
 	data.set(NULL, VISIT_COLUMN_END_TIME_HUMAN, end_time_human.c_str());
-
-	json_put_visit_categs(data, visit.categs);
-
 	_D("db: visit table insert interval: (%d, %d): (%s, %s)",
 			visit.interval.start, visit.interval.end, start_time_human.c_str(), end_time_human.c_str());
 #else
-	json_put_visit_categs(data, visit.categs);
-
 	_D("db: visit table insert interval: (%d, %d)", visit.interval.start, visit.interval.end);
 #endif /* TIZEN_ENGINEER_MODE */
+
+	__putVisitCategsToJson(visit.categs, data);
 
 	int64_t row_id;
 	bool ret = db_manager::insert_sync(VISIT_TABLE, data, &row_id);
@@ -426,30 +417,30 @@ int ctx::VisitDetector::db_insert_visit(visit_s visit)
 	return ret;
 }
 
-void ctx::VisitDetector::on_new_location(location_event_s location_event)
+void ctx::VisitDetector::onNewLocation(LocationEvent location_event)
 {
 	_D("");
 	location_event.log();
-	locations.push_back(location_event);
+	__locationEvents.push_back(location_event);
 };
 
-void ctx::VisitDetector::set_period(place_recog_mode_e energy_mode)
+void ctx::VisitDetector::__setPeriod(place_recog_mode_e energyMode)
 {
-	switch (energy_mode) {
+	switch (energyMode) {
 	case PLACE_RECOG_LOW_POWER_MODE:
-		period_seconds = VISIT_DETECTOR_PERIOD_SECONDS_LOW_POWER;
+		__periodSeconds = VISIT_DETECTOR_PERIOD_SECONDS_LOW_POWER;
 		break;
 	case PLACE_RECOG_HIGH_ACCURACY_MODE:
-		period_seconds = VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY;
+		__periodSeconds = VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY;
 		break;
 	default:
 		_E("Incorrect energy mode");
 	}
 }
 
-void ctx::VisitDetector::set_mode(place_recog_mode_e energy_mode)
+void ctx::VisitDetector::setMode(place_recog_mode_e energyMode)
 {
 	_D("");
-	set_period(energy_mode);
-	wifi_logger.set_mode(energy_mode);
+	__setPeriod(energyMode);
+	__wifiLogger.setMode(energyMode);
 }

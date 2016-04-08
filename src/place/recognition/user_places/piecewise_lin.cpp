@@ -17,33 +17,32 @@
 #include "piecewise_lin.h"
 #include <types_internal.h>
 
-ctx::PiecewiseLin::PiecewiseLin(std::vector<num_t> _xs, std::vector<num_t> _vs)
-	: n(0)
+ctx::PiecewiseLin::PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs) :
+	__xs(xs),
+	__vs(vs),
+	__n(xs.size())
 {
-	if (_xs.size() != _vs.size()) {
+	if (xs.size() != vs.size()) {
 		_E("Input arguments have different sizes");
 		return;
 	}
-	xs = _xs;
-	vs = _vs;
-	n = xs.size();
 }
 
-ctx::num_t ctx::PiecewiseLin::val(num_t x)
+ctx::num_t ctx::PiecewiseLin::value(num_t x)
 {
-	if (x <= xs[0]) {
-		return vs[0];
-	} else if (x >= xs[n-1]) {
-		return vs[n - 1];
+	if (x <= __xs[0]) {
+		return __vs[0];
+	} else if (x >= __xs[__n-1]) {
+		return __vs[__n - 1];
 	} else {
-		num_t xp = xs[0];
-		for (size_t i = 1; i < n; i++) {
-			num_t xn = xs[i];
+		num_t xp = __xs[0];
+		for (size_t i = 1; i < __n; i++) {
+			num_t xn = __xs[i];
 			if (x <= xn) {
 				num_t d = xn - xp;
 				num_t dxp = x - xp;
 				num_t dxn = xn - x;
-				return (dxn * vs[i-1] + dxp * vs[i]) / d;
+				return (dxn * __vs[i-1] + dxp * __vs[i]) / d;
 			}
 			xp = xn;
 		}

@@ -53,8 +53,8 @@ int ctx::place_recognition_provider::read(const char *subject, ctx::Json option,
 	_I(BLUE("Read"));
 	_J("Option", option);
 
-	std::vector<std::shared_ptr<ctx::Place>> places = engine.get_places();
-	Json dataRead = UserPlaces::compose_json(places);
+	std::vector<std::shared_ptr<ctx::Place>> places = engine.getPlaces();
+	Json dataRead = UserPlaces::composeJson(places);
 
 	// The below function needs to be called once.
 	// It does not need to be called within this read() function.

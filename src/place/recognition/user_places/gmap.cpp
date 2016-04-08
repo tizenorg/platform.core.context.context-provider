@@ -18,7 +18,7 @@
 #include <iostream>
 #include <fstream>
 
-const std::string ctx::Gmap::html_header = R"(
+const std::string ctx::Gmap::__htmlHeader = R"(
 <!DOCTYPE html>
 <html>
   <head>
@@ -42,7 +42,7 @@ function initialize() {
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 )";
 
-const std::string ctx::Gmap::html_footer = R"(
+const std::string ctx::Gmap::__htmlFooter = R"(
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -55,7 +55,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 </html>
 )";
 
-std::string ctx::Gmap::icon_for_categ_id(place_categ_id_e categ_id)
+std::string ctx::Gmap::__iconForCategId(PlaceCategId categ_id)
 {
 	switch (categ_id) {
 	case PLACE_CATEG_ID_HOME:  return "markerH.png";
@@ -66,28 +66,28 @@ std::string ctx::Gmap::icon_for_categ_id(place_categ_id_e categ_id)
 	}
 }
 
-void ctx::Gmap::place_marker_to_stream(const ctx::Place& place, std::ostream& out)
+void ctx::Gmap::__placeMarker2Stream(const ctx::Place& place, std::ostream& out)
 {
 	if (place.location_valid) {
 		out << "new google.maps.Marker({" << std::endl;
 		out << "    position: new google.maps.LatLng(" << place.location.latitude << "," << place.location.longitude << ")," << std::endl;
 		out << "    map: map," << std::endl;
-		out << "    icon: \"http://maps.google.com/mapfiles/" << icon_for_categ_id(place.categ_id)<< "\"" << std::endl;
+		out << "    icon: \"http://maps.google.com/mapfiles/" << __iconForCategId(place.categ_id)<< "\"" << std::endl;
 		out << "});" << std::endl;
 	}
 }
 
-void ctx::Gmap::html_to_stream(const std::vector<std::shared_ptr<ctx::Place>>& places, std::ostream& out)
+void ctx::Gmap::__html2Stream(const std::vector<std::shared_ptr<ctx::Place>>& places, std::ostream& out)
 {
-	out << html_header;
+	out << __htmlHeader;
 	for (std::shared_ptr<ctx::Place> place : places) {
-		place_marker_to_stream(*place, out);
+		__placeMarker2Stream(*place, out);
 	}
-	out << html_footer;
+	out << __htmlFooter;
 }
 
-void ctx::Gmap::write_map(const std::vector<std::shared_ptr<ctx::Place>>& places)
+void ctx::Gmap::writeMap(const std::vector<std::shared_ptr<ctx::Place>>& places)
 {
 	std::ofstream out(GMAP_FILE);
-	html_to_stream(places, out);
+	__html2Stream(places, out);
 }

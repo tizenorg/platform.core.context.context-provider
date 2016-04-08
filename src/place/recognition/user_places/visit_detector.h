@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_VISIT_DETECTOR_H__
-#define __CONTEXT_PLACE_STATUS_VISIT_DETECTOR_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_VISIT_DETECTOR_H_
+#define _CONTEXT_PLACE_RECOGNITION_VISIT_DETECTOR_H_
 
 #include <memory>
 #include <vector>
@@ -35,68 +35,67 @@ namespace ctx {
 	class VisitDetector : public IWifiListener, ILocationListener {
 
 	private:
-		bool test_mode;
-		std::shared_ptr<visits_t> detected_visits;   // only used in test mode
-		LocationLogger location_logger;
-		WifiLogger wifi_logger;
-		std::vector<IVisitListener*> listeners;
-
-		std::shared_ptr<mac_events> current_logger;
-		interval_s current_interval;
-
-		std::vector<std::shared_ptr<frame_s>> history_frames;  // python: history_scans  + history_times
-		std::vector<std::shared_ptr<frame_s>> buffered_frames; // python: buffered_scans + buffered_times
-
-		int stable_counter;
-		int tolerance;
-		bool entrance_to_place;
-		int period_seconds;
+		bool __testMode;
+		std::shared_ptr<visits_t> __detectedVisits; // only used in test mode
+		LocationLogger __locationLogger;
+		WifiLogger __wifiLogger;
+		std::vector<IVisitListener*> __listeners;
+		std::shared_ptr<mac_events> __currentLogger;
+		Interval __currentInterval;
+		std::vector<LocationEvent> __locationEvents;
+		std::vector<std::shared_ptr<Frame>> __historyFrames;  // python: history_scans  + history_times
+		std::vector<std::shared_ptr<Frame>> __bufferedFrames; // python: buffered_scans + buffered_times
+		int __stableCounter;
+		int __tolerance;
+		bool __entranceToPlace;
+		int __periodSeconds;
 
 		// fields that  are used only in case of entrance detection
-		std::shared_ptr<mac_set_t> rep_macs; // mac that represent the current place
-		std::shared_ptr<mac_set_t> stay_macs; // macs that can appear in the current place
-		time_t entrance_time;
-		time_t departure_time;
+		std::shared_ptr<mac_set_t> __representativesMacs; // macs that represent the current place
+		std::shared_ptr<mac_set_t> __stayMacs; // macs that can appear in the current place
+		time_t __entranceTime;
+		time_t __departureTime;
 
-		std::vector<location_event_s> locations;
+		bool __isValid(const Mac &mac);
+		void __shiftCurrentInterval();
+		void __detectEntranceOrDeparture(std::shared_ptr<Frame> frame);
+		void __detectEntrance(std::shared_ptr<Frame> frame);
+		void __detectDeparture(std::shared_ptr<Frame> frame);
+		void __processBuffer(std::shared_ptr<Frame> frame); // python: buffer_analysing
+		std::shared_ptr<Frame> __makeFrame(std::shared_ptr<mac_events> mac_events, Interval interval);  // python: scans2fingerprint
+		void __resetHistory();
+		void __resetHistory(std::shared_ptr<Frame> frame);
+		void __visitStartDetected();
+		void __visitEndDetected();
+		void __putLocationToVisit(Visit &visit);
+		std::shared_ptr<mac_set_t> __selectRepresentatives(const std::vector<std::shared_ptr<Frame>> &frames);
+		std::shared_ptr<mac_set_t> __macSetOfGreaterOrEqualShare(const mac_shares_t &mac_shares, share_t threshold);
+		std::shared_ptr<mac_shares_t> __macSharesFromCounts(mac_counts_t const &mac_counts, count_t denominator); // python: response_rate
+		share_t __calcMaxShare(const mac_shares_t &mac_shares);
+		bool __isDisjoint(const mac_counts_t &mac_counts, const mac_set_t &macSet);
+		bool __protrudesFrom(const mac_counts_t &mac_counts, const mac_set_t &macSet);
+		void __setPeriod(place_recog_mode_e mode);
+		void __processCurrentLogger();
 
-		bool is_valid(const Mac &mac);
-		void shift_current_interval();
-		void detect_entrance_or_departure(std::shared_ptr<frame_s> frame);
-		void detect_entrance(std::shared_ptr<frame_s> frame);
-		void detect_departure(std::shared_ptr<frame_s> frame);
-		void buffer_processing(std::shared_ptr<frame_s> frame); // python: buffer_anaysing
-		std::shared_ptr<frame_s> make_frame(std::shared_ptr<mac_events> mac_events, interval_s interval);  // python: scans2fingerprint
-		void history_reset();
-		void history_reset(std::shared_ptr<frame_s> frame);
-		void visit_start_detected();
-		void visit_end_detected();
-		void put_visit_location(visit_s &visit);
-		std::shared_ptr<mac_set_t> select_representatives(const std::vector<std::shared_ptr<frame_s>> &frames);
-		std::shared_ptr<mac_set_t> mac_set_of_greater_or_equal_share(const mac_shares_t &mac_shares, share_t threshold);
-		std::shared_ptr<mac_shares_t> mac_shares_from_counts(mac_counts_t const &mac_counts, count_t denominator); // python: response_rate
-		share_t calc_max_share(const mac_shares_t &mac_shares);
-		bool is_disjoint(const mac_counts_t &mac_counts, const mac_set_t &mac_set);
-		bool protrudes_from(const mac_counts_t &mac_counts, const mac_set_t &mac_set);
+		/* DATABASE */
+		void __dbCreateTable();
+		int __dbInsertVisit(Visit visit);
+		void __putVisitCategToJson(const char* key, const categs_t &categs, int categ_type, Json &data);
+		void __putVisitCategsToJson(const categs_t &categs, Json &data);
 
-		void db_create_table();
-		void json_put_visit_categ(Json &data, const char* key, const categs_t &categs, int categ_type);
-		void json_put_visit_categs(Json &data, const categs_t &categs);
-		int db_insert_visit(visit_s visit);
-		void set_period(place_recog_mode_e mode);
+		/* INPUT */
+		void onWifiScan(MacEvent event);
+		void onNewLocation(LocationEvent location);
 
 	public:
-		VisitDetector(time_t t_start_scan, place_recog_mode_e energy_mode = PLACE_RECOG_HIGH_ACCURACY_MODE, bool test_mode_ = false);
+		VisitDetector(time_t t_start_scan, place_recog_mode_e energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE, bool testMode = false);
 		~VisitDetector();
-		interval_s get_current_interval();
-		void on_wifi_scan(mac_event_s event);
-		void process_current_logger();
-		std::shared_ptr<visits_t> get_visits(); // only used in test mode
-		void on_new_location(location_event_s location);
-		void set_mode(place_recog_mode_e energy_mode);
+
+		std::shared_ptr<visits_t> getVisits(); // only used in test mode
+		void setMode(place_recog_mode_e energyMode);
 
 	};	/* class VisitDetector */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_VISIT_DETECTOR_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_VISIT_DETECTOR_H_ */

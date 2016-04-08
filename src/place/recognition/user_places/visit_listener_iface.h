@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_VISIT_LISTENER_IFACE_H__
-#define __CONTEXT_PLACE_STATUS_VISIT_LISTENER_IFACE_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_VISIT_LISTENER_IFACE_H_
+#define _CONTEXT_PLACE_RECOGNITION_VISIT_LISTENER_IFACE_H_
 
 namespace ctx {
 
@@ -23,11 +23,11 @@ namespace ctx {
 
 	public:
 		virtual ~IVisitListener() {};
-		virtual void on_visit_start() = 0;
-		virtual void on_visit_end() = 0;
+		virtual void onVisitStart() = 0;
+		virtual void onVisitEnd() = 0;
 
 	};	/* class IVisitListener */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_VISIT_LISTENER_IFACE_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_VISIT_LISTENER_IFACE_H_ */

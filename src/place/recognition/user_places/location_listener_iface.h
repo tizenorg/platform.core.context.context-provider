@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_LOCATION_LISTENER_IFACE_H__
-#define __CONTEXT_PLACE_STATUS_LOCATION_LISTENER_IFACE_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
+#define _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
 
 #include "user_places_types.h"
 
@@ -25,10 +25,10 @@ namespace ctx {
 
 	public:
 		virtual ~ILocationListener() {};
-		virtual void on_new_location(location_event_s location) = 0;
+		virtual void onNewLocation(LocationEvent location) = 0;
 
 	};	/* class ILocationListener */
 
 }	/* namespace ctx */
 
-#endif	/* __CONTEXT_PLACE_STATUS_LOCATION_LISTENER_IFACE_H__ */
+#endif	/* End of _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_ */

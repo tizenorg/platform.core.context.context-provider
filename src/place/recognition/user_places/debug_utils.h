@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_DEBUG_UTILS_H__
-#define __CONTEXT_PLACE_STATUS_DEBUG_UTILS_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_DEBUG_UTILS_H_
+#define _CONTEXT_PLACE_RECOGNITION_DEBUG_UTILS_H_
 
 #include <string>
 #include <ctime>
@@ -25,10 +25,10 @@ namespace ctx {
 	class DebugUtils {
 
 	public:
-		static std::string human_readable_date_time(time_t timestamp, std::string format, size_t size, bool utc = false);
+		static std::string humanReadableDateTime(time_t timestamp, std::string format, size_t size, bool utc = false);
 
 	};	/* class DebugUtils */
 
 }	/* namespace ctx */
 
-#endif /*__CONTEXT_PLACE_STATUS_DEBUG_UTILS_H__*/
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_DEBUG_UTILS_H_ */

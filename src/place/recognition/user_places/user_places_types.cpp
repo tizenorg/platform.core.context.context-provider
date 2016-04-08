@@ -121,7 +121,7 @@ bool ctx::operator<(const Mac &m1, const Mac &m2)
 	return false; // they are equal
 }
 
-std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &mac_set)
+std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &macSet)
 {
 	Mac mac;
 	char delimeter;
@@ -129,10 +129,10 @@ std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &mac_set)
 		try {
 			input >> mac;
 		} catch (std::runtime_error &e) {
-			_E("Cannot read mac_set. Exception: %s", e.what());
+			_E("Cannot read macSet. Exception: %s", e.what());
 			break;
 		}
-		mac_set.insert(mac);
+		macSet.insert(mac);
 		if (input.eof()) {
 			break;
 		}
@@ -145,10 +145,10 @@ std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &mac_set)
 	return input;
 }
 
-std::ostream& ctx::operator<<(std::ostream &output, const ctx::mac_set_t &mac_set)
+std::ostream& ctx::operator<<(std::ostream &output, const ctx::mac_set_t &macSet)
 {
-	std::vector<Mac> mac_vec(mac_set.size());
-	std::copy(mac_set.begin(), mac_set.end(), mac_vec.begin());
+	std::vector<Mac> mac_vec(macSet.size());
+	std::copy(macSet.begin(), macSet.end(), mac_vec.begin());
 	std::sort(mac_vec.begin(), mac_vec.end());
 
 	bool first = true;
@@ -163,9 +163,9 @@ std::ostream& ctx::operator<<(std::ostream &output, const ctx::mac_set_t &mac_se
 	return output;
 }
 
-void ctx::location_event_s::log()
+void ctx::LocationEvent::log()
 {
-	std::string time_str = DebugUtils::human_readable_date_time(timestamp, "%T", 9);
+	std::string time_str = DebugUtils::humanReadableDateTime(timestamp, "%T", 9);
 #ifdef TIZEN_ENGINEER_MODE
 	_D("location lat=%.8f, lon=%.8f, acc=%.2f[m], time=%s, method=%d",
 			coordinates.latitude,
@@ -182,24 +182,24 @@ void ctx::location_event_s::log()
 #endif /* TIZEN_ENGINEER_MODE */
 }
 
-void ctx::visit_s::set_location(location_s location_)
+void ctx::Visit::set_location(Location location_)
 {
 	location_valid = true;
 	location = location_;
 }
 
-void ctx::visit_s::print_short_to_stream(std::ostream &out) const
+void ctx::Visit::print_short_to_stream(std::ostream &out) const
 {
 	// print only valid visits
 	if (interval.end != 0) {
 		float duration = ((float) (interval.end - interval.start)) / 3600; // [h]
 		out << "__VISIT " << duration << "h: ";
-			out << DebugUtils::human_readable_date_time(interval.start, "%m/%d %H:%M", 15) << " ÷ ";
-			out << DebugUtils::human_readable_date_time(interval.end, "%m/%d %H:%M", 15) << std::endl;
+			out << DebugUtils::humanReadableDateTime(interval.start, "%m/%d %H:%M", 15) << " ÷ ";
+			out << DebugUtils::humanReadableDateTime(interval.end, "%m/%d %H:%M", 15) << std::endl;
 	}
 }
 
-bool ctx::operator==(const ctx::visit_s &v1, const ctx::visit_s &v2)
+bool ctx::operator==(const ctx::Visit &v1, const ctx::Visit &v2)
 {
 	return v1.interval.start == v2.interval.start
 			&& v1.interval.end == v2.interval.end
@@ -208,16 +208,16 @@ bool ctx::operator==(const ctx::visit_s &v1, const ctx::visit_s &v2)
 			&& v1.location.longitude == v2.location.longitude
 			&& v1.location.accuracy == v2.location.accuracy
 			&& v1.location_valid == v2.location_valid
-			&& v1.mac_set == v2.mac_set;
+			&& v1.macSet == v2.macSet;
 }
 
 ctx::mac_set_t ctx::mac_set_from_string(const std::string &str)
 {
-	mac_set_t mac_set;
+	mac_set_t macSet;
 	std::stringstream ss;
 	ss << str;
-	ss >> mac_set;
-	return mac_set;
+	ss >> macSet;
+	return macSet;
 }
 
 bool ctx::operator>(const Mac &m1, const Mac &m2)
@@ -227,23 +227,23 @@ bool ctx::operator>(const Mac &m1, const Mac &m2)
 
 std::shared_ptr<ctx::mac_set_t> ctx::mac_set_from_mac_counts(const mac_counts_t &mac_counts)
 {
-	std::shared_ptr<mac_set_t> mac_set(std::make_shared<mac_set_t>());
+	std::shared_ptr<mac_set_t> macSet(std::make_shared<mac_set_t>());
 	for (auto &c: mac_counts) {
-		mac_set->insert(c.first);
+		macSet->insert(c.first);
 	}
-	return mac_set;
+	return macSet;
 }
 
-std::shared_ptr<ctx::mac_set_t> ctx::mac_sets_union(const std::vector<std::shared_ptr<mac_set_t>> &mac_sets)
+std::shared_ptr<ctx::mac_set_t> ctx::mac_sets_union(const std::vector<std::shared_ptr<mac_set_t>> &macSets)
 {
 	std::shared_ptr<mac_set_t> union_set = std::make_shared<mac_set_t>();
-	for (std::shared_ptr<mac_set_t> mac_set : mac_sets) {
-		union_set->insert(mac_set->begin(), mac_set->end());
+	for (std::shared_ptr<mac_set_t> macSet : macSets) {
+		union_set->insert(macSet->begin(), macSet->end());
 	}
 	return union_set;
 }
 
-ctx::interval_s::interval_s(time_t start_, time_t end_) : start(start_), end(end_) {
+ctx::Interval::Interval(time_t start_, time_t end_) : start(start_), end(end_) {
 	if (end_ < start_) {
 		_E("Negative interval, start=%d, end=%d", start_, end_);
 	}
@@ -258,5 +258,5 @@ void ctx::Place::print_to_stream(std::ostream &out) const
 		out << ", lon=" << location.longitude << std::setprecision(5) << std::endl;
 	}
 	out << "__WIFI:" << wifi_aps << std::endl;
-	out << "__CREATE_DATE: " << DebugUtils::human_readable_date_time(create_date, "%F %T", 80) << std::endl;
+	out << "__CREATE_DATE: " << DebugUtils::humanReadableDateTime(create_date, "%F %T", 80) << std::endl;
 }

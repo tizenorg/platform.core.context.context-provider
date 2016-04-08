@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_MEDIAN__
-#define __CONTEXT_PLACE_STATUS_MEDIAN__
+#ifndef _CONTEXT_PLACE_RECOGNITION_MEDIAN_
+#define _CONTEXT_PLACE_RECOGNITION_MEDIAN_
 
 #include "user_places_types.h"
 #include <vector>
@@ -27,4 +27,4 @@ namespace ctx {
 
 } /* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_MEDIAN__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_MEDIAN_ */

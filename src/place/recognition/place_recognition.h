@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_RECOGNITION_H__
-#define __CONTEXT_PLACE_RECOGNITION_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_H_
+#define _CONTEXT_PLACE_RECOGNITION_H_
 
 #include <ContextProviderBase.h>
 #include "place_recognition_types.h"
@@ -46,4 +46,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_RECOGNITION_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_H_ */

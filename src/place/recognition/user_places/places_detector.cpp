@@ -18,7 +18,7 @@
 #include <types_internal.h>
 #include <db_mgr.h>
 #include <Json.h>
-#include "similar.h"
+#include "similarity.h"
 #include "places_detector.h"
 #include "place_categer.h"
 #include "graph.h"
@@ -73,15 +73,15 @@
 bool ctx::PlacesDetector::onTimerExpired(int timerId)
 {
 	_D("");
-	db_delete_places();
-	db_delete_old_visits();
-	std::vector<Json> records = db_get_visits();
-	visits_t visits = visits_from_jsons(records);
-	process_visits(visits);
+	__dbDeletePlaces();
+	__dbDeleteOldVisits();
+	std::vector<Json> records = __dbGetVisits();
+	visits_t visits = __visitsFromJsons(records);
+	__processVisits(visits);
 	return true;
 }
 
-std::vector<ctx::Json> ctx::PlacesDetector::db_get_visits()
+std::vector<ctx::Json> ctx::PlacesDetector::__dbGetVisits()
 {
 	std::vector<Json> records;
 	bool ret = db_manager::execute_sync(GET_VISITS_QUERY, &records);
@@ -89,7 +89,7 @@ std::vector<ctx::Json> ctx::PlacesDetector::db_get_visits()
 	return records;
 }
 
-std::vector<ctx::Json> ctx::PlacesDetector::db_get_places()
+std::vector<ctx::Json> ctx::PlacesDetector::__dbGetPlaces()
 {
 	std::vector<Json> records;
 	bool ret = db_manager::execute_sync(GET_PLACES_QUERY, &records);
@@ -97,24 +97,24 @@ std::vector<ctx::Json> ctx::PlacesDetector::db_get_places()
 	return records;
 }
 
-double ctx::PlacesDetector::double_value_from_json(Json &row, const char* key)
+double ctx::PlacesDetector::__doubleValueFromJson(Json &row, const char* key)
 {
 	double value;
 	row.get(NULL, key, &value);
-	_D("double_value_from_json, key:%s, value: %lf", key, value);
+	_D("__doubleValueFromJson, key:%s, value: %lf", key, value);
 	return value;
 }
 
-ctx::categs_t ctx::PlacesDetector::visit_categs_from_json(Json &row)
+ctx::categs_t ctx::PlacesDetector::__visitCategsFromJson(Json &row)
 {
 	categs_t categs;
-	categs[PLACE_CATEG_ID_HOME] = double_value_from_json(row, VISIT_COLUMN_CATEG_HOME);
-	categs[PLACE_CATEG_ID_WORK] = double_value_from_json(row, VISIT_COLUMN_CATEG_WORK);
-	categs[PLACE_CATEG_ID_OTHER] = double_value_from_json(row, VISIT_COLUMN_CATEG_OTHER);
+	categs[PLACE_CATEG_ID_HOME] = __doubleValueFromJson(row, VISIT_COLUMN_CATEG_HOME);
+	categs[PLACE_CATEG_ID_WORK] = __doubleValueFromJson(row, VISIT_COLUMN_CATEG_WORK);
+	categs[PLACE_CATEG_ID_OTHER] = __doubleValueFromJson(row, VISIT_COLUMN_CATEG_OTHER);
 	return categs;
 }
 
-ctx::visit_s ctx::PlacesDetector::visit_from_json(Json &row)
+ctx::Visit ctx::PlacesDetector::__visitFromJson(Json &row)
 {
 	int start_time;
 	int end_time;
@@ -125,13 +125,13 @@ ctx::visit_s ctx::PlacesDetector::visit_from_json(Json &row)
 
 	std::stringstream mac_set_ss;
 	mac_set_ss << mac_set_string;
-	std::shared_ptr<mac_set_t> mac_set = std::make_shared<mac_set_t>();
-	mac_set_ss >> *mac_set;
+	std::shared_ptr<mac_set_t> macSet = std::make_shared<mac_set_t>();
+	mac_set_ss >> *macSet;
 
-	interval_s interval(start_time, end_time);
-	categs_t categs = visit_categs_from_json(row);
+	Interval interval(start_time, end_time);
+	categs_t categs = __visitCategsFromJson(row);
 
-	visit_s visit(interval, mac_set, categs);
+	Visit visit(interval, macSet, categs);
 
 	{ // location
 		int location_valid_int;
@@ -144,27 +144,27 @@ ctx::visit_s ctx::PlacesDetector::visit_from_json(Json &row)
 	return visit;
 }
 
-ctx::visits_t ctx::PlacesDetector::visits_from_jsons(std::vector<Json>& records)
+ctx::visits_t ctx::PlacesDetector::__visitsFromJsons(std::vector<Json>& records)
 {
 	visits_t visits;
 	_D("db_result: number of all visits: %d", records.size());
 
 	for (Json &row : records) {
-		visit_s visit = visit_from_json(row);
+		Visit visit = __visitFromJson(row);
 		visits.push_back(visit);
 	}
 	_D("number of all visits in vector: %d", visits.size());
 	return visits;
 }
 
-std::shared_ptr<ctx::Place> ctx::PlacesDetector::place_from_json(Json &row)
+std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromJson(Json &row)
 {
 	std::shared_ptr<Place> place = std::make_shared<Place>();
 	{ // category
 		int categ_id;
 		row.get(NULL, PLACE_COLUMN_CATEG_ID, &categ_id);
 		// This is due to the fact the JSON module API interface doesn't handle enum
-		place->categ_id = static_cast<place_categ_id_e>(categ_id);
+		place->categ_id = static_cast<PlaceCategId>(categ_id);
 	}
 	row.get(NULL, PLACE_COLUMN_NAME, &(place->name));
 	row.get(NULL, PLACE_COLUMN_WIFI_APS, &(place->wifi_aps));
@@ -185,26 +185,26 @@ std::shared_ptr<ctx::Place> ctx::PlacesDetector::place_from_json(Json &row)
 	return place;
 }
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::places_from_jsons(std::vector<Json>& records)
+std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::__placesFromJsons(std::vector<Json>& records)
 {
 	std::vector<std::shared_ptr<Place>> places;
 	_D("db_result: number of all places: %d", records.size());
 
 	for (Json &row : records) {
-		std::shared_ptr<Place> place = place_from_json(row);
+		std::shared_ptr<Place> place = __placeFromJson(row);
 		places.push_back(place);
 	}
 	_D("number of all places in vector: %d", places.size());
 	return places;
 }
 
-void ctx::PlacesDetector::reduce_outliers(ctx::visits_t &visits)
+void ctx::PlacesDetector::reduceOutliers(ctx::visits_t &visits)
 {
 	int size = visits.size();
 	visits.erase(std::remove_if(
 					visits.begin(),
 					visits.end(),
-					[](visit_s v) {
+					[](Visit v) {
 						int minutes = (v.interval.end - v.interval.start) / 60;
 						return (minutes < PLACES_DETECTOR_MIN_VISIT_DURATION_MINUTES)
 								|| (minutes > PLACES_DETECTOR_MAX_VISIT_DURATION_MINUTES);
@@ -216,39 +216,39 @@ void ctx::PlacesDetector::reduce_outliers(ctx::visits_t &visits)
 	}
 }
 
-void ctx::PlacesDetector::process_visits(ctx::visits_t &visits)
+void ctx::PlacesDetector::__processVisits(ctx::visits_t &visits)
 {
-	reduce_outliers(visits);
+	reduceOutliers(visits);
 
-	_D("test_mode = %d", test_mode);
-	auto components = merge_visits(visits);
-	std::vector<std::shared_ptr<Place>> new_detected_places;
+	_D("__testMode = %d", __testMode);
+	auto components = __mergeVisits(visits);
+	std::vector<std::shared_ptr<Place>> newDetectedPlaces;
 #ifdef TIZEN_ENGINEER_MODE
 	std::vector<visits_t> places_visits; // TODO: remove from final solution.
 #endif /* TIZEN_ENGINEER_MODE */
-	for (std::shared_ptr<component_t> component : *components) {
+	for (std::shared_ptr<graph::Component> component : *components) {
 		// Small places outliers reduction
-		if (!test_mode && component->size() < PLACES_DETECTOR_MIN_VISITS_PER_BIG_PLACE) {
+		if (!__testMode && component->size() < PLACES_DETECTOR_MIN_VISITS_PER_BIG_PLACE) {
 			continue;
 		}
 
 		std::shared_ptr<visits_t> merged = std::make_shared<visits_t>();
-		for (node_t i : *component) {
+		for (graph::Node i : *component) {
 			merged->push_back(visits[i]);
 		}
-		std::shared_ptr<Place> place = place_from_merged(*merged);
+		std::shared_ptr<Place> place = __placeFromMergedVisits(*merged);
 		if (place->categ_id == PLACE_CATEG_ID_NONE) {
 			continue;
 		}
-		new_detected_places.push_back(place);
-		if (!test_mode) {
-			db_insert_place(*place);
+		newDetectedPlaces.push_back(place);
+		if (!__testMode) {
+			__dbInsertPlace(*place);
 		}
 
 #ifdef TIZEN_ENGINEER_MODE
 		{ // TODO: Only for debug -> remove in final solution
 			visits_t place_visits;
-			for (node_t i : *component) {
+			for (graph::Node i : *component) {
 				place_visits.push_back(visits[i]);
 			}
 			places_visits.push_back(place_visits);
@@ -256,20 +256,20 @@ void ctx::PlacesDetector::process_visits(ctx::visits_t &visits)
 #endif /* TIZEN_ENGINEER_MODE */
 	}
 
-	detected_places_update(new_detected_places);
+	__detectedPlacesUpdate(newDetectedPlaces);
 
 #ifdef TIZEN_ENGINEER_MODE
 	{ // Print to file TODO: Only for debug -> remove in final solution
 		std::ofstream out(USER_PLACES_FILE);
-		for (size_t i = 0; i < new_detected_places.size(); i++) {
-			new_detected_places[i]->print_to_stream(out);
+		for (size_t i = 0; i < newDetectedPlaces.size(); i++) {
+			newDetectedPlaces[i]->print_to_stream(out);
 			visits_t place_visits = places_visits[i];
-			for (visit_s visit : place_visits) {
+			for (Visit visit : place_visits) {
 				visit.print_short_to_stream(out);
 			}
 		}
 		out.close();
-		Gmap::write_map(detected_places);
+		Gmap::writeMap(newDetectedPlaces);
 	}
 #endif /* TIZEN_ENGINEER_MODE */
 }
@@ -277,19 +277,19 @@ void ctx::PlacesDetector::process_visits(ctx::visits_t &visits)
 /*
  * Replace old places by new ones.
  */
-void ctx::PlacesDetector::detected_places_update(std::vector<std::shared_ptr<Place>> &new_places)
+void ctx::PlacesDetector::__detectedPlacesUpdate(std::vector<std::shared_ptr<Place>> &new_places)
 {
 	_D("");
 	// XXX: In case of thread safety issues use std::mutex to protect places list.
-	detected_places = new_places;
+	__detectedPlaces = new_places;
 }
 
-void ctx::PlacesDetector::merge_location(const visits_t &visits, Place &place)
+void ctx::PlacesDetector::__mergeLocation(const visits_t &visits, Place &place)
 {
 	place.location_valid = false;
 	std::vector<double> latitudes;
 	std::vector<double> longitudes;
-	for (const visit_s& visit : visits) {
+	for (const Visit& visit : visits) {
 		if (visit.location_valid) {
 			latitudes.push_back(visit.location.latitude);
 			longitudes.push_back(visit.location.longitude);
@@ -302,32 +302,32 @@ void ctx::PlacesDetector::merge_location(const visits_t &visits, Place &place)
 	}
 }
 
-std::shared_ptr<ctx::Place> ctx::PlacesDetector::place_from_merged(visits_t &merged_visits)
+std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromMergedVisits(visits_t &merged_visits)
 {
 	std::shared_ptr<Place> place = std::make_shared<Place>();
 	place->create_date = std::time(nullptr);
-	std::vector<std::shared_ptr<mac_set_t>> mac_sets;
-	for (const visit_s &visit : merged_visits) {
-		mac_sets.push_back(visit.mac_set);
+	std::vector<std::shared_ptr<mac_set_t>> macSets;
+	for (const Visit &visit : merged_visits) {
+		macSets.push_back(visit.macSet);
 	}
-	std::shared_ptr<mac_set_t> all_macs = mac_sets_union(mac_sets);
+	std::shared_ptr<mac_set_t> all_macs = mac_sets_union(macSets);
 	std::stringstream all_macs_ss;
 	all_macs_ss << *all_macs;
 	place->wifi_aps = all_macs_ss.str();
 
-	merge_location(merged_visits, *place);
+	__mergeLocation(merged_visits, *place);
 
 	PlaceCateger::categorize(merged_visits, *place);
 
 	return place;
 }
 
-void ctx::PlacesDetector::reduce_outliers(std::shared_ptr<ctx::components_t> &cc)
+void ctx::PlacesDetector::reduceOutliers(std::shared_ptr<ctx::graph::Components> &cc)
 {
 	int size = cc->size();
 	cc->erase(std::remove_if(cc->begin(),
 							 cc->end(),
-							 [](std::shared_ptr<component_t> &c) {
+							 [](std::shared_ptr<graph::Component> &c) {
 								 return c->size() < PLACES_DETECTOR_MIN_VISITS_PER_PLACE;
 							 }),
 			  cc->end());
@@ -337,22 +337,22 @@ void ctx::PlacesDetector::reduce_outliers(std::shared_ptr<ctx::components_t> &cc
 	}
 }
 
-std::shared_ptr<ctx::components_t> ctx::PlacesDetector::merge_visits(const std::vector<visit_s> &visits)
+std::shared_ptr<ctx::graph::Components> ctx::PlacesDetector::__mergeVisits(const std::vector<Visit> &visits)
 {
-	auto graph = graph_from_visits(visits);
-	auto cc = connected_components(*graph);
-	reduce_outliers(cc);
+	auto graph = __graphFromVisits(visits);
+	auto cc = graph::connectedComponents(*graph);
+	reduceOutliers(cc);
 	return cc;
 }
 
-std::shared_ptr<ctx::graph_t> ctx::PlacesDetector::graph_from_visits(const std::vector<visit_s> &visits)
+std::shared_ptr<ctx::graph::Graph> ctx::PlacesDetector::__graphFromVisits(const std::vector<Visit> &visits)
 {
-	std::shared_ptr<graph_t> graph = std::make_shared<graph_t>();
+	std::shared_ptr<graph::Graph> graph = std::make_shared<graph::Graph>();
 	graph->resize(visits.size());
 	for (size_t i = 0; i < visits.size(); i++) {
-		(*graph)[i] = std::make_shared<nhood_t>();
+		(*graph)[i] = std::make_shared<graph::NeighbourNodes>();
 		for (size_t j = 0; j < i; j++) {
-			if (is_joint(*visits[i].mac_set, *visits[j].mac_set)) {
+			if (similarity::isJoint(*visits[i].macSet, *visits[j].macSet)) {
 				(*graph)[i]->insert(j);
 				(*graph)[j]->insert(i);
 			}
@@ -361,22 +361,22 @@ std::shared_ptr<ctx::graph_t> ctx::PlacesDetector::graph_from_visits(const std::
 	return graph;
 }
 
-void ctx::PlacesDetector::db_delete_places()
+void ctx::PlacesDetector::__dbDeletePlaces()
 {
 	std::vector<Json> records;
 	bool ret = db_manager::execute_sync(DELETE_PLACES_QUERY, &records);
 	_D("delete places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-void ctx::PlacesDetector::db_delete_old_visits()
+void ctx::PlacesDetector::__dbDeleteOldVisits()
 {
 	time_t current_time;
 	time(&current_time);
 	time_t threshold_time = current_time - PLACES_DETECTOR_RETENTION_SECONDS;
-	db_delete_older_visits(threshold_time);
+	__dbDeleteOlderVisitsThan(threshold_time);
 }
 
-void ctx::PlacesDetector::db_delete_older_visits(time_t threshold)
+void ctx::PlacesDetector::__dbDeleteOlderVisitsThan(time_t threshold)
 {
 	_D("deleting vistits older than: %d", threshold);
 	std::stringstream query;
@@ -388,25 +388,25 @@ void ctx::PlacesDetector::db_delete_older_visits(time_t threshold)
 	_D("delete old visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-ctx::PlacesDetector::PlacesDetector(bool test_mode_)
-	: test_mode(test_mode_)
+ctx::PlacesDetector::PlacesDetector(bool testMode) :
+	__testMode(testMode)
 {
-	if (test_mode) {
+	if (testMode) {
 		return;
 	}
-	db_create_table();
-	std::vector<Json> records = db_get_places();
-	std::vector<std::shared_ptr<Place>> db_places = places_from_jsons(records);
-	detected_places_update(db_places);
+	__dbCreateTable();
+	std::vector<Json> records = __dbGetPlaces();
+	std::vector<std::shared_ptr<Place>> db_places = __placesFromJsons(records);
+	__detectedPlacesUpdate(db_places);
 }
 
-void ctx::PlacesDetector::db_create_table()
+void ctx::PlacesDetector::__dbCreateTable()
 {
 	bool ret = db_manager::create_table(0, PLACE_TABLE, PLACE_TABLE_COLUMNS);
 	_D("db: place Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-void ctx::PlacesDetector::db_insert_place(const Place &place)
+void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 {
 	Json data;
 	data.set(NULL, PLACE_COLUMN_CATEG_ID, place.categ_id);
@@ -425,8 +425,8 @@ void ctx::PlacesDetector::db_insert_place(const Place &place)
 	_D("insert place execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::get_places()
+std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::getPlaces()
 {
 	// XXX: In case of thread safety issues use std::mutex to protect places list.
-	return detected_places;
+	return __detectedPlaces;
 }

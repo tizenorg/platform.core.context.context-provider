@@ -17,7 +17,7 @@
 #include "debug_utils.h"
 #include <types_internal.h>
 
-std::string ctx::DebugUtils::human_readable_date_time(time_t timestamp, std::string format, size_t size, bool utc)
+std::string ctx::DebugUtils::humanReadableDateTime(time_t timestamp, std::string format, size_t size, bool utc)
 {
 	struct tm * timeinfo;
 	if (utc) {

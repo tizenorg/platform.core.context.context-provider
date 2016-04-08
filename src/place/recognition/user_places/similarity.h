@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_SIMILAR_H__
-#define __CONTEXT_PLACE_STATUS_SIMILAR_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_SIMILAR_H_
+#define _CONTEXT_PLACE_RECOGNITION_SIMILAR_H_
 
 #include "user_places_types.h"
 
 namespace ctx {
 
-	/* similarity functions */
+namespace similarity {
 
-	template <class T> ctx::share_t overlap_first_over_second(const T &s1, const T &s2)
+	template <class T> ctx::share_t overlap1stOver2nd(const T &s1, const T &s2)
 	{
 		if (s2.empty()) {
 			return 0;
@@ -37,16 +37,16 @@ namespace ctx {
 		return (ctx::share_t) count / s2.size();
 	}
 
-	template <class T> ctx::share_t overlap_bigger_over_smaller(const T &s1, const T &s2)
+	template <class T> ctx::share_t overlapBiggerOverSmaller(const T &s1, const T &s2)
 	{
 		if (s1.size() > s2.size()) {
-			return overlap_first_over_second(s1, s2);
+			return similarity::overlap1stOver2nd(s1, s2);
 		} else {
-			return overlap_first_over_second(s2, s1);
+			return similarity::overlap1stOver2nd(s2, s1);
 		}
 	}
 
-	template <class T> bool is_joint(const T &s1, const T &s2)
+	template <class T> bool isJoint(const T &s1, const T &s2)
 	{
 		for (auto e : s2) {
 			if (s1.find(e) != s1.end()) {
@@ -56,6 +56,8 @@ namespace ctx {
 		return false;
 	}
 
+}	/* namespace similarity */
+
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_SIMILAR_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_SIMILAR_H_ */

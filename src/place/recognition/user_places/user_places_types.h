@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_USER_PLACES_TYPES_H__
-#define __CONTEXT_PLACE_STATUS_USER_PLACES_TYPES_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_USER_PLACES_TYPES_H_
+#define _CONTEXT_PLACE_RECOGNITION_USER_PLACES_TYPES_H_
 
 #include <memory>
 #include <vector>
@@ -83,25 +83,25 @@ namespace ctx {
 
 	typedef std::unordered_set<ctx::Mac> mac_set_t;
 
-	std::istream &operator>>(std::istream &input, ctx::mac_set_t &mac_set);
-	std::ostream &operator<<(std::ostream &output, const ctx::mac_set_t &mac_set);
+	std::istream &operator>>(std::istream &input, ctx::mac_set_t &macSet);
+	std::ostream &operator<<(std::ostream &output, const ctx::mac_set_t &macSet);
 	ctx::mac_set_t mac_set_from_string(const std::string &str);
 
-	std::shared_ptr<mac_set_t> mac_sets_union(const std::vector<std::shared_ptr<mac_set_t>> &mac_sets);
+	std::shared_ptr<mac_set_t> mac_sets_union(const std::vector<std::shared_ptr<mac_set_t>> &macSets);
 
-	struct interval_s {
+	struct Interval {
 		time_t start;
 		time_t end;
 
-		interval_s(time_t start_, time_t end_);
+		Interval(time_t start_, time_t end_);
 	};
 
 }	/* namespace ctx */
 
 namespace std {
 
-	template <> struct hash<ctx::interval_s> {
-		size_t operator()(const ctx::interval_s & interval) const {
+	template <> struct hash<ctx::Interval> {
+		size_t operator()(const ctx::Interval & interval) const {
 			return interval.end * interval.start;
 		}
 	};
@@ -113,98 +113,98 @@ namespace ctx {
 	/*
 	 * fully describes interval data after the interval is finished
 	 */
-	struct frame_s {
-		interval_s interval;
-		count_t no_timestamps;
-		mac_counts_t mac_counts;
+	struct Frame {
+		Interval interval;
+		count_t numberOfTimestamps;
+		mac_counts_t macCountsMap;
 
-		frame_s(interval_s interval_) : interval(interval_), no_timestamps(0) {};
+		Frame(Interval interval_) : interval(interval_), numberOfTimestamps(0) {};
 	};
 
 	/*
 	 * mac address + its timestamp
 	 */
-	struct mac_event_s {
+	struct MacEvent {
 		time_t timestamp;
 		Mac mac;
 
-		mac_event_s(time_t timestamp_, Mac mac_) : timestamp(timestamp_), mac(mac_) {}
+		MacEvent(time_t timestamp_, Mac mac_) : timestamp(timestamp_), mac(mac_) {}
 	};
 
 	typedef std::map<int, num_t> categs_t; // scores of categories
 
-	struct location_s {
+	struct Location {
 		double latitude;
 		double longitude;
 		double accuracy; // [m]
 
-		location_s(double latitude_ = 0.0, double longitude_ = 0.0, double accuracy_ = -1.0)
+		Location(double latitude_ = 0.0, double longitude_ = 0.0, double accuracy_ = -1.0)
 			: latitude(latitude_), longitude(longitude_), accuracy(accuracy_) {}
 
-	};	/* struct location_s */
+	};	/* struct Location */
 
 #ifdef TIZEN_ENGINEER_MODE
-	typedef enum {
+	enum LocationSource {
 		LOCATION_METHOD_REQUEST = 0,
 		LOCATION_METHOD_GET_LOCATION = 1,
 		LOCATION_METHOD_GET_LAST_LOCATION = 2
-	} location_source_e;
+	};
 #endif /* TIZEN_ENGINEER_MODE */
 
 	/*
 	 * location + timestamp + method
 	 */
-	struct location_event_s {
-		location_s coordinates;
+	struct LocationEvent {
+		Location coordinates;
 		time_t timestamp;
 
 #ifdef TIZEN_ENGINEER_MODE
-		location_source_e method;
+		LocationSource method;
 
-		location_event_s(double latitude_, double longitude_, double accuracy_, time_t timestamp_, location_source_e method_)
+		LocationEvent(double latitude_, double longitude_, double accuracy_, time_t timestamp_, LocationSource method_)
 			: coordinates(latitude_, longitude_, accuracy_), timestamp(timestamp_), method(method_) {}
 #else /* TIZEN_ENGINEER_MODE */
-		location_event_s(double latitude_, double longitude_, double accuracy_, time_t timestamp_)
+		LocationEvent(double latitude_, double longitude_, double accuracy_, time_t timestamp_)
 			: coordinates(latitude_, longitude_, accuracy_), timestamp(timestamp_) {}
 #endif /* TIZEN_ENGINEER_MODE */
 
 		void log();
 
-	};	/* struct location_event_s */
+	};	/* struct LocationEvent */
 
-	struct visit_s {
-		interval_s interval;
-		std::shared_ptr<mac_set_t> mac_set;
+	struct Visit {
+		Interval interval;
+		std::shared_ptr<mac_set_t> macSet;
 		categs_t categs;
 		bool location_valid;
-		location_s location; // makes sense if location_valid == true;
+		Location location; // makes sense if location_valid == true;
 
-		visit_s(interval_s interval_, std::shared_ptr<mac_set_t> mac_set_ = std::make_shared<mac_set_t>(), categs_t categs_ = categs_t()) :
+		Visit(Interval interval_, std::shared_ptr<mac_set_t> macSet_ = std::make_shared<mac_set_t>(), categs_t categs_ = categs_t()) :
 			interval(interval_),
-			mac_set(mac_set_),
+			macSet(macSet_),
 			categs(categs_),
 			location_valid(false) {}
-		void set_location(location_s location);
+		void set_location(Location location);
 		void print_short_to_stream(std::ostream &out) const;
 
-	};	/* struct visit_s */
+	};	/* struct Visit */
 
-	bool operator==(const visit_s &v1, const visit_s &v2);
-	typedef std::vector<visit_s> visits_t;
-	typedef std::vector<mac_event_s> mac_events; // used to store current interval logs
+	bool operator==(const Visit &v1, const Visit &v2);
+	typedef std::vector<Visit> visits_t;
+	typedef std::vector<MacEvent> mac_events; // used to store current interval logs
 
-	std::shared_ptr<mac_set_t> mac_set_from_mac_counts(const mac_counts_t &mac_counts);
+	std::shared_ptr<mac_set_t> mac_set_from_mac_counts(const mac_counts_t &macCountsMap);
 
 	typedef float confidence_t;
 
 	class Place {
 
 	public:
-		place_categ_id_e categ_id; // category of a place (work/home/other)
+		PlaceCategId categ_id; // category of a place (work/home/other)
 		confidence_t categ_confidence; // confidence of the above category - between [0,1]
 		std::string name; // for now: "work"/"home"/"other"
 		bool location_valid;
-		location_s location; // makes sense if location_valid == true;
+		Location location; // makes sense if location_valid == true;
 		std::string wifi_aps; // WiFi APs MAC addresses separated by ","
 		time_t create_date; // The last update time of this place
 
@@ -214,4 +214,4 @@ namespace ctx {
 
 }	/* namespace ctx */
 
-#endif /*__CONTEXT_PLACE_STATUS_USER_PLACES_TYPES_H__*/
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_USER_PLACES_TYPES_H_ */

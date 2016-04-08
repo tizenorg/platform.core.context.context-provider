@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_PLACE_CATEGER__
-#define __CONTEXT_PLACE_STATUS_PLACE_CATEGER__
+#ifndef _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_
+#define _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_
 
 #include "user_places_types.h"
 #include <utility>
@@ -28,16 +28,16 @@ namespace ctx {
 	class PlaceCateger {
 
 	private:
-		static bool reduce_category(const place_categ_id_e &categ, const ctx::visits_t &visits);
+		static bool __reduceCategory(const PlaceCategId &categ, const ctx::visits_t &visits);
 
 	public:
-		static void reduce_outliers(visits_t &visits);
-		static std::vector<ctx::num_t> categ_vector_from_visits(const ctx::visits_t &visits, place_categ_id_e categ_id);
+		static void reduceOutliers(visits_t &visits); // TODO: move to private
+		static std::vector<ctx::num_t> categVectorFromVisits(const ctx::visits_t &visits, PlaceCategId categ_id); // TODO: move to private
 		static void categorize(ctx::visits_t &visits, ctx::Place &place);
-		static std::string categ_id_to_name(place_categ_id_e categ_id);
+		static std::string categId2Name(PlaceCategId categ_id); // TODO: move to private
 
 	};	/* class PlaceCateger */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_PLACE_CATEGER__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_ */

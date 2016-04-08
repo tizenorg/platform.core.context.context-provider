@@ -22,30 +22,30 @@
 #include "../place_recognition_types.h"
 #include "db_mgr.h"
 
-ctx::UserPlaces::UserPlaces(place_recog_mode_e energy_mode)
-	: visit_detector(nullptr)
-	, places_detector(nullptr)
-	, places_detector_timer_id(-1)
+ctx::UserPlaces::UserPlaces(place_recog_mode_e energyMode):
+	__visitDetector(nullptr),
+	__placesDetector(nullptr),
+	__placesDetectorTimerId(-1)
 {
 	time_t now = std::time(nullptr);
-	visit_detector = new(std::nothrow) VisitDetector(now, energy_mode);
-	if (visit_detector == nullptr) {
-		_E("Cannot initialize visit_detector");
+	__visitDetector = new(std::nothrow) VisitDetector(now, energyMode);
+	if (__visitDetector == nullptr) {
+		_E("Cannot initialize __visitDetector");
 		return;
 	}
 
-	places_detector = new(std::nothrow) PlacesDetector();
-	if (places_detector == nullptr) {
-		_E("Cannot initialize places_detector");
+	__placesDetector = new(std::nothrow) PlacesDetector();
+	if (__placesDetector == nullptr) {
+		_E("Cannot initialize __placesDetector");
 		return;
 	}
 
-	places_detector_timer_id = __timerManager.setAt( // execute once every night
+	__placesDetectorTimerId = __timerManager.setAt( // execute once every night
 			PLACES_DETECTOR_TASK_START_HOUR,
 			PLACES_DETECTOR_TASK_START_MINUTE,
 			DayOfWeek::EVERYDAY,
-			places_detector);
-	if (places_detector_timer_id < 0) {
+			__placesDetector);
+	if (__placesDetectorTimerId < 0) {
 		_E("PlacesDetector timer set FAIL");
 		return;
 	} else {
@@ -55,24 +55,24 @@ ctx::UserPlaces::UserPlaces(place_recog_mode_e energy_mode)
 
 ctx::UserPlaces::~UserPlaces()
 {
-	if (places_detector_timer_id >= 0) {
-		__timerManager.remove(places_detector_timer_id);
+	if (__placesDetectorTimerId >= 0) {
+		__timerManager.remove(__placesDetectorTimerId);
 		_D("PlacesDetector timer removed");
 	}
 
-	if (visit_detector) {
-		delete visit_detector;
+	if (__visitDetector) {
+		delete __visitDetector;
 	}
 
-	if (places_detector) {
-		delete places_detector;
+	if (__placesDetector) {
+		delete __placesDetector;
 	}
 };
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::get_places()
+std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::getPlaces()
 {
-	if (places_detector) {
-		return places_detector->get_places();
+	if (__placesDetector) {
+		return __placesDetector->getPlaces();
 	} else {
 		return std::vector<std::shared_ptr<ctx::Place>>();
 	}
@@ -110,7 +110,7 @@ std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::get_places()
  *	  ]
  * }
  */
-ctx::Json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> places)
+ctx::Json ctx::UserPlaces::composeJson(std::vector<std::shared_ptr<Place>> places)
 {
 	ctx::Json data;
 	for (std::shared_ptr<ctx::Place> place : places) {
@@ -129,9 +129,9 @@ ctx::Json ctx::UserPlaces::compose_json(std::vector<std::shared_ptr<Place>> plac
 	return data;
 }
 
-void ctx::UserPlaces::set_mode(place_recog_mode_e energy_mode)
+void ctx::UserPlaces::setMode(place_recog_mode_e energyMode)
 {
-	if (visit_detector) {
-		visit_detector->set_mode(energy_mode);
+	if (__visitDetector) {
+		__visitDetector->setMode(energyMode);
 	}
 }

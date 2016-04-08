@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_PROB_FEATURES_MODEL_H__
-#define __CONTEXT_PLACE_PROB_FEATURES_MODEL_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_FEATURES_MODEL_H_
+#define _CONTEXT_PLACE_RECOGNITION_FEATURES_MODEL_H_
 
 namespace ctx {
+
+namespace prob_features {
 
 	/*
 	 * Probabilities for whole week <monday ÷ sunday> with minutes resolution
 	 * from beginning of the week (sunday -> monday midnight) <0, 10080).
-	 * Key is place_categ_id_e:
+	 * Key is PlaceCategId:
 	 *     PLACE_CATEG_ID_HOME
 	 *     PLACE_CATEG_ID_WORK
 	 *     PLACE_CATEG_ID_OTHER
 	 */
-	std::map<place_categ_id_e, std::vector<num_t>> week_model {
+	std::map<PlaceCategId, std::vector<num_t>> weekModel {
 		{ PLACE_CATEG_ID_HOME,
 			{
 				0.9824561403508770,
@@ -30282,6 +30284,8 @@ namespace ctx {
 		}
 	};
 
+}	/* namespace prob_features */
+
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_PROB_FEATURES_MODEL_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_FEATURES_MODEL_H_ */

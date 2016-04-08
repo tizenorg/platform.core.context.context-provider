@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_MAHAL_H__
-#define __CONTEXT_PLACE_STATUS_MAHAL_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_MAHAL_H_
+#define _CONTEXT_PLACE_RECOGNITION_MAHAL_H_
 
 #include <vector>
 #include "user_places_types.h"
@@ -28,16 +28,18 @@ namespace ctx {
 	class MahalModel {
 
 	private:
-		std::vector<num_t> mean;
-		std::vector<num_t> sigma; // represents square matrix row-wise
+		std::vector<num_t> __mean;
+		std::vector<num_t> __sigma; // represents square matrix row-wise
 
 	public:
 		static num_t dist_s(const std::vector<num_t> &v1, const std::vector<num_t> &v2, const std::vector<num_t> &m);
-		MahalModel(std::vector<num_t> mean_, std::vector<num_t> sigma_) : mean(mean_), sigma(sigma_) { }
+		MahalModel(std::vector<num_t> mean, std::vector<num_t> sigma) :
+			__mean(mean),
+			__sigma(sigma) { }
 		num_t dist(const std::vector<num_t> &v);
 
 	};	/* class MahalModel */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_MAHAL_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_MAHAL_H_ */

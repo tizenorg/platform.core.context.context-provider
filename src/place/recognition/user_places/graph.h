@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_GRAPH_H__
-#define __CONTEXT_PLACE_STATUS_GRAPH_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_GRAPH_H_
+#define _CONTEXT_PLACE_RECOGNITION_GRAPH_H_
 
 #include <memory>
 #include <vector>
@@ -23,18 +23,22 @@
 
 namespace ctx {
 
-	typedef int node_t;
-	typedef std::set<node_t> nhood_t; // neighbouring nodes
-	typedef std::vector<std::shared_ptr<nhood_t>> graph_t;
-	typedef std::set<node_t> component_t;
-	typedef std::vector<std::shared_ptr<component_t>> components_t;
+namespace graph {
+
+	typedef int Node;
+	typedef std::set<Node> NeighbourNodes;
+	typedef std::vector<std::shared_ptr<NeighbourNodes>> Graph;
+	typedef std::set<Node> Component;
+	typedef std::vector<std::shared_ptr<Component>> Components;
 
 	/*
 	 * make connected components of a given graph
 	 * caution: the graph will be changed (its nodes will be cleared)
 	 */
-	std::shared_ptr<components_t> connected_components(graph_t &graph);
+	std::shared_ptr<Components> connectedComponents(Graph &graph);
+
+}	/* namespace graph */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_GRAPH_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_GRAPH_H_ */

@@ -42,5 +42,5 @@ ctx::num_t ctx::MahalModel::dist_s(const std::vector<num_t> &v1, const std::vect
 
 ctx::num_t ctx::MahalModel::dist(const std::vector<ctx::num_t> &v)
 {
-	return dist_s(v, mean, sigma);
+	return dist_s(v, __mean, __sigma);
 }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_PLACES_DETECTOR__
-#define __CONTEXT_PLACE_STATUS_PLACES_DETECTOR__
+#ifndef _CONTEXT_PLACE_RECOGNITION_PLACES_DETECTOR_
+#define _CONTEXT_PLACE_RECOGNITION_PLACES_DETECTOR_
 
 #include "visit_detector.h"
 #include <ITimerListener.h>
@@ -29,37 +29,42 @@ namespace ctx {
 	class PlacesDetector : public ITimerListener {
 
 	private:
-		bool test_mode;
-		double double_value_from_json(Json &row, const char* key);
-		categs_t visit_categs_from_json(Json &row);
-		visit_s visit_from_json(Json &row);
-		visits_t visits_from_jsons(std::vector<Json>& records);
-		std::shared_ptr<ctx::Place> place_from_json(Json &row);
-		std::vector<std::shared_ptr<Place>> places_from_jsons(std::vector<Json>& records);
-		std::shared_ptr<graph_t> graph_from_visits(const std::vector<visit_s> &visits);
-		void db_create_table();
-		void db_delete_places();
-		void db_delete_old_visits();
-		void db_delete_older_visits(time_t threshold);
-		std::vector<Json> db_get_visits();
-		std::vector<Json> db_get_places();
-		void db_insert_place(const Place &place);
-		std::shared_ptr<Place> place_from_merged(visits_t &merged_visits);
-		std::vector<std::shared_ptr<Place>> detected_places;
-		void detected_places_update(std::vector<std::shared_ptr<Place>> &new_places);
+		bool __testMode;
+
+		double __doubleValueFromJson(Json &row, const char* key);
+		categs_t __visitCategsFromJson(Json &row);
+		Visit __visitFromJson(Json &row);
+		visits_t __visitsFromJsons(std::vector<Json>& records);
+		std::shared_ptr<ctx::Place> __placeFromJson(Json &row);
+		std::vector<std::shared_ptr<Place>> __placesFromJsons(std::vector<Json>& records);
+
+		std::shared_ptr<graph::Graph> __graphFromVisits(const std::vector<Visit> &visits);
+
+		void __dbCreateTable();
+		void __dbDeletePlaces();
+		void __dbDeleteOldVisits();
+		void __dbDeleteOlderVisitsThan(time_t threshold);
+		std::vector<Json> __dbGetVisits();
+		std::vector<Json> __dbGetPlaces();
+		void __dbInsertPlace(const Place &place);
+
+		std::shared_ptr<Place> __placeFromMergedVisits(visits_t &merged_visits);
+		std::vector<std::shared_ptr<Place>> __detectedPlaces;
+		void __detectedPlacesUpdate(std::vector<std::shared_ptr<Place>> &new_places);
+		void __processVisits(visits_t &visits);
+		static void __mergeLocation(const visits_t &merged_visits, Place &place);
+		std::shared_ptr<graph::Components> __mergeVisits(const std::vector<Visit> &visits);
+
+		bool onTimerExpired(int timerId);
 
 	public:
-		static void reduce_outliers(visits_t &visits);
-		static void reduce_outliers(std::shared_ptr<components_t> &cc);
-		void process_visits(visits_t &visits);
-		static void merge_location(const visits_t &merged_visits, Place &place);
-		PlacesDetector(bool test_mode_ = false);
-		bool onTimerExpired(int timerId);
-		std::shared_ptr<components_t> merge_visits(const std::vector<visit_s> &visits);
-		std::vector<std::shared_ptr<Place>> get_places();
+		PlacesDetector(bool testMode = false);
+		static void reduceOutliers(visits_t &visits); // TODO: move to private
+		static void reduceOutliers(std::shared_ptr<graph::Components> &cc); // TODO: move to private
+		std::vector<std::shared_ptr<Place>> getPlaces();
 
 	};  /* class PlacesDetector */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_PLACES_DETECTOR__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_PLACES_DETECTOR_ */

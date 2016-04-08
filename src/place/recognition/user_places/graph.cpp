@@ -18,26 +18,26 @@
 #include <queue>
 #include "graph.h"
 
-std::shared_ptr<ctx::components_t> ctx::connected_components(graph_t &graph)
+std::shared_ptr<ctx::graph::Components> ctx::graph::connectedComponents(Graph &graph)
 {
-	std::shared_ptr<components_t> ccs = std::make_shared<components_t>();
+	std::shared_ptr<Components> ccs = std::make_shared<Components>();
 	std::set<int> fringe;
 
-	for (node_t i = 0; i < static_cast<node_t>(graph.size()); i++) {
+	for (Node i = 0; i < static_cast<Node>(graph.size()); i++) {
 		if (!graph[i]) {
 			continue;
 		}
 		// neighbourhood of node i exists (was not removed)
-		std::shared_ptr<component_t> c = std::make_shared<component_t>();
+		std::shared_ptr<Component> c = std::make_shared<Component>();
 		ccs->push_back(c);
 		fringe.insert(i);
 		while (!fringe.empty()) {
-			node_t curr_node = *fringe.begin();
+			Node curr_node = *fringe.begin();
 			fringe.erase(fringe.begin());
 			c->insert(curr_node);
 
-			std::shared_ptr<nhood_t> curr_nhood = graph[curr_node];
-			for (node_t nhood_node : *curr_nhood) {
+			std::shared_ptr<NeighbourNodes> curr_nhood = graph[curr_node];
+			for (Node nhood_node : *curr_nhood) {
 				if (graph[nhood_node] && fringe.find(nhood_node) == fringe.end()) {
 					fringe.insert(nhood_node);
 				}

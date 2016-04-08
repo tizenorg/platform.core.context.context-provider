@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_GMAP_H__
-#define __CONTEXT_PLACE_STATUS_GMAP_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_GMAP_H_
+#define _CONTEXT_PLACE_RECOGNITION_GMAP_H_
 
 #include "user_places_types.h"
 #include "../place_recognition_types.h"
@@ -31,17 +31,17 @@ namespace ctx {
 	class Gmap {
 
 	private:
-		const static std::string html_header;
-		const static std::string html_footer;
-		static std::string icon_for_categ_id(place_categ_id_e categ_id);
-		static void place_marker_to_stream(const Place& place, std::ostream& out);
-		static void html_to_stream(const std::vector<std::shared_ptr<Place>>& places, std::ostream& out);
+		const static std::string __htmlHeader;
+		const static std::string __htmlFooter;
+		static std::string __iconForCategId(PlaceCategId categ_id);
+		static void __placeMarker2Stream(const Place& place, std::ostream& out);
+		static void __html2Stream(const std::vector<std::shared_ptr<Place>>& places, std::ostream& out);
 
 	public:
-		static void write_map(const std::vector<std::shared_ptr<Place>>& places);
+		static void writeMap(const std::vector<std::shared_ptr<Place>>& places);
 
 	};	/* class Gmap */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_VISIT_GMAP_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_GMAP_H_ */

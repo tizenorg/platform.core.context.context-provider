@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_PIECEWISE_LIN__
-#define __CONTEXT_PLACE_STATUS_PIECEWISE_LIN__
+#ifndef _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
+#define _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
 
 #include "user_places_types.h"
 
@@ -27,16 +27,16 @@ namespace ctx {
 	class PiecewiseLin {
 
 	private:
-		std::vector<num_t> xs; // nodes
-		std::vector<num_t> vs; // values in nodes
-		size_t n;
+		std::vector<num_t> __xs; // nodes
+		std::vector<num_t> __vs; // values in nodes
+		size_t __n;
 
 	public:
-		PiecewiseLin(std::vector<num_t> _xs, std::vector<num_t> _vs);
-		num_t val(num_t x);
+		PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs);
+		num_t value(num_t x);
 
 	}; 	/* PiecewiseLin */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_PIECEWISE_LIN__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_ */

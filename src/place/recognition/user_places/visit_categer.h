@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PLACE_STATUS_VISIT_CATEGER_H__
-#define __CONTEXT_PLACE_STATUS_VISIT_CATEGER_H__
+#ifndef _CONTEXT_PLACE_RECOGNITION_VISIT_CATEGER_H_
+#define _CONTEXT_PLACE_RECOGNITION_VISIT_CATEGER_H_
 
 #include "user_places_types.h"
 #include "mahal.h"
@@ -24,9 +24,9 @@
 
 namespace ctx {
 
-	struct time_features_s {
-	    int minutes_since_midnight;
-	    int minutes_since_begining_of_the_week;
+	struct TimeFeatures {
+	    int minutesSinceMidnight;
+	    int minutesSinceBeginingOfTheWeek;
 	    int weekday;
 	    bool weekend;
 	};
@@ -38,26 +38,25 @@ namespace ctx {
 
 	private:
 		const static int MINUTES_IN_WEEK = 60 * 24 * 7;
-		const static std::map<int, MahalModel> models;
-		const static std::vector<num_t> features_mean;
-		const static std::vector<num_t> features_std;
-		static num_t sum(const std::vector<num_t> model, const size_t &from, const size_t &to);
-		static num_t week_model_mean_value(place_categ_id_e categ, const interval_s &interval,
-				const time_features_s &start_f,	const time_features_s &end_f);
-		static void normalize(std::vector<num_t> &features);
+		const static std::map<int, MahalModel> __models;
+		const static std::vector<num_t> __featuresMean;
+		const static std::vector<num_t> __featuresStd;
+		static num_t __sum(const std::vector<num_t> model, const size_t &from, const size_t &to);
+		static num_t __weekModelMeanValue(PlaceCategId categ, const Interval &interval,
+				const TimeFeatures &start_f, const TimeFeatures &end_f);
+		static void __normalize(std::vector<num_t> &features);
+		static PiecewiseLin __chiApprox; // tabled chi function approximator
 
 	public:
-		static PiecewiseLin chi_approx; // tabled chi function approximator
-
 		/**
 		 * Function interpret time in timestamp input argument,
 		 *
-		 * @param  time             timestamp
-		 * @return time_features_s  structure with interpretations of timestamp
+		 * @param  time          timestamp
+		 * @return TimeFeatures  structure with interpretations of timestamp
 		 */
-		static time_features_s time_features(const time_t &time);
+		static TimeFeatures timeFeatures(const time_t &time);
 
-		static int weeks_scope(const time_features_s &start_f, const interval_s &interval);
+		static int weeksScope(const TimeFeatures &start_f, const Interval &interval);
 
 		/**
 		 * Function interpret time interval input argument and calculates scores
@@ -68,8 +67,8 @@ namespace ctx {
 		 * @param  end_f	 end time features
 		 * @return categs_t  score that argument interval is home, work or other
 		 */
-		static categs_t week_model_features(const interval_s &interval,	const time_features_s &start_f,
-				const time_features_s &end_f);
+		static categs_t weekModelFeatures(const Interval &interval, const TimeFeatures &start_f,
+				const TimeFeatures &end_f);
 
 		/**
 		 * Function interpret time interval input argument,
@@ -77,15 +76,15 @@ namespace ctx {
 		 * @param  interval            time interval
 		 * @return std::vector<num_t>  vector with interpretations of input time interval
 		 */
-		static std::vector<num_t> interval_features(const interval_s &interval);
+		static std::vector<num_t> intervalFeatures(const Interval &interval);
 
 		/**
 		 * Function categorize visit based on visits time interval and fill its categories values.
 		 */
-		static void categorize(ctx::visit_s &visit);
+		static void categorize(ctx::Visit &visit);
 
 	};	/* class VisitCateger */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_PLACE_STATUS_VISIT_CATEGER_H__ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_VISIT_CATEGER_H_ */

@@ -41,23 +41,23 @@
 
 #define _LOCATION_ERROR_LOG(error) { \
 	if (error != LOCATIONS_ERROR_NONE) { \
-		_E("ERROR == %s", location_error_str(error)); \
+		_E("ERROR == %s", __locationError2Str(error)); \
 	} else { \
 		_D("SUCCESS"); \
 	} \
 }
 
-void ctx::LocationLogger::location_service_state_changed_cb(location_service_state_e state, void *user_data)
+void ctx::LocationLogger::__locationServiceStateChangedCb(location_service_state_e state, void *user_data)
 {
-	ctx::LocationLogger* location_logger_p = (ctx::LocationLogger *)user_data;
-	location_logger_p->location_service_state = state;
+	ctx::LocationLogger* locationLogger = (ctx::LocationLogger *)user_data;
+	locationLogger->__locationServiceState = state;
 	if (state == LOCATIONS_SERVICE_ENABLED) {
 		_D("LOCATIONS_SERVICE_ENABLED");
-		switch (location_logger_p->timer_purpose) {
+		switch (locationLogger->__timerPurpose) {
 		case LOCATION_LOGGER_WAITING_FOR_SERVICE_START:
 			_D("Waiting for location service start FINISHED");
-			location_logger_p->timer_stop();
-			location_logger_p->location_request();
+			locationLogger->__timerStop();
+			locationLogger->__locationRequest();
 			break;
 		case LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST:
 		case LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON:
@@ -69,25 +69,25 @@ void ctx::LocationLogger::location_service_state_changed_cb(location_service_sta
 		}
 	} else {
 		_D("LOCATIONS_SERVICE_DISABLED");
-//		location_logger_p->timer_stop();
+//		locationLogger->__timerStop();
 	}
 }
 
-void ctx::LocationLogger::location_setting_changed_cb(location_method_e method, bool enable, void *user_data)
+void ctx::LocationLogger::__locationSettingChangedCb(location_method_e method, bool enable, void *user_data)
 {
-	ctx::LocationLogger* location_logger_p = (ctx::LocationLogger *)user_data;
-	location_logger_p->location_method_state = enable;
-	if (method == location_logger_p->location_method) {
+	ctx::LocationLogger* locationLogger = (ctx::LocationLogger *)user_data;
+	locationLogger->__locationMethodState = enable;
+	if (method == locationLogger->__locationMethod) {
 		if (enable) {
 			_D("Location method settings ON");
-			switch (location_logger_p->timer_purpose) {
+			switch (locationLogger->__timerPurpose) {
 			case LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON:
 				_D("Waiting for location method settings on FINISHED");
-				if (location_logger_p->location_service_state == LOCATIONS_SERVICE_ENABLED) {
-					location_logger_p->timer_stop();
-					location_logger_p->location_request();
+				if (locationLogger->__locationServiceState == LOCATIONS_SERVICE_ENABLED) {
+					locationLogger->__timerStop();
+					locationLogger->__locationRequest();
 				} else {
-					location_logger_p->manager_start();
+					locationLogger->__locationManagerStart();
 				}
 				break;
 			case LOCATION_LOGGER_WAITING_FOR_SERVICE_START:
@@ -100,34 +100,34 @@ void ctx::LocationLogger::location_setting_changed_cb(location_method_e method, 
 			}
 		} else {
 			_D("Location method settings OFF");
-//			location_logger_p->timer_stop();
+//			locationLogger->__timerStop();
 		}
 	}
 }
 
-void ctx::LocationLogger::position_updated_cb(double latitude, double longitude,
+void ctx::LocationLogger::__positionUpdatedCb(double latitude, double longitude,
 		double altitude, time_t timestamp, void *user_data)
 {
 	_D("");
-	ctx::LocationLogger* location_logger_p = (ctx::LocationLogger *)user_data;
-	double horizontal = location_logger_p->manager_get_horizontal_accuracy();
+	ctx::LocationLogger* locationLogger = (ctx::LocationLogger *)user_data;
+	double horizontal = locationLogger->__locationManagerGetHorizontalAccuracy();
 #ifdef TIZEN_ENGINEER_MODE
-	ctx::location_event_s location(latitude, longitude, horizontal, timestamp, LOCATION_METHOD_REQUEST);
+	ctx::LocationEvent location(latitude, longitude, horizontal, timestamp, LOCATION_METHOD_REQUEST);
 #else /* TIZEN_ENGINEER_MODE */
-	ctx::location_event_s location(latitude, longitude, horizontal, timestamp);
+	ctx::LocationEvent location(latitude, longitude, horizontal, timestamp);
 #endif /* TIZEN_ENGINEER_MODE */
-	location_logger_p->broadcast(location);
-	location_logger_p->on_active_request_succeeded();
+	locationLogger->__broadcast(location);
+	locationLogger->__onActiveRequestSucceeded();
 }
 
-void ctx::LocationLogger::location_updated_cb(location_error_e error, double latitude, double longitude,
+void ctx::LocationLogger::__locationUpdatedCb(location_error_e error, double latitude, double longitude,
 		double altitude, time_t timestamp, double speed, double direction, double climb, void *user_data)
 {
 	_D("");
-	position_updated_cb(latitude, longitude, altitude, timestamp, user_data);
+	__positionUpdatedCb(latitude, longitude, altitude, timestamp, user_data);
 }
 
-const char* ctx::LocationLogger::location_error_str(int error)
+const char* ctx::LocationLogger::__locationError2Str(int error)
 {
 	switch (error) {
 	case LOCATIONS_ERROR_NONE:
@@ -156,7 +156,7 @@ const char* ctx::LocationLogger::location_error_str(int error)
 }
 
 
-void ctx::LocationLogger::log(location_accessibility_state_e state)
+void ctx::LocationLogger::__log(location_accessibility_state_e state)
 {
 	switch (state) {
 	case LOCATIONS_ACCESS_STATE_NONE : // Access state is not determined
@@ -173,14 +173,14 @@ void ctx::LocationLogger::log(location_accessibility_state_e state)
 	}
 }
 
-int ctx::LocationLogger::create_table()
+int ctx::LocationLogger::__dbCreateTable()
 {
 	bool ret = db_manager::create_table(0, LOCATION_TABLE_NAME, LOCATION_CREATE_TABLE_COLUMNS, NULL, NULL);
 	_D("%s -> Table Creation Request", ret ? "SUCCESS" : "FAIL");
 	return 0;
 }
 
-int ctx::LocationLogger::db_insert_log(location_event_s location_event)
+int ctx::LocationLogger::__dbInsertLog(LocationEvent location_event)
 {
 	Json data;
 	data.set(NULL, LOCATION_COLUMN_LATITUDE, location_event.coordinates.latitude);
@@ -188,7 +188,7 @@ int ctx::LocationLogger::db_insert_log(location_event_s location_event)
 	data.set(NULL, LOCATION_COLUMN_ACCURACY, location_event.coordinates.accuracy);
 	data.set(NULL, LOCATION_COLUMN_TIMESTAMP, static_cast<int>(location_event.timestamp));
 #ifdef TIZEN_ENGINEER_MODE
-	std::string time_human = DebugUtils::human_readable_date_time(location_event.timestamp, "%F %T", 80);
+	std::string time_human = DebugUtils::humanReadableDateTime(location_event.timestamp, "%F %T", 80);
 	data.set(NULL, LOCATION_COLUMN_TIMESTAMP_HUMAN, time_human);
 	data.set(NULL, LOCATION_COLUMN_METHOD, static_cast<int>(location_event.method));
 #endif /* TIZEN_ENGINEER_MODE */
@@ -199,94 +199,94 @@ int ctx::LocationLogger::db_insert_log(location_event_s location_event)
 	return ret;
 }
 
-ctx::LocationLogger::LocationLogger(ILocationListener *listener_, bool test_mode_)
-	: listener(listener_)
-	, test_mode(test_mode_)
-	, active_request_attempts(0)
-	, active_attempts(0)
-	, all_attempts(0)
-	, location_count(0)
-	, active_request_succeeded(false)
-	, active_location_succeeded(false)
-	, timer_id(-1)
-	, timer_timestamp(0)
-	, timer_purpose(LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL)
-	, location_service_state(LOCATIONS_SERVICE_DISABLED)
-	, location_method(LOCATION_LOGGER_METHOD)
-	, location_method_state(false)
+ctx::LocationLogger::LocationLogger(ILocationListener *listener, bool testMode) :
+	__listener(listener),
+	__testMode(testMode),
+	__activeRequestAttempts(0),
+	__activeAttempts(0),
+	__allAttempts(0),
+	__locationCount(0),
+	__activeRequestSucceeded(false),
+	__activeLocationSucceeded(false),
+	__timerId(-1),
+	__timerTimestamp(0),
+	__timerPurpose(LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL),
+	__locationServiceState(LOCATIONS_SERVICE_DISABLED),
+	__locationMethod(LOCATION_LOGGER_METHOD),
+	__locationMethodState(false)
 {
 	_D("CONSTRUCTOR");
 
-	manager_create();
+	__locationManagerCreate();
 
-	if (test_mode) {
+	if (__testMode) {
 		return;
 	}
 	if (LOCATION_LOGGER_DATABASE) {
-		create_table();
+		__dbCreateTable();
 	}
 
-	manager_set_service_state_changed_cb();
-	manager_set_setting_changed_cb();
-	location_method_state = manager_is_enabled_method(location_method);
+	__locationManagerSetServiceStateChangedCb();
+	__locationManagerSetSettingChangedCb();
+	__locationMethodState = __locationManagerIsEnabledMethod(__locationMethod);
 }
 
 ctx::LocationLogger::~LocationLogger()
 {
 	_D("DESTRUCTOR");
-	stop_logging();
-	manager_unset_service_state_changed_cb();
-	manager_unset_setting_changed_cb();
-	manager_destroy();
+	__stopLogging();
+	__locationManagerUnsetServiceStateChangedCb();
+	__locationManagerUnsetSettingChangedCb();
+	__locationManagerDestroy();
 }
 
-void ctx::LocationLogger::manager_create()
+void ctx::LocationLogger::__locationManagerCreate()
 {
-	int ret = location_manager_create(location_method, &manager);
+	int ret = location_manager_create(__locationMethod, &__locationManager);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-void ctx::LocationLogger::manager_destroy()
+void ctx::LocationLogger::__locationManagerDestroy()
 {
-	int ret = location_manager_destroy(manager);
+	int ret = location_manager_destroy(__locationManager);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-void ctx::LocationLogger::manager_set_service_state_changed_cb()
+void ctx::LocationLogger::__locationManagerSetServiceStateChangedCb()
 {
-	int ret = location_manager_set_service_state_changed_cb(manager, location_service_state_changed_cb, this);
+	int ret = location_manager_set_service_state_changed_cb(__locationManager, __locationServiceStateChangedCb, this);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-void ctx::LocationLogger::manager_unset_service_state_changed_cb()
+void ctx::LocationLogger::__locationManagerUnsetServiceStateChangedCb()
 {
-	int ret = location_manager_unset_service_state_changed_cb(manager);
+	int ret = location_manager_unset_service_state_changed_cb(__locationManager);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-void ctx::LocationLogger::manager_start()
+void ctx::LocationLogger::__locationManagerStart()
 {
-	int ret = location_manager_start(manager);
+	int ret = location_manager_start(__locationManager);
 	_LOCATION_ERROR_LOG(ret);
-	start_service_timer_start();
+	__startServiceTimerStart();
 }
 
-void ctx::LocationLogger::manager_stop()
+void ctx::LocationLogger::__locationManagerStop()
 {
-	int ret = location_manager_stop(manager);
+	int ret = location_manager_stop(__locationManager);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-double ctx::LocationLogger::manager_get_horizontal_accuracy()
+double ctx::LocationLogger::__locationManagerGetHorizontalAccuracy()
 {
 	location_accuracy_level_e accuracy_level;
 	double horizontal, vertical;
-	int ret = location_manager_get_accuracy(manager, &accuracy_level, &horizontal, &vertical);
+	int ret = location_manager_get_accuracy(__locationManager, &accuracy_level, &horizontal, &vertical);
 	_LOCATION_ERROR_LOG(ret);
 	return horizontal;
 }
 
-location_accessibility_state_e ctx::LocationLogger::manager_get_accessibility_state()
+location_accessibility_state_e ctx::LocationLogger::__locationManagerGetAccessibilityState()
 {
 	location_accessibility_state_e state;
 	int ret = location_manager_get_accessibility_state(&state);
@@ -294,109 +294,109 @@ location_accessibility_state_e ctx::LocationLogger::manager_get_accessibility_st
 	return state;
 }
 
-void ctx::LocationLogger::manager_set_setting_changed_cb()
+void ctx::LocationLogger::__locationManagerSetSettingChangedCb()
 {
-	int ret = location_manager_set_setting_changed_cb(location_method, location_setting_changed_cb, this);
+	int ret = location_manager_set_setting_changed_cb(__locationMethod, __locationSettingChangedCb, this);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-void ctx::LocationLogger::manager_unset_setting_changed_cb()
+void ctx::LocationLogger::__locationManagerUnsetSettingChangedCb()
 {
-	int ret = location_manager_unset_setting_changed_cb(location_method);
+	int ret = location_manager_unset_setting_changed_cb(__locationMethod);
 	_LOCATION_ERROR_LOG(ret);
 }
 
-bool ctx::LocationLogger::manager_request_single_location()
+bool ctx::LocationLogger::__locationManagerRequestSingleLocation()
 {
-	int ret = location_manager_request_single_location(manager,
-			LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS, location_updated_cb, this);
+	int ret = location_manager_request_single_location(__locationManager,
+			LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS, __locationUpdatedCb, this);
 	_D("%s (seconds=%d) ----- ATTEMPTS: REQ[%d/%d], ACT[%d/%d], ALL[%d/%d]; ----- LOCATIONS:[%d/%d]",
 			ret == LOCATIONS_ERROR_NONE ? "SUCCESS" : "ERROR",
 			LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS,
-			active_request_attempts,
+			__activeRequestAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_REQUEST_ATTEMPTS,
-			active_attempts,
+			__activeAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS,
-			all_attempts,
+			__allAttempts,
 			LOCATION_LOGGER_MAX_LOCATION_ATTEMPTS,
-			location_count,
+			__locationCount,
 			LOCATION_LOGGER_MAX_LOCATION_COUNT);
 	_LOCATION_ERROR_LOG(ret);
-	active_request_attempts++;
-	active_attempts++;
-	all_attempts++;
+	__activeRequestAttempts++;
+	__activeAttempts++;
+	__allAttempts++;
 	if (ret == LOCATIONS_ERROR_NONE) {
-		active_request_timer_start();
+		__activeRequestTimerStart();
 		return true;
 	} else {
 		return false;
 	}
 }
 
-bool ctx::LocationLogger::manager_get_location()
+bool ctx::LocationLogger::__locationManagerGetLocation()
 {
 	double altitude, latitude, longitude, climb, direction, speed, horizontal, vertical;
 	location_accuracy_level_e level;
 	time_t timestamp;
-	int ret = location_manager_get_location(manager, &altitude, &latitude, &longitude,
+	int ret = location_manager_get_location(__locationManager, &altitude, &latitude, &longitude,
 			&climb, &direction, &speed, &level, &horizontal, &vertical, &timestamp);
 	_D("%s ----- ATTEMPTS: REQ[%d/%d], ACT[%d/%d], ALL[%d/%d]; ----- LOCATIONS:[%d/%d]",
 			ret == LOCATIONS_ERROR_NONE ? "SUCCESS" : "ERROR",
-			active_request_attempts,
+			__activeRequestAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_REQUEST_ATTEMPTS,
-			active_attempts,
+			__activeAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS,
-			all_attempts,
+			__allAttempts,
 			LOCATION_LOGGER_MAX_LOCATION_ATTEMPTS,
-			location_count,
+			__locationCount,
 			LOCATION_LOGGER_MAX_LOCATION_COUNT);
 	_LOCATION_ERROR_LOG(ret);
-	active_attempts++;
-	all_attempts++;
+	__activeAttempts++;
+	__allAttempts++;
 	if (ret == LOCATIONS_ERROR_NONE) {
 #ifdef TIZEN_ENGINEER_MODE
-		ctx::location_event_s location(latitude, longitude, horizontal, timestamp, LOCATION_METHOD_GET_LOCATION);
+		ctx::LocationEvent location(latitude, longitude, horizontal, timestamp, LOCATION_METHOD_GET_LOCATION);
 #else /* TIZEN_ENGINEER_MODE */
-		ctx::location_event_s location(latitude, longitude, horizontal, timestamp);
+		ctx::LocationEvent location(latitude, longitude, horizontal, timestamp);
 #endif /* TIZEN_ENGINEER_MODE */
-		broadcast(location);
-		on_active_location_succeeded();
+		__broadcast(location);
+		__onActiveLocationSucceeded();
 		return true;
 	} else {
 		return false;
 	}
 }
 
-void ctx::LocationLogger::manager_get_last_location()
+void ctx::LocationLogger::__locationManagerGetLastLocation()
 {
 	double altitude, latitude, longitude, climb, direction, speed, horizontal, vertical;
 	location_accuracy_level_e level;
 	time_t timestamp;
-	int ret = location_manager_get_last_location(manager, &altitude, &latitude, &longitude,
+	int ret = location_manager_get_last_location(__locationManager, &altitude, &latitude, &longitude,
 			&climb, &direction, &speed, &level, &horizontal, &vertical, &timestamp);
 	_D("%s ----- ATTEMPTS: REQ[%d/%d], ACT[%d/%d], ALL[%d/%d]; ----- LOCATIONS:[%d/%d]",
 			ret == LOCATIONS_ERROR_NONE ? "SUCCESS" : "ERROR",
-			active_request_attempts,
+			__activeRequestAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_REQUEST_ATTEMPTS,
-			active_attempts,
+			__activeAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS,
-			all_attempts,
+			__allAttempts,
 			LOCATION_LOGGER_MAX_LOCATION_ATTEMPTS,
-			location_count,
+			__locationCount,
 			LOCATION_LOGGER_MAX_LOCATION_COUNT);
 	_LOCATION_ERROR_LOG(ret);
-	all_attempts++;
+	__allAttempts++;
 	if (ret == LOCATIONS_ERROR_NONE) {
 #ifdef TIZEN_ENGINEER_MODE
-		ctx::location_event_s location(latitude, longitude, horizontal, timestamp, LOCATION_METHOD_GET_LAST_LOCATION);
+		ctx::LocationEvent location(latitude, longitude, horizontal, timestamp, LOCATION_METHOD_GET_LAST_LOCATION);
 #else /* TIZEN_ENGINEER_MODE */
-		ctx::location_event_s location(latitude, longitude, horizontal, timestamp);
+		ctx::LocationEvent location(latitude, longitude, horizontal, timestamp);
 #endif /* TIZEN_ENGINEER_MODE */
-		broadcast(location);
+		__broadcast(location);
 	}
 }
 
-bool ctx::LocationLogger::manager_is_enabled_method(location_method_e method)
+bool ctx::LocationLogger::__locationManagerIsEnabledMethod(location_method_e method)
 {
 	bool enable;
 	int ret = location_manager_is_enabled_method(method, &enable);
@@ -404,211 +404,211 @@ bool ctx::LocationLogger::manager_is_enabled_method(location_method_e method)
 	return enable;
 }
 
-bool ctx::LocationLogger::check_general_limits()
+bool ctx::LocationLogger::__checkGeneralLimits()
 {
-	return (location_count < LOCATION_LOGGER_MAX_LOCATION_COUNT
-			&& all_attempts < LOCATION_LOGGER_MAX_LOCATION_ATTEMPTS);
+	return (__locationCount < LOCATION_LOGGER_MAX_LOCATION_COUNT
+			&& __allAttempts < LOCATION_LOGGER_MAX_LOCATION_ATTEMPTS);
 }
 
-bool ctx::LocationLogger::check_active_limits()
+bool ctx::LocationLogger::__checkActiveLimits()
 {
-	return (!active_location_succeeded
-			&& active_attempts < LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS);
+	return (!__activeLocationSucceeded
+			&& __activeAttempts < LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS);
 }
 
-bool ctx::LocationLogger::check_active_request_limits()
+bool ctx::LocationLogger::__checkActiveRequestLimits()
 {
-	return (!active_request_succeeded
-			&& active_request_attempts < LOCATION_LOGGER_MAX_ACTIVE_REQUEST_ATTEMPTS);
+	return (!__activeRequestSucceeded
+			&& __activeRequestAttempts < LOCATION_LOGGER_MAX_ACTIVE_REQUEST_ATTEMPTS);
 }
 
-void ctx::LocationLogger::location_request()
+void ctx::LocationLogger::__locationRequest()
 {
 	_D("");
 	bool request_single_location_ret = false;
 	bool get_location_ret = false;
-	if (check_general_limits() && check_active_limits() && check_active_request_limits()) {
-		request_single_location_ret = manager_request_single_location();
+	if (__checkGeneralLimits() && __checkActiveLimits() && __checkActiveRequestLimits()) {
+		request_single_location_ret = __locationManagerRequestSingleLocation();
 	}
-	if (check_general_limits() && check_active_limits() && !request_single_location_ret) {
-		get_location_ret = manager_get_location();
+	if (__checkGeneralLimits() && __checkActiveLimits() && !request_single_location_ret) {
+		get_location_ret = __locationManagerGetLocation();
 	}
-	if (check_general_limits() && !request_single_location_ret && !get_location_ret
-			&& active_attempts >= LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS) {
-		manager_get_last_location();
+	if (__checkGeneralLimits() && !request_single_location_ret && !get_location_ret
+			&& __activeAttempts >= LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS) {
+		__locationManagerGetLastLocation();
 	}
 	if (!request_single_location_ret) {
-		manager_stop();
-		set_next_timer();
+		__locationManagerStop();
+		__setNextTimer();
 	}
 }
 
-void ctx::LocationLogger::set_next_timer()
+void ctx::LocationLogger::__setNextTimer()
 {
 	_D("ATTEMPTS: REQ[%d/%d], ACT[%d/%d], ALL[%d/%d]; ----- LOCATIONS:[%d/%d])",
-			active_request_attempts,
+			__activeRequestAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_REQUEST_ATTEMPTS,
-			active_attempts,
+			__activeAttempts,
 			LOCATION_LOGGER_MAX_ACTIVE_LOCATION_ATTEMPTS,
-			all_attempts,
+			__allAttempts,
 			LOCATION_LOGGER_MAX_LOCATION_ATTEMPTS,
-			location_count,
+			__locationCount,
 			LOCATION_LOGGER_MAX_LOCATION_COUNT);
-	if (check_general_limits()) {
-		if (check_active_limits()) {
-			active_interval_timer_start();
+	if (__checkGeneralLimits()) {
+		if (__checkActiveLimits()) {
+			__activeIntervalTimerStart();
 		} else {
-			passive_interval_timer_start();
+			__passiveIntervalTimerStart();
 		}
 	}
 }
 
-void ctx::LocationLogger::on_active_request_succeeded()
+void ctx::LocationLogger::__onActiveRequestSucceeded()
 {
 	_D("");
-	manager_stop();
-	active_request_succeeded = true;
-	on_active_location_succeeded();
+	__locationManagerStop();
+	__activeRequestSucceeded = true;
+	__onActiveLocationSucceeded();
 }
 
-void ctx::LocationLogger::on_active_location_succeeded()
+void ctx::LocationLogger::__onActiveLocationSucceeded()
 {
 	_D("");
-	active_location_succeeded = true;
+	__activeLocationSucceeded = true;
 }
 
-void ctx::LocationLogger::broadcast(ctx::location_event_s location_event)
+void ctx::LocationLogger::__broadcast(ctx::LocationEvent location_event)
 {
 	_D("");
-	location_count++;
-	if (listener) {
-		listener->on_new_location(location_event);
+	__locationCount++;
+	if (__listener) {
+		__listener->onNewLocation(location_event);
 	}
 	if (LOCATION_LOGGER_DATABASE) {
-		db_insert_log(location_event);
+		__dbInsertLog(location_event);
 	}
 }
 
 bool ctx::LocationLogger::onTimerExpired(int id)
 {
 	time_t now = time(nullptr);
-	double seconds = difftime(now, timer_timestamp);
+	double seconds = difftime(now, __timerTimestamp);
 
-	switch (timer_purpose) {
+	switch (__timerPurpose) {
 	case LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST:
-		_D("Active request FAILED, timer_id = %d[%d], from start = %.1fs", id, timer_id, seconds);
-		manager_stop();
-		set_next_timer();
+		_D("Active request FAILED, timerId = %d[%d], from start = %.1fs", id, __timerId, seconds);
+		__locationManagerStop();
+		__setNextTimer();
 		return false;
 	case LOCATION_LOGGER_WAITING_FOR_SERVICE_START:
-		_D("Service start in timeout time FAILED, timer_id = %d[%d], from start = %.1fs", id, timer_id, seconds);
+		_D("Service start in timeout time FAILED, timerId = %d[%d], from start = %.1fs", id, __timerId, seconds);
 		// Waiting for service start FAILURE is also some kind of active request attempt
-		active_request_attempts++;
-		active_attempts++;
-		all_attempts++;
-		manager_stop();
-		set_next_timer();
+		__activeRequestAttempts++;
+		__activeAttempts++;
+		__allAttempts++;
+		__locationManagerStop();
+		__setNextTimer();
 		return false;
 	case LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON:
-		_D("Still waiting for Location method settings on, timer_id = %d[%d], from start = %.1fs", id, timer_id, seconds);
+		_D("Still waiting for Location method settings on, timerId = %d[%d], from start = %.1fs", id, __timerId, seconds);
 		// Do nothing
 		return false;
 	case LOCATION_LOGGER_WAITING_FOR_ACTIVE_INTERVAL:
-		_D("Active interval time expired, timer_id = %d[%d], from start = %.1fs", id, timer_id, seconds);
+		_D("Active interval time expired, timerId = %d[%d], from start = %.1fs", id, __timerId, seconds);
 		break;
 	case LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL:
-		_D("Passive interval time expired, timer_id = %d[%d], from start = %.1fs", id, timer_id, seconds);
+		_D("Passive interval time expired, timerId = %d[%d], from start = %.1fs", id, __timerId, seconds);
 		break;
 	default:
-		_D("Do nothing, timer_id = %d[%d], from start = %.1fs", id, timer_id, seconds);
+		_D("Do nothing, timerId = %d[%d], from start = %.1fs", id, __timerId, seconds);
 		return false;
 	}
-	if (location_method_state) {
-		manager_start();
+	if (__locationMethodState) {
+		__locationManagerStart();
 	} else {
-		timer_purpose = LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON;
+		__timerPurpose = LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON;
 		_D("LOCATION_LOGGER_WAITING_FOR_LOCATION_METHOD_SETTING_ON");
 	}
 	return false;
 }
 
-void ctx::LocationLogger::active_request_timer_start()
+void ctx::LocationLogger::__activeRequestTimerStart()
 {
 	int minutes = LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS / 60;
 	if (LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS % 60) {
 		minutes++;
 	}
-	timer_purpose = LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST;
+	__timerPurpose = LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST;
 	_D("LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST (minutes=%d)", minutes);
-	timer_start(minutes);
+	__timerStart(minutes);
 }
 
-void ctx::LocationLogger::start_service_timer_start()
+void ctx::LocationLogger::__startServiceTimerStart()
 {
-	timer_purpose = LOCATION_LOGGER_WAITING_FOR_SERVICE_START;
+	__timerPurpose = LOCATION_LOGGER_WAITING_FOR_SERVICE_START;
 	_D("LOCATION_LOGGER_WAITING_FOR_SERVICE_START");
-	timer_start(LOCATION_LOGGER_SERVICE_START_TIMEOUT_MINUTES);
+	__timerStart(LOCATION_LOGGER_SERVICE_START_TIMEOUT_MINUTES);
 }
 
-void ctx::LocationLogger::active_interval_timer_start()
+void ctx::LocationLogger::__activeIntervalTimerStart()
 {
-	timer_purpose = LOCATION_LOGGER_WAITING_FOR_ACTIVE_INTERVAL;
+	__timerPurpose = LOCATION_LOGGER_WAITING_FOR_ACTIVE_INTERVAL;
 	_D("LOCATION_LOGGER_WAITING_FOR_ACTIVE_INTERVAL");
-	timer_start(LOCATION_LOGGER_ACTIVE_INTERVAL_MINUTES);
+	__timerStart(LOCATION_LOGGER_ACTIVE_INTERVAL_MINUTES);
 }
 
-void ctx::LocationLogger::passive_interval_timer_start()
+void ctx::LocationLogger::__passiveIntervalTimerStart()
 {
-	timer_purpose = LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL;
+	__timerPurpose = LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL;
 	_D("LOCATION_LOGGER_WAITING_FOR_PASSIVE_INTERVAL");
-	timer_start(LOCATION_LOGGER_PASSIVE_INTERVAL_MINUTES);
+	__timerStart(LOCATION_LOGGER_PASSIVE_INTERVAL_MINUTES);
 }
 
-void ctx::LocationLogger::timer_start(time_t minutes)
+void ctx::LocationLogger::__timerStart(time_t minutes)
 {
-	timer_timestamp = time(nullptr);
-	timer_id = __timerManager.setFor(minutes, this);
-	_D("%s (minutes=%d) timer_id = %d", timer_id >= 0 ? "SUCCESS" : "ERROR", minutes, timer_id);
+	__timerTimestamp = time(nullptr);
+	__timerId = __timerManager.setFor(minutes, this);
+	_D("%s (minutes=%d) timerId = %d", __timerId >= 0 ? "SUCCESS" : "ERROR", minutes, __timerId);
 }
 
-void ctx::LocationLogger::timer_stop()
-{
-	_D("");
-	__timerManager.remove(timer_id);
-}
-
-void ctx::LocationLogger::start_logging()
+void ctx::LocationLogger::__timerStop()
 {
 	_D("");
-	active_request_attempts = 0;
-	active_attempts = 0;
-	all_attempts = 0;
-	location_count = 0;
-	active_request_succeeded = false;;
-	active_location_succeeded = false;
-	manager_start();
+	__timerManager.remove(__timerId);
 }
 
-void ctx::LocationLogger::stop_logging()
+void ctx::LocationLogger::__startLogging()
 {
 	_D("");
-	timer_stop();
-	manager_stop();
+	__activeRequestAttempts = 0;
+	__activeAttempts = 0;
+	__allAttempts = 0;
+	__locationCount = 0;
+	__activeRequestSucceeded = false;;
+	__activeLocationSucceeded = false;
+	__locationManagerStart();
 }
 
-void ctx::LocationLogger::on_visit_start()
+void ctx::LocationLogger::__stopLogging()
 {
 	_D("");
-	if (!test_mode) {
-		start_logging();
+	__timerStop();
+	__locationManagerStop();
+}
+
+void ctx::LocationLogger::onVisitStart()
+{
+	_D("");
+	if (!__testMode) {
+		__startLogging();
 	}
 }
 
-void ctx::LocationLogger::on_visit_end()
+void ctx::LocationLogger::onVisitEnd()
 {
 	_D("");
-	if (!test_mode) {
-		stop_logging();
+	if (!__testMode) {
+		__stopLogging();
 	}
 }
 
