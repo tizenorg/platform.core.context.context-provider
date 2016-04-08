@@ -142,52 +142,52 @@ void ctx::GeofenceMonitorHandle::__updateState(int fenceId, geofence_state_e sta
 	__geoStateMap[fenceId] = state;
 }
 
-static const char* get_state_string(geofence_state_e state)
-{
-	switch (state) {
-		case GEOFENCE_STATE_IN:
-			return PLACE_GEOFENCE_IN;
-		case GEOFENCE_STATE_OUT:
-			return PLACE_GEOFENCE_OUT;
-		case GEOFENCE_STATE_UNCERTAIN:
-			return PLACE_GEOFENCE_UNCERTAIN;
-		default:
-			return PLACE_GEOFENCE_UNCERTAIN;
-	}
-}
-
 void ctx::GeofenceMonitorHandle::__emitStateChange()
 {
-	geofence_state_e current_state = GEOFENCE_STATE_UNCERTAIN;
+	geofence_state_e currentState = GEOFENCE_STATE_UNCERTAIN;
 	int outCount = 0;
 
 	for (auto it = __geoStateMap.begin(); it != __geoStateMap.end(); ++it) {
 		if (it->second == GEOFENCE_STATE_IN) {
-			current_state = GEOFENCE_STATE_IN;
+			currentState = GEOFENCE_STATE_IN;
 			break;
 		} else if (it->second == GEOFENCE_STATE_OUT) {
-			++ outCount;
+			++outCount;
 		}
 	}
 
-	if (current_state != GEOFENCE_STATE_IN && outCount > 0) {
-		current_state = GEOFENCE_STATE_OUT;
+	if (currentState != GEOFENCE_STATE_IN && outCount > 0) {
+		currentState = GEOFENCE_STATE_OUT;
 	}
 
-	if (current_state == __prevState) {
+	if (currentState == __prevState) {
 		return;
 	}
 
-	__prevState = current_state;
+	__prevState = currentState;
 
 	Json option;
 	option.set(NULL, PLACE_GEOFENCE_PLACE_ID, __placeId);
 
 	Json data;
 	data.set(NULL, PLACE_GEOFENCE_PLACE_ID, __placeId);
-	data.set(NULL, PLACE_GEOFENCE_EVENT, get_state_string(current_state));
+	data.set(NULL, PLACE_GEOFENCE_EVENT, __getStateString(currentState));
 
 	context_manager::publish(PLACE_SUBJ_GEOFENCE, option, ERR_NONE, data);
+}
+
+const char* ctx::GeofenceMonitorHandle::__getStateString(geofence_state_e state)
+{
+	switch (state) {
+	case GEOFENCE_STATE_IN:
+		return PLACE_GEOFENCE_IN;
+	case GEOFENCE_STATE_OUT:
+		return PLACE_GEOFENCE_OUT;
+	case GEOFENCE_STATE_UNCERTAIN:
+		return PLACE_GEOFENCE_UNCERTAIN;
+	default:
+		return PLACE_GEOFENCE_UNCERTAIN;
+	}
 }
 
 bool ctx::GeofenceMonitorHandle::__fenceListCb(int geofenceId, geofence_h fence, int fenceIndex, int fenceCount, void* userData)
