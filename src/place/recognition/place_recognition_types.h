@@ -81,9 +81,9 @@ enum PlaceCategId {
 	PLACE_CATEG_ID_OTHER = 3
 };
 
-typedef enum {
+enum PlaceRecogMode {
 	PLACE_RECOG_HIGH_ACCURACY_MODE = 0,
 	PLACE_RECOG_LOW_POWER_MODE = 1
-} place_recog_mode_e;
+};
 
 #endif /* End of _CONTEXT_PLACE_RECOGNITION_TYPES_ */

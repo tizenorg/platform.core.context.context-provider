@@ -32,9 +32,9 @@ namespace ctx {
 		bool __testMode;
 
 		double __doubleValueFromJson(Json &row, const char* key);
-		categs_t __visitCategsFromJson(Json &row);
+		Categs __visitCategsFromJson(Json &row);
 		Visit __visitFromJson(Json &row);
-		visits_t __visitsFromJsons(std::vector<Json>& records);
+		Visits __visitsFromJsons(std::vector<Json>& records);
 		std::shared_ptr<ctx::Place> __placeFromJson(Json &row);
 		std::vector<std::shared_ptr<Place>> __placesFromJsons(std::vector<Json>& records);
 
@@ -48,18 +48,18 @@ namespace ctx {
 		std::vector<Json> __dbGetPlaces();
 		void __dbInsertPlace(const Place &place);
 
-		std::shared_ptr<Place> __placeFromMergedVisits(visits_t &merged_visits);
+		std::shared_ptr<Place> __placeFromMergedVisits(Visits &mergedVisits);
 		std::vector<std::shared_ptr<Place>> __detectedPlaces;
-		void __detectedPlacesUpdate(std::vector<std::shared_ptr<Place>> &new_places);
-		void __processVisits(visits_t &visits);
-		static void __mergeLocation(const visits_t &merged_visits, Place &place);
+		void __detectedPlacesUpdate(std::vector<std::shared_ptr<Place>> &newPlaces);
+		void __processVisits(Visits &visits);
+		static void __mergeLocation(const Visits &mergedVisits, Place &place);
 		std::shared_ptr<graph::Components> __mergeVisits(const std::vector<Visit> &visits);
 
 		bool onTimerExpired(int timerId);
 
 	public:
 		PlacesDetector(bool testMode = false);
-		static void reduceOutliers(visits_t &visits); // TODO: move to private
+		static void reduceOutliers(Visits &visits); // TODO: move to private
 		static void reduceOutliers(std::shared_ptr<graph::Components> &cc); // TODO: move to private
 		std::vector<std::shared_ptr<Place>> getPlaces();
 

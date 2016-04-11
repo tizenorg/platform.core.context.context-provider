@@ -28,13 +28,13 @@ namespace ctx {
 	class PlaceCateger {
 
 	private:
-		static bool __reduceCategory(const PlaceCategId &categ, const ctx::visits_t &visits);
+		static bool __reduceCategory(const PlaceCategId &categId, const ctx::Visits &visits);
 
 	public:
-		static void reduceOutliers(visits_t &visits); // TODO: move to private
-		static std::vector<ctx::num_t> categVectorFromVisits(const ctx::visits_t &visits, PlaceCategId categ_id); // TODO: move to private
-		static void categorize(ctx::visits_t &visits, ctx::Place &place);
-		static std::string categId2Name(PlaceCategId categ_id); // TODO: move to private
+		static void reduceOutliers(Visits &visits); // TODO: move to private
+		static std::vector<ctx::num_t> categVectorFromVisits(const ctx::Visits &visits, PlaceCategId categId); // TODO: move to private
+		static void categorize(ctx::Visits &visits, ctx::Place &place);
+		static std::string categId2Name(PlaceCategId categId); // TODO: move to private
 
 	};	/* class PlaceCateger */
 

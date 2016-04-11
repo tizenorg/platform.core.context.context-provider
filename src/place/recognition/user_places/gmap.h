@@ -31,9 +31,9 @@ namespace ctx {
 	class Gmap {
 
 	private:
-		const static std::string __htmlHeader;
-		const static std::string __htmlFooter;
-		static std::string __iconForCategId(PlaceCategId categ_id);
+		static const std::string __HTML_HEADER;
+		static const std::string __HTML_FOOTER;
+		static std::string __iconForCategId(PlaceCategId categId);
 		static void __placeMarker2Stream(const Place& place, std::ostream& out);
 		static void __html2Stream(const std::vector<std::shared_ptr<Place>>& places, std::ostream& out);
 

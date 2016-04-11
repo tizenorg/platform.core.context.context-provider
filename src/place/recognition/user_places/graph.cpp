@@ -32,17 +32,17 @@ std::shared_ptr<ctx::graph::Components> ctx::graph::connectedComponents(Graph &g
 		ccs->push_back(c);
 		fringe.insert(i);
 		while (!fringe.empty()) {
-			Node curr_node = *fringe.begin();
+			Node currNode = *fringe.begin();
 			fringe.erase(fringe.begin());
-			c->insert(curr_node);
+			c->insert(currNode);
 
-			std::shared_ptr<NeighbourNodes> curr_nhood = graph[curr_node];
-			for (Node nhood_node : *curr_nhood) {
-				if (graph[nhood_node] && fringe.find(nhood_node) == fringe.end()) {
-					fringe.insert(nhood_node);
+			std::shared_ptr<NeighbourNodes> currNhood = graph[currNode];
+			for (Node nhoodNode : *currNhood) {
+				if (graph[nhoodNode] && fringe.find(nhoodNode) == fringe.end()) {
+					fringe.insert(nhoodNode);
 				}
 			}
-			graph[curr_node].reset();  // removing current node
+			graph[currNode].reset();  // removing current node
 		}
 	}
 	return ccs;

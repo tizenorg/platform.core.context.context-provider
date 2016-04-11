@@ -36,7 +36,7 @@ namespace ctx {
 		MahalModel(std::vector<num_t> mean, std::vector<num_t> sigma) :
 			__mean(mean),
 			__sigma(sigma) { }
-		num_t dist(const std::vector<num_t> &v);
+		num_t distance(const std::vector<num_t> &v);
 
 	};	/* class MahalModel */
 
