@@ -65,8 +65,7 @@ namespace ctx {
 	class LocationLogger : public ITimerListener, public IVisitListener {
 
 	public:
-		LocationLogger(ILocationListener *listener = nullptr,
-				bool testMode = false);
+		LocationLogger(ILocationListener *listener = nullptr, bool testMode = false);
 		~LocationLogger();
 
 	private:
@@ -76,7 +75,7 @@ namespace ctx {
 
 		/* OUTPUT */
 		ILocationListener * const __listener;
-		void __broadcast(LocationEvent location_event);
+		void __broadcast(LocationEvent locationEvent);
 
 		/* INTERNAL */
 		bool __testMode;
@@ -115,7 +114,7 @@ namespace ctx {
 
 		/* DATABASE */
 		static int __dbCreateTable();
-		int __dbInsertLog(LocationEvent location_event);
+		int __dbInsertLog(LocationEvent locationEvent);
 
 		/* DEBUG */
 		static const char* __locationError2Str(int error);
@@ -131,7 +130,7 @@ namespace ctx {
 
 		/* LOCATION MANAGER : LOCATION SERVICE STATE */
 		location_service_state_e __locationServiceState;
-		static void __locationServiceStateChangedCb(location_service_state_e state, void *user_data);
+		static void __locationServiceStateChangedCb(location_service_state_e state, void *userData);
 		void __locationManagerSetServiceStateChangedCb();
 		void __locationManagerUnsetServiceStateChangedCb();
 
@@ -139,7 +138,7 @@ namespace ctx {
 		location_method_e __locationMethod;
 		bool __locationMethodState;
 		bool __locationManagerIsEnabledMethod(location_method_e method);
-		static void __locationSettingChangedCb(location_method_e method, bool enable, void *user_data);
+		static void __locationSettingChangedCb(location_method_e method, bool enable, void *userData);
 		void __locationManagerSetSettingChangedCb();
 		void __locationManagerUnsetSettingChangedCb();
 
@@ -152,10 +151,10 @@ namespace ctx {
 
 		/* LOCATION MANAGER : LOCATION : ASYNCHRONOUS */
 		static void __positionUpdatedCb(double latitude, double longitude,
-				double altitude, time_t timestamp, void *user_data);
+				double altitude, time_t timestamp, void *userData);
 		static void __locationUpdatedCb(location_error_e error, double latitude,
 				double longitude, double altitude, time_t timestamp, double speed,
-				double direction, double climb, void *user_data);
+				double direction, double climb, void *userData);
 		bool __locationManagerRequestSingleLocation();
 
 	};	/* class LocationLogger */

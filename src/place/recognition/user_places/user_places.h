@@ -35,10 +35,10 @@ namespace ctx {
 		TimerManager __timerManager;
 
 	public:
-		UserPlaces(place_recog_mode_e energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);
+		UserPlaces(PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);
 		~UserPlaces();
 
-		void setMode(place_recog_mode_e energyMode);
+		void setMode(PlaceRecogMode energyMode);
 		std::vector<std::shared_ptr<Place>> getPlaces();
 		static Json composeJson(std::vector<std::shared_ptr<Place>> places);
 

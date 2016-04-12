@@ -78,22 +78,22 @@ namespace ctx {
 	typedef float share_t;
 	typedef int count_t;
 
-	typedef std::unordered_map<ctx::Mac, ctx::count_t> mac_counts_t;
-	typedef std::unordered_map<ctx::Mac, ctx::share_t> mac_shares_t;
+	typedef std::unordered_map<ctx::Mac, ctx::count_t> Macs2Counts;
+	typedef std::unordered_map<ctx::Mac, ctx::share_t> Macs2Shares;
 
-	typedef std::unordered_set<ctx::Mac> mac_set_t;
+	typedef std::unordered_set<ctx::Mac> MacSet;
 
-	std::istream &operator>>(std::istream &input, ctx::mac_set_t &macSet);
-	std::ostream &operator<<(std::ostream &output, const ctx::mac_set_t &macSet);
-	ctx::mac_set_t mac_set_from_string(const std::string &str);
+	std::istream &operator>>(std::istream &input, ctx::MacSet &macSet);
+	std::ostream &operator<<(std::ostream &output, const ctx::MacSet &macSet);
+	ctx::MacSet macSetFromString(const std::string &str);
 
-	std::shared_ptr<mac_set_t> mac_sets_union(const std::vector<std::shared_ptr<mac_set_t>> &macSets);
+	std::shared_ptr<MacSet> macSetsUnion(const std::vector<std::shared_ptr<MacSet>> &macSets);
 
 	struct Interval {
 		time_t start;
 		time_t end;
 
-		Interval(time_t start_, time_t end_);
+		Interval(time_t start, time_t end);
 	};
 
 }	/* namespace ctx */
@@ -116,7 +116,7 @@ namespace ctx {
 	struct Frame {
 		Interval interval;
 		count_t numberOfTimestamps;
-		mac_counts_t macCountsMap;
+		Macs2Counts macs2Counts;
 
 		Frame(Interval interval_) : interval(interval_), numberOfTimestamps(0) {};
 	};
@@ -131,7 +131,7 @@ namespace ctx {
 		MacEvent(time_t timestamp_, Mac mac_) : timestamp(timestamp_), mac(mac_) {}
 	};
 
-	typedef std::map<int, num_t> categs_t; // scores of categories
+	typedef std::map<int, num_t> Categs; // scores of categories
 
 	struct Location {
 		double latitude;
@@ -161,11 +161,13 @@ namespace ctx {
 #ifdef TIZEN_ENGINEER_MODE
 		LocationSource method;
 
-		LocationEvent(double latitude_, double longitude_, double accuracy_, time_t timestamp_, LocationSource method_)
-			: coordinates(latitude_, longitude_, accuracy_), timestamp(timestamp_), method(method_) {}
+		LocationEvent(double latitude_, double longitude_, double accuracy_, time_t timestamp_, LocationSource method_) :
+			coordinates(latitude_, longitude_, accuracy_),
+			timestamp(timestamp_), method(method_) {}
 #else /* TIZEN_ENGINEER_MODE */
-		LocationEvent(double latitude_, double longitude_, double accuracy_, time_t timestamp_)
-			: coordinates(latitude_, longitude_, accuracy_), timestamp(timestamp_) {}
+		LocationEvent(double latitude_, double longitude_, double accuracy_, time_t timestamp_) :
+			coordinates(latitude_, longitude_, accuracy_),
+			timestamp(timestamp_) {}
 #endif /* TIZEN_ENGINEER_MODE */
 
 		void log();
@@ -174,41 +176,41 @@ namespace ctx {
 
 	struct Visit {
 		Interval interval;
-		std::shared_ptr<mac_set_t> macSet;
-		categs_t categs;
-		bool location_valid;
-		Location location; // makes sense if location_valid == true;
+		std::shared_ptr<MacSet> macSet;
+		Categs categs;
+		bool locationValid;
+		Location location; // makes sense if locationValid == true;
 
-		Visit(Interval interval_, std::shared_ptr<mac_set_t> macSet_ = std::make_shared<mac_set_t>(), categs_t categs_ = categs_t()) :
+		Visit(Interval interval_, std::shared_ptr<MacSet> macSet_ = std::make_shared<MacSet>(), Categs categs_ = Categs()) :
 			interval(interval_),
 			macSet(macSet_),
 			categs(categs_),
-			location_valid(false) {}
-		void set_location(Location location);
-		void print_short_to_stream(std::ostream &out) const;
+			locationValid(false) {}
+		void setLocation(Location location);
+		void printShort2Stream(std::ostream &out) const;
 
 	};	/* struct Visit */
 
 	bool operator==(const Visit &v1, const Visit &v2);
-	typedef std::vector<Visit> visits_t;
-	typedef std::vector<MacEvent> mac_events; // used to store current interval logs
+	typedef std::vector<Visit> Visits;
+	typedef std::vector<MacEvent> MacEvents; // used to store current interval logs
 
-	std::shared_ptr<mac_set_t> mac_set_from_mac_counts(const mac_counts_t &macCountsMap);
+	std::shared_ptr<MacSet> macSetFromMacs2Counts(const Macs2Counts &macs2Counts);
 
 	typedef float confidence_t;
 
 	class Place {
 
 	public:
-		PlaceCategId categ_id; // category of a place (work/home/other)
-		confidence_t categ_confidence; // confidence of the above category - between [0,1]
+		PlaceCategId categId; // category of a place (work/home/other)
+		confidence_t categConfidence; // confidence of the above category - between [0,1]
 		std::string name; // for now: "work"/"home"/"other"
-		bool location_valid;
-		Location location; // makes sense if location_valid == true;
-		std::string wifi_aps; // WiFi APs MAC addresses separated by ","
-		time_t create_date; // The last update time of this place
+		bool locationValid;
+		Location location; // makes sense if locationValid == true;
+		std::string wifiAps; // WiFi APs MAC addresses separated by ","
+		time_t createDate; // The last update time of this place
 
-		void print_to_stream(std::ostream &out) const;
+		void print2Stream(std::ostream &out) const;
 
 	};	/* class Place */
 

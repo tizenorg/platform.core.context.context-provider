@@ -51,13 +51,13 @@ namespace ctx {
 
 	public:
 		WifiLogger(IWifiListener * listener = nullptr,
-				place_recog_mode_e mode = PLACE_RECOG_HIGH_ACCURACY_MODE,
+				PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE,
 				bool testMode = false);
 		~WifiLogger();
 
 		void startLogging();
 		void stopLogging();
-		void setMode(place_recog_mode_e energyMode);
+		void setMode(PlaceRecogMode energyMode);
 
 	private:
 		/* INPUT */
@@ -71,7 +71,7 @@ namespace ctx {
 		int __timerId;
 		int __intervalMinutes;
 		TimerManager __timerManager;
-		void __setInterval(place_recog_mode_e energyMode);
+		void __setInterval(PlaceRecogMode energyMode);
 		bool __checkTimerId(int id);
 		bool __checkTimerTime(time_t now);
 		void __timerStart(time_t minutes);
@@ -87,17 +87,17 @@ namespace ctx {
 		void __wifiSetConnectionStateChangedCbRequest();
 		static bool __checkWifiIsActivated();
 		void __wifiScanRequest();
-		static int __wifiForeachFoundApsRequest(void *user_data);
+		static int __wifiForeachFoundApsRequest(void *userData);
 		static wifi_connection_state_e __wifiGetConnectionStateRequest();
 		static int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
 		void __wifiInitializeRequest();
 		void __wifiDeinitializeRequest();
 
 		/* SYSTEM CAPI CALLBACKS */
-		static void __wifiDeviceStateChangedCb(wifi_device_state_e state, void *user_data);
-		static void __wifiConnectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *user_data);
-		static bool __wifiFoundApCb(wifi_ap_h ap, void *user_data);
-		static void __wifiScanFinishedCb(wifi_error_e error_code, void *user_data);
+		static void __wifiDeviceStateChangedCb(wifi_device_state_e state, void *userData);
+		static void __wifiConnectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *userData);
+		static bool __wifiFoundApCb(wifi_ap_h ap, void *userData);
+		static void __wifiScanFinishedCb(wifi_error_e errorCode, void *userData);
 
 		bool __testMode;
 		IWifiListener * const __listener;

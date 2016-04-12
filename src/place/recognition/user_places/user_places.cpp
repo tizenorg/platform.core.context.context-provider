@@ -22,7 +22,7 @@
 #include "../place_recognition_types.h"
 #include "db_mgr.h"
 
-ctx::UserPlaces::UserPlaces(place_recog_mode_e energyMode):
+ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 	__visitDetector(nullptr),
 	__placesDetector(nullptr),
 	__placesDetectorTimerId(-1)
@@ -114,22 +114,22 @@ ctx::Json ctx::UserPlaces::composeJson(std::vector<std::shared_ptr<Place>> place
 {
 	ctx::Json data;
 	for (std::shared_ptr<ctx::Place> place : places) {
-		ctx::Json place_j;
-		place_j.set(NULL, PLACE_CATEG_ID, place->categ_id);
-		place_j.set(NULL, PLACE_CATEG_CONFIDENCE, place->categ_confidence);
-		place_j.set(NULL, PLACE_NAME, place->name);
-		if (place->location_valid) {
-			place_j.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude);
-			place_j.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude);
+		ctx::Json placeJson;
+		placeJson.set(NULL, PLACE_CATEG_ID, place->categId);
+		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, place->categConfidence);
+		placeJson.set(NULL, PLACE_NAME, place->name);
+		if (place->locationValid) {
+			placeJson.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude);
+			placeJson.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude);
 		}
-		place_j.set(NULL, PLACE_WIFI_APS, place->wifi_aps);
-		place_j.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->create_date));
-		data.append(NULL, DATA_READ, place_j);
+		placeJson.set(NULL, PLACE_WIFI_APS, place->wifiAps);
+		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->createDate));
+		data.append(NULL, DATA_READ, placeJson);
 	}
 	return data;
 }
 
-void ctx::UserPlaces::setMode(place_recog_mode_e energyMode)
+void ctx::UserPlaces::setMode(PlaceRecogMode energyMode)
 {
 	if (__visitDetector) {
 		__visitDetector->setMode(energyMode);
