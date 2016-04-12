@@ -24,8 +24,8 @@
 #include "user_places_params.h"
 #include "debug_utils.h"
 
-#define MAC_STRING_COMPONENTS_SEPARATOR ':'
-#define MAC_SET_STRING_DELIMITER ','
+#define __MAC_STRING_COMPONENTS_SEPARATOR ':'
+#define __MAC_SET_STRING_DELIMITER ','
 
 ctx::Mac::Mac(const std::string& str)
 {
@@ -59,7 +59,7 @@ std::istream& ctx::operator>>(std::istream &input, ctx::Mac &mac)
 			break;
 		}
 		input >> colon;
-		if (colon != MAC_STRING_COMPONENTS_SEPARATOR) {
+		if (colon != __MAC_STRING_COMPONENTS_SEPARATOR) {
 			throw std::runtime_error("Invalid MAC format");
 		}
 	}
@@ -77,7 +77,7 @@ std::ostream& ctx::operator<<(std::ostream &output, const ctx::Mac &mac)
 		if (i >= Mac::MAC_SIZE) {
 			break;
 		}
-		output << MAC_STRING_COMPONENTS_SEPARATOR;
+		output << __MAC_STRING_COMPONENTS_SEPARATOR;
 	}
 	output << std::dec;
 	return output;
@@ -121,7 +121,7 @@ bool ctx::operator<(const Mac &m1, const Mac &m2)
 	return false; // they are equal
 }
 
-std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &macSet)
+std::istream& ctx::operator>>(std::istream &input, ctx::MacSet &macSet)
 {
 	Mac mac;
 	char delimeter;
@@ -137,7 +137,7 @@ std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &macSet)
 			break;
 		}
 		delimeter = input.get();
-		if (delimeter != MAC_SET_STRING_DELIMITER) {
+		if (delimeter != __MAC_SET_STRING_DELIMITER) {
 			input.unget();
 			break;
 		}
@@ -145,18 +145,18 @@ std::istream& ctx::operator>>(std::istream &input, ctx::mac_set_t &macSet)
 	return input;
 }
 
-std::ostream& ctx::operator<<(std::ostream &output, const ctx::mac_set_t &macSet)
+std::ostream& ctx::operator<<(std::ostream &output, const ctx::MacSet &macSet)
 {
-	std::vector<Mac> mac_vec(macSet.size());
-	std::copy(macSet.begin(), macSet.end(), mac_vec.begin());
-	std::sort(mac_vec.begin(), mac_vec.end());
+	std::vector<Mac> macVec(macSet.size());
+	std::copy(macSet.begin(), macSet.end(), macVec.begin());
+	std::sort(macVec.begin(), macVec.end());
 
 	bool first = true;
-	for (auto &mac: mac_vec) {
+	for (auto &mac: macVec) {
 		if (first) {
 			first = false;
 		} else {
-			output << MAC_SET_STRING_DELIMITER;
+			output << __MAC_SET_STRING_DELIMITER;
 		}
 		output << mac;
 	}
@@ -182,13 +182,13 @@ void ctx::LocationEvent::log()
 #endif /* TIZEN_ENGINEER_MODE */
 }
 
-void ctx::Visit::set_location(Location location_)
+void ctx::Visit::setLocation(Location location_)
 {
-	location_valid = true;
+	locationValid = true;
 	location = location_;
 }
 
-void ctx::Visit::print_short_to_stream(std::ostream &out) const
+void ctx::Visit::printShort2Stream(std::ostream &out) const
 {
 	// print only valid visits
 	if (interval.end != 0) {
@@ -207,13 +207,13 @@ bool ctx::operator==(const ctx::Visit &v1, const ctx::Visit &v2)
 			&& v1.location.latitude == v2.location.latitude
 			&& v1.location.longitude == v2.location.longitude
 			&& v1.location.accuracy == v2.location.accuracy
-			&& v1.location_valid == v2.location_valid
+			&& v1.locationValid == v2.locationValid
 			&& v1.macSet == v2.macSet;
 }
 
-ctx::mac_set_t ctx::mac_set_from_string(const std::string &str)
+ctx::MacSet ctx::macSetFromString(const std::string &str)
 {
-	mac_set_t macSet;
+	MacSet macSet;
 	std::stringstream ss;
 	ss << str;
 	ss >> macSet;
@@ -225,22 +225,22 @@ bool ctx::operator>(const Mac &m1, const Mac &m2)
 	return m2 < m1;
 }
 
-std::shared_ptr<ctx::mac_set_t> ctx::mac_set_from_mac_counts(const mac_counts_t &mac_counts)
+std::shared_ptr<ctx::MacSet> ctx::macSetFromMacs2Counts(const Macs2Counts &macs2Counts)
 {
-	std::shared_ptr<mac_set_t> macSet(std::make_shared<mac_set_t>());
-	for (auto &c: mac_counts) {
-		macSet->insert(c.first);
+	std::shared_ptr<MacSet> macSet(std::make_shared<MacSet>());
+	for (auto &macCount: macs2Counts) {
+		macSet->insert(macCount.first);
 	}
 	return macSet;
 }
 
-std::shared_ptr<ctx::mac_set_t> ctx::mac_sets_union(const std::vector<std::shared_ptr<mac_set_t>> &macSets)
+std::shared_ptr<ctx::MacSet> ctx::macSetsUnion(const std::vector<std::shared_ptr<MacSet>> &macSets)
 {
-	std::shared_ptr<mac_set_t> union_set = std::make_shared<mac_set_t>();
-	for (std::shared_ptr<mac_set_t> macSet : macSets) {
-		union_set->insert(macSet->begin(), macSet->end());
+	std::shared_ptr<MacSet> unionSet = std::make_shared<MacSet>();
+	for (std::shared_ptr<MacSet> macSet : macSets) {
+		unionSet->insert(macSet->begin(), macSet->end());
 	}
-	return union_set;
+	return unionSet;
 }
 
 ctx::Interval::Interval(time_t start_, time_t end_) : start(start_), end(end_) {
@@ -249,14 +249,14 @@ ctx::Interval::Interval(time_t start_, time_t end_) : start(start_), end(end_) {
 	}
 }
 
-void ctx::Place::print_to_stream(std::ostream &out) const
+void ctx::Place::print2Stream(std::ostream &out) const
 {
 	out << "PLACE:" << std::endl;
 	out << "__CATEGORY: " << name << std::endl;
-	if (location_valid) {
+	if (locationValid) {
 		out << "__LOCATION: lat=" << std::setprecision(GEO_LOCATION_PRECISION + 2) << location.latitude;
 		out << ", lon=" << location.longitude << std::setprecision(5) << std::endl;
 	}
-	out << "__WIFI:" << wifi_aps << std::endl;
-	out << "__CREATE_DATE: " << DebugUtils::humanReadableDateTime(create_date, "%F %T", 80) << std::endl;
+	out << "__WIFI:" << wifiAps << std::endl;
+	out << "__CREATE_DATE: " << DebugUtils::humanReadableDateTime(createDate, "%F %T", 80) << std::endl;
 }

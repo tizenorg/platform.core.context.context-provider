@@ -314,12 +314,12 @@ ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
 	};
 }
 
-int ctx::VisitCateger::weeksScope(const TimeFeatures &start_f, const Interval &interval)
+int ctx::VisitCateger::weeksScope(const TimeFeatures &startF, const Interval &interval)
 {
-	int duration_minutes = (interval.end - interval.start) / 60;
-	int scope_minutes = start_f.minutesSinceBeginingOfTheWeek + duration_minutes;
-	int weeksScope = scope_minutes / MINUTES_IN_WEEK;
-	if (scope_minutes % MINUTES_IN_WEEK > 0) {
+	int durationMinutes = (interval.end - interval.start) / 60;
+	int scopeMinutes = startF.minutesSinceBeginingOfTheWeek + durationMinutes;
+	int weeksScope = scopeMinutes / __MINUTES_IN_WEEK;
+	if (scopeMinutes % __MINUTES_IN_WEEK > 0) {
 		weeksScope++;
 	}
 	return weeksScope;
@@ -327,10 +327,10 @@ int ctx::VisitCateger::weeksScope(const TimeFeatures &start_f, const Interval &i
 
 ctx::num_t ctx::VisitCateger::__sum(const std::vector<num_t> model, const size_t &from, const size_t &to)
 {
-	size_t to_secure = to;
+	size_t toSecure = to;
 	if (to >= model.size()) {
 		_E("'to' exceeds model size");
-		to_secure = model.size() - 1;
+		toSecure = model.size() - 1;
 	}
 
 	if (from > to) {
@@ -338,7 +338,7 @@ ctx::num_t ctx::VisitCateger::__sum(const std::vector<num_t> model, const size_t
 	}
 
 	num_t result = 0.0;
-	for (size_t i = from; i <= to_secure; i++) {
+	for (size_t i = from; i <= toSecure; i++) {
 		result += model[i];
 	}
 
@@ -346,20 +346,20 @@ ctx::num_t ctx::VisitCateger::__sum(const std::vector<num_t> model, const size_t
 }
 
 ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Interval &interval,
-		const TimeFeatures &start_f, const TimeFeatures &end_f)
+		const TimeFeatures &startF, const TimeFeatures &endF)
 {
 	num_t ret = 0.0;
 	int minutes = 0;
-	int ws = weeksScope(start_f, interval);
+	int ws = weeksScope(startF, interval);
 	for (int week = 1; week <= ws; week++) {
-		size_t start_index = (week == 1)
-				? start_f.minutesSinceBeginingOfTheWeek
+		size_t startIndex = (week == 1)
+				? startF.minutesSinceBeginingOfTheWeek
 				: 0;
-		size_t end_index = (week == ws)
-				? end_f.minutesSinceBeginingOfTheWeek
-				: MINUTES_IN_WEEK - 1;
-		ret += __sum(prob_features::weekModel[categ], start_index, end_index);
-		minutes += end_index - start_index + 1;
+		size_t endIndex = (week == ws)
+				? endF.minutesSinceBeginingOfTheWeek
+				: __MINUTES_IN_WEEK - 1;
+		ret += __sum(prob_features::weekModel[categ], startIndex, endIndex);
+		minutes += endIndex - startIndex + 1;
 	}
 	if (minutes > 0) {
 		return ret / minutes;
@@ -367,12 +367,11 @@ ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Int
 	return ret;
 }
 
-ctx::categs_t ctx::VisitCateger::weekModelFeatures(const Interval &interval, const TimeFeatures &start_f,
-		const TimeFeatures &end_f)
+ctx::Categs ctx::VisitCateger::weekModelFeatures(const Interval &interval, const TimeFeatures &startF, const TimeFeatures &endF)
 {
-	ctx::categs_t categs;
+	ctx::Categs categs;
 	for (const auto &item : prob_features::weekModel) {
-		categs[item.first] = __weekModelMeanValue(item.first, interval, start_f,	end_f);
+		categs[item.first] = __weekModelMeanValue(item.first, interval, startF, endF);
 	}
 	_D("categs: H=%.12f, W=%.12f, O=%.12f",
 			categs[PLACE_CATEG_ID_HOME],
@@ -381,20 +380,20 @@ ctx::categs_t ctx::VisitCateger::weekModelFeatures(const Interval &interval, con
 	return categs;
 }
 
-std::vector<ctx::num_t> ctx::VisitCateger::intervalFeatures(const Interval &interval)
+ctx::IntervalFeatures ctx::VisitCateger::intervalFeatures(const Interval &interval)
 {
-	num_t duration_minutes = 1.0 * (interval.end - interval.start) / 60;
-	TimeFeatures start_features = timeFeatures(interval.start);
-	TimeFeatures end_features = timeFeatures(interval.end);
-	categs_t week_features = weekModelFeatures(interval, start_features, end_features);
+	num_t durationMinutes = 1.0 * (interval.end - interval.start) / 60;
+	TimeFeatures startFeatures = timeFeatures(interval.start);
+	TimeFeatures endFeatures = timeFeatures(interval.end);
+	Categs weekFeatures = weekModelFeatures(interval, startFeatures, endFeatures);
 	return {
-		duration_minutes,
-		(num_t) start_features.minutesSinceMidnight,
-		(num_t) end_features.minutesSinceMidnight,
-		(num_t) start_features.weekday,
-		week_features[PLACE_CATEG_ID_HOME],
-		week_features[PLACE_CATEG_ID_WORK],
-		week_features[PLACE_CATEG_ID_OTHER]
+		durationMinutes,
+		(num_t) startFeatures.minutesSinceMidnight,
+		(num_t) endFeatures.minutesSinceMidnight,
+		(num_t) startFeatures.weekday,
+		weekFeatures[PLACE_CATEG_ID_HOME],
+		weekFeatures[PLACE_CATEG_ID_WORK],
+		weekFeatures[PLACE_CATEG_ID_OTHER]
 	};
 }
 
@@ -409,15 +408,15 @@ void ctx::VisitCateger::__normalize(std::vector<ctx::num_t> &features)
 
 void ctx::VisitCateger::categorize(ctx::Visit &visit)
 {
-	std::vector<ctx::num_t> features = intervalFeatures(visit.interval);
+	IntervalFeatures features = intervalFeatures(visit.interval);
 	__normalize(features);
 
-	for (auto &model_pair : __models) {
-		int categ_i = model_pair.first;
-		MahalModel model = model_pair.second;
+	for (auto &modelPair : __models) {
+		int categId = modelPair.first;
+		MahalModel model = modelPair.second;
 
-		num_t mahal_dist = model.dist(features);
-		num_t prob = 1 - __chiApprox.value(mahal_dist); // sth like probability but not exactly
-		visit.categs[categ_i] = prob;
+		num_t distance = model.distance(features);
+		num_t probability = 1 - __chiApprox.value(distance); // sth like probability but not exactly
+		visit.categs[categId] = probability;
 	}
 }

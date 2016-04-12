@@ -31,19 +31,21 @@ namespace ctx {
 	    bool weekend;
 	};
 
+	typedef std::vector<num_t> IntervalFeatures;
+
 	/*
 	 * visit categorizer class
 	 */
 	class VisitCateger {
 
 	private:
-		const static int MINUTES_IN_WEEK = 60 * 24 * 7;
-		const static std::map<int, MahalModel> __models;
-		const static std::vector<num_t> __featuresMean;
-		const static std::vector<num_t> __featuresStd;
+		static const int __MINUTES_IN_WEEK = 60 * 24 * 7;
+		static const std::map<int, MahalModel> __models;
+		static const std::vector<num_t> __featuresMean;
+		static const std::vector<num_t> __featuresStd;
 		static num_t __sum(const std::vector<num_t> model, const size_t &from, const size_t &to);
 		static num_t __weekModelMeanValue(PlaceCategId categ, const Interval &interval,
-				const TimeFeatures &start_f, const TimeFeatures &end_f);
+				const TimeFeatures &startF, const TimeFeatures &endF);
 		static void __normalize(std::vector<num_t> &features);
 		static PiecewiseLin __chiApprox; // tabled chi function approximator
 
@@ -56,27 +58,27 @@ namespace ctx {
 		 */
 		static TimeFeatures timeFeatures(const time_t &time);
 
-		static int weeksScope(const TimeFeatures &start_f, const Interval &interval);
+		static int weeksScope(const TimeFeatures &startF, const Interval &interval);
 
 		/**
 		 * Function interpret time interval input argument and calculates scores
 		 * that argument interval is home, work or other based on whole week model.
 		 *
 		 * @param  interval  time interval
-		 * @param  start_f	 start time features
-		 * @param  end_f	 end time features
-		 * @return categs_t  score that argument interval is home, work or other
+		 * @param  startF	 start time features
+		 * @param  endF	     end time features
+		 * @return Categs    score that argument interval is home, work or other
 		 */
-		static categs_t weekModelFeatures(const Interval &interval, const TimeFeatures &start_f,
-				const TimeFeatures &end_f);
+		static Categs weekModelFeatures(const Interval &interval, const TimeFeatures &startF,
+				const TimeFeatures &endF);
 
 		/**
 		 * Function interpret time interval input argument,
 		 *
-		 * @param  interval            time interval
-		 * @return std::vector<num_t>  vector with interpretations of input time interval
+		 * @param  interval          time interval
+		 * @return IntervalFeatures  vector with interpretations of input time interval
 		 */
-		static std::vector<num_t> intervalFeatures(const Interval &interval);
+		static IntervalFeatures intervalFeatures(const Interval &interval);
 
 		/**
 		 * Function categorize visit based on visits time interval and fill its categories values.

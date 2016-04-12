@@ -43,8 +43,8 @@ EXTAPI bool ctx::initPlaceContextProvider()
 	PlaceGeofenceProvider::submitTriggerItem();
 
 #ifndef _DISABLE_RECOG_ENGINE_
-	place_recognition_provider::create(NULL);
-	registerProvider<place_recognition_provider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);
+	PlaceRecognitionProvider::create(NULL);
+	registerProvider<PlaceRecognitionProvider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);
 #endif	/* _DISABLE_RECOG_ENGINE_ */
 
 #endif	/* _MOBILE_ */

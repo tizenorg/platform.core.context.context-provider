@@ -23,7 +23,7 @@
 
 namespace ctx {
 
-	class place_recognition_provider : public ContextProviderBase {
+	class PlaceRecognitionProvider : public ContextProviderBase {
 
 	public:
 		static ContextProviderBase *create(void *data);
@@ -36,13 +36,13 @@ namespace ctx {
 		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
 
 	private:
-		static place_recognition_provider *__instance;
-		UserPlaces engine;
+		static PlaceRecognitionProvider *__instance;
+		UserPlaces __engine;
 
-		place_recognition_provider() : engine(PLACE_RECOG_HIGH_ACCURACY_MODE) {}
-		~place_recognition_provider() {}
+		PlaceRecognitionProvider() : __engine(PLACE_RECOG_HIGH_ACCURACY_MODE) {}
+		~PlaceRecognitionProvider() {}
 
-	};	/* class place_recognition_provider */
+	};	/* class PlaceRecognitionProvider */
 
 }	/* namespace ctx */
 

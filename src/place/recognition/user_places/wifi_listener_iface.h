@@ -25,7 +25,7 @@ namespace ctx {
 
 	public:
 		virtual ~IWifiListener() {};
-		virtual void onWifiScan(ctx::MacEvent e) = 0;
+		virtual void onWifiScan(ctx::MacEvent macEvent) = 0;
 
 	};	/* IWifiListener */
 
