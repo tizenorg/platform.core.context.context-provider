@@ -24,12 +24,10 @@
 #include "inactive_detector_storage_queries.h"
 #include "inactive_detector_classificator.h"
 #include "app_inactive_detector_types.h"
-#include "db_mgr.h"
-#include <db_mgr.h>
 
 /*int ctx::inactive_detector_storage::create_table()
 {
-	bool ret = db_manager::create_table(0, WIFI_TABLE_NAME, WIFI_CREATE_TABLE_COLUMNS, NULL, NULL);
+	bool ret = __dbManager.create_table(0, WIFI_TABLE_NAME, WIFI_CREATE_TABLE_COLUMNS, NULL, NULL);
 	_D("Table Creation Request: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }*/
@@ -46,7 +44,7 @@ int ctx::inactive_detector_storage::read(
 
 	IF_FAIL_RETURN(!query.empty(), ERR_OPERATION_FAILED);
 
-	bool ret = db_manager::execute(
+	bool ret = __dbManager.execute(
 		STR_EQ(subject, APP_INACTIVE_SUBJ_GET_APPS_INACTIVE) ?
 			APP_INACTIVE_QUERY_ID_GET_APPS_INACTIVE :
 			APP_INACTIVE_QUERY_ID_GET_APPS_ACTIVE,
@@ -165,7 +163,7 @@ void ctx::inactive_detector_storage::json_to_object(std::vector<Json>& records,
 	}
 }
 
-void ctx::inactive_detector_storage::on_query_result_received(unsigned int query_id,
+void ctx::inactive_detector_storage::onExecuted(unsigned int query_id,
 	int error,
 	std::vector<Json>& records)
 {
@@ -192,7 +190,7 @@ void ctx::inactive_detector_storage::on_query_result_received(unsigned int query
 			{
 				std::string query;
 				query = query_update_apps(apps_with_weights);
-				bool ret = db_manager::execute(APP_INACTIVE_QUERY_ID_UPDATE_CLUSTERS,
+				bool ret = __dbManager.execute(APP_INACTIVE_QUERY_ID_UPDATE_CLUSTERS,
 					query.c_str(),
 					this);
 				_D("load visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
@@ -241,7 +239,7 @@ int ctx::inactive_detector_storage::get_apps_info_w_weights(
 
 	inject_params(query, placeholder, timestamp_str);
 
-	bool ret = db_manager::execute(APP_INACTIVE_QUERY_ID_GET_APPS_WEIGHT,
+	bool ret = __dbManager.execute(APP_INACTIVE_QUERY_ID_GET_APPS_WEIGHT,
 		query.c_str(),
 		this);
 	_D("load visits execute query result: %s", ret ? "SUCCESS" : "FAIL");

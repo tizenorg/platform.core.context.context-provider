@@ -20,7 +20,6 @@
 #include "user_places.h"
 #include "places_detector.h"
 #include "../place_recognition_types.h"
-#include "db_mgr.h"
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 	__visitDetector(nullptr),

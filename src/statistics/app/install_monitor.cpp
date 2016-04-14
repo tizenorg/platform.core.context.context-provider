@@ -18,7 +18,7 @@
 #include <glib.h>
 #include <Json.h>
 #include <types_internal.h>
-#include <db_mgr.h>
+#include <DatabaseManager.h>
 #include "app_stats_types.h"
 #include "install_monitor.h"
 
@@ -80,13 +80,15 @@ void ctx::app_install_monitor::package_event_cb(const char *type, const char *pa
 
 bool ctx::app_install_monitor::app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data)
 {
+	DatabaseManager dbManager;
+
 	if (last_event_type == PACKAGE_MANAGER_EVENT_TYPE_INSTALL) {
 		Json data;
 		data.set(NULL, STATS_APP_ID, app_id);
-		db_manager::insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
+		dbManager.insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 	} else if (last_event_type == PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL) {
-		db_manager::execute(0, create_deletion_query(APP_TABLE_REMOVABLE_APP, app_id).c_str(), NULL);
-		db_manager::execute(0, create_deletion_query(APP_TABLE_USAGE_LOG, app_id).c_str(), NULL);
+		dbManager.execute(0, create_deletion_query(APP_TABLE_REMOVABLE_APP, app_id).c_str(), NULL);
+		dbManager.execute(0, create_deletion_query(APP_TABLE_USAGE_LOG, app_id).c_str(), NULL);
 	}
 
 	return true;

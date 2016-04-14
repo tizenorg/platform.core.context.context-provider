@@ -19,14 +19,15 @@
 
 #include <sstream>
 #include <media_content.h>
-#include <db_listener_iface.h>
+#include <DatabaseManager.h>
 
 namespace ctx {
 
-	class media_content_monitor : public db_listener_iface {
+	class media_content_monitor : public IDatabaseListener {
 	private:
 		bool started;
 		int last_cleanup_time;
+		DatabaseManager __dbManager;
 
 		bool start_monitoring();
 		void stop_monitoring();
@@ -35,9 +36,9 @@ namespace ctx {
 		void update_play_count(const char *uuid, int type, int count);
 		void insert_log(int media_type);
 
-		void on_creation_result_received(unsigned int query_id, int error) {}
-		void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-		void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
+		void onTableCreated(unsigned int query_id, int error) {}
+		void onInserted(unsigned int query_id, int error, int64_t row_id) {}
+		void onExecuted(unsigned int query_id, int error, std::vector<Json>& records);
 
 		static void on_media_content_db_updated(media_content_error_e error, int pid,
 				media_content_db_update_item_type_e update_item,

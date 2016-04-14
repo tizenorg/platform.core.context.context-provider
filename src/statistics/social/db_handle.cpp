@@ -18,7 +18,6 @@
 #include <contacts.h>
 #include <types_internal.h>
 #include <ContextManager.h>
-#include <db_mgr.h>
 #include "social_stats_types.h"
 #include "db_handle.h"
 

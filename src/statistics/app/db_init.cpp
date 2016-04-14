@@ -17,7 +17,6 @@
 #include <sstream>
 #include <Json.h>
 #include <types_internal.h>
-#include <db_mgr.h>
 #include "app_stats_types.h"
 #include "db_init.h"
 
@@ -38,16 +37,16 @@ void ctx::app_db_initializer::create_table()
 	static bool done = false;
 	IF_FAIL_VOID(!done);
 
-	db_manager::create_table(0, APP_TABLE_USAGE_LOG, APP_TABLE_USAGE_LOG_COLUMNS, NULL, NULL);
-	db_manager::create_table(0, APP_TABLE_REMOVABLE_APP, APP_TABLE_REMOVABLE_APP_COLUMNS, NULL, NULL);
-	db_manager::execute(0, APP_TEMP_USAGE_FREQ_SQL, NULL);
+	__dbManager.createTable(0, APP_TABLE_USAGE_LOG, APP_TABLE_USAGE_LOG_COLUMNS, NULL, NULL);
+	__dbManager.createTable(0, APP_TABLE_REMOVABLE_APP, APP_TABLE_REMOVABLE_APP_COLUMNS, NULL, NULL);
+	__dbManager.execute(0, APP_TEMP_USAGE_FREQ_SQL, NULL);
 
 	done = true;
 }
 
 void ctx::app_db_initializer::check_app_list()
 {
-	db_manager::execute(EMPTY_CHECKER_QID, "SELECT * FROM " APP_TABLE_REMOVABLE_APP " LIMIT 1", this);
+	__dbManager.execute(EMPTY_CHECKER_QID, "SELECT * FROM " APP_TABLE_REMOVABLE_APP " LIMIT 1", this);
 }
 
 void ctx::app_db_initializer::duplicate_app_list()
@@ -79,19 +78,21 @@ bool ctx::app_db_initializer::package_info_cb(package_info_h package_info, void 
 bool ctx::app_db_initializer::app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data)
 {
 	Json data;
+	DatabaseManager dbManager;
+
 	data.set(NULL, STATS_APP_ID, app_id);
-	return db_manager::insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
+	return dbManager.insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 }
 
-void ctx::app_db_initializer::on_creation_result_received(unsigned int query_id, int error)
+void ctx::app_db_initializer::onTableCreated(unsigned int query_id, int error)
 {
 }
 
-void ctx::app_db_initializer::on_insertion_result_received(unsigned int query_id, int error, int64_t row_id)
+void ctx::app_db_initializer::onInserted(unsigned int query_id, int error, int64_t row_id)
 {
 }
 
-void ctx::app_db_initializer::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::app_db_initializer::onExecuted(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	if (query_id != EMPTY_CHECKER_QID) {
 		_E("Unknown Query ID: %d", query_id);

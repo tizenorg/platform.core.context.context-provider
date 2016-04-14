@@ -24,6 +24,7 @@
 #include <unordered_set>
 #include "user_places_types.h"
 #include <Json.h>
+#include <DatabaseManager.h>
 #include "visit_listener_iface.h"
 #include "location_logger.h"
 #include "location_listener_iface.h"
@@ -49,6 +50,7 @@ namespace ctx {
 		int __tolerance;
 		bool __entranceToPlace;
 		int __periodSeconds;
+		DatabaseManager __dbManager;
 
 		// fields that  are used only in case of entrance detection
 		std::shared_ptr<MacSet> __representativesMacs; // macs that represent the current place

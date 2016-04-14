@@ -17,7 +17,6 @@
 #include <sstream>
 #include <types_internal.h>
 #include <ContextManager.h>
-#include <db_mgr.h>
 #include "common_types.h"
 #include "db_handle_base.h"
 
@@ -43,7 +42,7 @@ int ctx::stats_db_handle_base::generate_qid()
 
 bool ctx::stats_db_handle_base::execute_query(const char* subject, ctx::Json filter, const char* query)
 {
-	bool ret = db_manager::execute(generate_qid(), query, this);
+	bool ret = __dbManager.execute(generate_qid(), query, this);
 	IF_FAIL_RETURN(ret, false);
 
 	req_subject = subject;
@@ -188,11 +187,11 @@ std::string ctx::stats_db_handle_base::create_sql_common_setting(ctx::Json filte
 	return query.str();
 }
 
-void ctx::stats_db_handle_base::on_creation_result_received(unsigned int query_id, int error)
+void ctx::stats_db_handle_base::onTableCreated(unsigned int query_id, int error)
 {
 }
 
-void ctx::stats_db_handle_base::on_insertion_result_received(unsigned int query_id, int error, int64_t row_id)
+void ctx::stats_db_handle_base::onInserted(unsigned int query_id, int error, int64_t row_id)
 {
 	delete this;
 }
@@ -207,7 +206,7 @@ void ctx::stats_db_handle_base::json_vector_to_array(std::vector<Json> &vec_json
 	}
 }
 
-void ctx::stats_db_handle_base::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::stats_db_handle_base::onExecuted(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	if (is_trigger_item) {
 		if (records.size() == 1) {

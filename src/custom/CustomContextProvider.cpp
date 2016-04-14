@@ -19,11 +19,12 @@
 #include <types_internal.h>
 #include <ContextManager.h>
 #include <ContextProviderBase.h>
-#include <db_mgr.h>
+#include <DatabaseManager.h>
 #include <CustomContextProvider.h>
 #include "CustomBase.h"
 
 static std::map<std::string, ctx::CustomBase*> __customMap;
+static ctx::DatabaseManager __dbManager;
 
 static bool __isValidFact(std::string subject, ctx::Json& fact);
 static bool __checkValueInt(ctx::Json& tmpl, std::string key, int value);
@@ -67,12 +68,12 @@ EXTAPI bool ctx::initCustomContextProvider()
 			+ "attributes TEXT DEFAULT '' NOT NULL, owner TEXT DEFAULT '' NOT NULL)";
 
 	std::vector<Json> record;
-	bool ret = db_manager::execute_sync(q.c_str(), &record);
+	bool ret = __dbManager.executeSync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
 
 	// Register custom items
 	std::string qSelect = "SELECT * FROM context_trigger_custom_template";
-	ret = db_manager::execute_sync(qSelect.c_str(), &record);
+	ret = __dbManager.executeSync(qSelect.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	IF_FAIL_RETURN(record.size() > 0, true);
 
@@ -123,7 +124,7 @@ EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::strin
 		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
 				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
 		std::vector<Json> record;
-		bool ret = db_manager::execute_sync(q.c_str(), &record);
+		bool ret = __dbManager.executeSync(q.c_str(), &record);
 		IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	}
 
@@ -141,7 +142,7 @@ EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
 	// Remove item from custom template db
 	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
 	std::vector<Json> record;
-	bool ret = db_manager::execute_sync(q.c_str(), &record);
+	bool ret = __dbManager.executeSync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 
 	return ERR_NONE;

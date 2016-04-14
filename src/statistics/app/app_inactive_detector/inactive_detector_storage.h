@@ -20,11 +20,11 @@
 #include <vector>
 #include "app_inactive_detector_types.h"
 #include <Json.h>
-#include <db_listener_iface.h>
+#include <DatabaseManager.h>
 
 namespace ctx {
 
-	class inactive_detector_storage : public db_listener_iface
+	class inactive_detector_storage : public IDatabaseListener
 	{
 		private:
 			//int type;  //TODO: enum
@@ -42,10 +42,12 @@ namespace ctx {
 
 			std::string subquery_form_values(std::vector<app_t> *apps_with_weights);
 
-			void on_creation_result_received(unsigned int query_id, int error) {}
-			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);// {}
-		
+			void onTableCreated(unsigned int query_id, int error) {}
+			void onInserted(unsigned int query_id, int error, int64_t row_id) {}
+			void onExecuted(unsigned int query_id, int error, std::vector<Json>& records);
+
+			DatabaseManager __dbManager;
+
 		public:
 			inactive_detector_storage();
 			~inactive_detector_storage();

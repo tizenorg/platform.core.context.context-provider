@@ -16,7 +16,6 @@
 
 #include <sstream>
 #include <Json.h>
-#include <db_mgr.h>
 #include <types_internal.h>
 #include "social_stats_types.h"
 #include "log_aggregator.h"
@@ -39,8 +38,8 @@ void ctx::contact_log_aggregator::create_table()
 	static bool done = false;
 	IF_FAIL_VOID(!done);
 
-	db_manager::create_table(0, SOCIAL_TABLE_CONTACT_LOG, SOCIAL_TABLE_CONTACT_LOG_COLUMNS, NULL, NULL);
-	db_manager::execute(0, SOCIAL_TEMP_CONTACT_FREQ_SQL, NULL);
+	__dbManager.createTable(0, SOCIAL_TABLE_CONTACT_LOG, SOCIAL_TABLE_CONTACT_LOG_COLUMNS, NULL, NULL);
+	__dbManager.execute(0, SOCIAL_TEMP_CONTACT_FREQ_SQL, NULL);
 
 	done = true;
 }
@@ -53,13 +52,13 @@ bool ctx::contact_log_aggregator::onTimerExpired(int timer)
 
 void ctx::contact_log_aggregator::aggregate_contact_log()
 {
-	db_manager::execute(0,
+	__dbManager.execute(0,
 			"SELECT IFNULL(MAX(" STATS_UNIV_TIME "),0) AS " STATS_LAST_TIME \
 			", (strftime('%s', 'now', 'localtime')) - (strftime('%s', 'now')) AS " TIME_DIFFERENCE \
 			" FROM " SOCIAL_TABLE_CONTACT_LOG, this);
 }
 
-void ctx::contact_log_aggregator::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::contact_log_aggregator::onExecuted(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	IF_FAIL_VOID_TAG(!records.empty(), _E, "Invalid query result");
 
@@ -154,7 +153,7 @@ void ctx::contact_log_aggregator::insert_contact_log_list(contacts_list_h list)
 		data.set(NULL, STATS_UNIV_TIME, accesstime);
 		data.set(NULL, STATS_LOCAL_TIME, accesstime + time_diff);
 
-		db_manager::insert(0, SOCIAL_TABLE_CONTACT_LOG, data, NULL);
+		__dbManager.insert(0, SOCIAL_TABLE_CONTACT_LOG, data, NULL);
 
 	} while(contacts_list_next(list) == CONTACTS_ERROR_NONE);
 }
@@ -164,5 +163,5 @@ void ctx::contact_log_aggregator::remove_expired_log()
 	std::stringstream query;
 	query << "DELETE FROM " SOCIAL_TABLE_CONTACT_LOG " WHERE " \
 		STATS_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
-	db_manager::execute(0, query.str().c_str(), NULL);
+	__dbManager.execute(0, query.str().c_str(), NULL);
 }

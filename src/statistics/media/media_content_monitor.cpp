@@ -16,7 +16,6 @@
 
 #include <time.h>
 #include <types_internal.h>
-#include <db_mgr.h>
 #include "../shared/system_info.h"
 #include "media_stats_types.h"
 #include "db_handle.h"
@@ -29,8 +28,8 @@ ctx::media_content_monitor::media_content_monitor()
 	: started(false)
 	, last_cleanup_time(0)
 {
-	db_manager::create_table(0, MEDIA_TABLE_NAME, MEDIA_TABLE_COLUMNS, NULL, NULL);
-	db_manager::execute(0, MEDIA_PLAYCOUNT_TABLE_SCHEMA, NULL);
+	__dbManager.createTable(0, MEDIA_TABLE_NAME, MEDIA_TABLE_COLUMNS, NULL, NULL);
+	__dbManager.execute(0, MEDIA_PLAYCOUNT_TABLE_SCHEMA, NULL);
 
 	started = start_monitoring();
 }
@@ -118,10 +117,10 @@ void ctx::media_content_monitor::update_play_count(const char *uuid, int type, i
 		"SELECT MediaType FROM Log_MediaPlayCount" \
 		" WHERE UUID = '" << uuid << "' AND Diff > 0;";
 
-	db_manager::execute(0, query.str().c_str(), this);
+	__dbManager.execute(0, query.str().c_str(), this);
 }
 
-void ctx::media_content_monitor::on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records)
+void ctx::media_content_monitor::onExecuted(unsigned int query_id, int error, std::vector<Json>& records)
 {
 	IF_FAIL_VOID(!records.empty());
 
@@ -146,5 +145,5 @@ void ctx::media_content_monitor::insert_log(int media_type)
 		data.set(NULL, STATS_MEDIA_VOLUME, media_volume);
 	}
 
-	db_manager::insert(0, MEDIA_TABLE_NAME, data, NULL);
+	__dbManager.insert(0, MEDIA_TABLE_NAME, data, NULL);
 }

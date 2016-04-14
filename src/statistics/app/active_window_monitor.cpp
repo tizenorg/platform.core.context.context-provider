@@ -18,7 +18,6 @@
 #include <time.h>
 #include <app_manager.h>
 
-#include <db_mgr.h>
 #include <Json.h>
 #include <types_internal.h>
 #include "../shared/system_info.h"
@@ -99,7 +98,7 @@ void ctx::app_use_monitor::create_record(std::string app_id)
 	if (ctx::system_info::get_wifi_bssid(bssid))
 		data.set(NULL, STATS_BSSID, bssid);
 
-	db_manager::insert(0, APP_TABLE_USAGE_LOG, data, NULL);
+	__dbManager.insert(0, APP_TABLE_USAGE_LOG, data, NULL);
 }
 
 void ctx::app_use_monitor::finish_record(std::string app_id)
@@ -113,7 +112,7 @@ void ctx::app_use_monitor::finish_record(std::string app_id)
 			"SELECT MAX(" STATS_COL_ROW_ID ") FROM " APP_TABLE_USAGE_LOG \
 			" WHERE " STATS_APP_ID " = '" << app_id << "'" \
 			" AND " STATS_DURATION " = 0)";
-	db_manager::execute(0, query.str().c_str(), NULL);
+	__dbManager.execute(0, query.str().c_str(), NULL);
 }
 
 bool ctx::app_use_monitor::is_skippable(std::string app_id)
@@ -145,5 +144,5 @@ void ctx::app_use_monitor::remove_expired()
 	std::stringstream query;
 	query << "DELETE FROM " APP_TABLE_USAGE_LOG " WHERE " \
 		STATS_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
-	db_manager::execute(0, query.str().c_str(), NULL);
+	__dbManager.execute(0, query.str().c_str(), NULL);
 }
