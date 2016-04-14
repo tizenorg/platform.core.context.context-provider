@@ -19,7 +19,7 @@
 #include <iomanip>
 #include <sstream>
 #include <types_internal.h>
-#include <db_mgr.h>
+#include <DatabaseManager.h>
 #include <Json.h>
 #include "../place_recognition_types.h"
 #include "visit_detector.h"
@@ -361,7 +361,8 @@ std::shared_ptr<ctx::Visits> ctx::VisitDetector::getVisits()
 
 void ctx::VisitDetector::__dbCreateTable()
 {
-	bool ret = db_manager::create_table(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
+	ctx::DatabaseManager dbManager;
+	bool ret = dbManager.createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
 	_D("db: visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -411,7 +412,8 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	__putVisitCategsToJson(visit.categs, data);
 
 	int64_t rowId;
-	bool ret = db_manager::insert_sync(VISIT_TABLE, data, &rowId);
+	ctx::DatabaseManager dbManager;
+	bool ret = dbManager.insertSync(VISIT_TABLE, data, &rowId);
 	_D("db: visit table insert result: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }

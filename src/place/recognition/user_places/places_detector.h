@@ -17,12 +17,12 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_PLACES_DETECTOR_
 #define _CONTEXT_PLACE_RECOGNITION_PLACES_DETECTOR_
 
-#include "visit_detector.h"
-#include <ITimerListener.h>
-#include <cstdint>
-#include "db_listener_iface.h"
-#include "user_places_types.h"
 #include <vector>
+#include <cstdint>
+#include <ITimerListener.h>
+#include <DatabaseManager.h>
+#include "visit_detector.h"
+#include "user_places_types.h"
 
 namespace ctx {
 
@@ -30,6 +30,7 @@ namespace ctx {
 
 	private:
 		bool __testMode;
+		DatabaseManager __dbManager;
 
 		double __doubleValueFromJson(Json &row, const char* key);
 		Categs __visitCategsFromJson(Json &row);

@@ -18,22 +18,24 @@
 #define __CONTEXT_APP_DB_INITIALIZER_H__
 
 #include <package_manager.h>
-#include <db_listener_iface.h>
+#include <DatabaseManager.h>
 
 namespace ctx {
 
-	class app_db_initializer : public db_listener_iface {
+	class app_db_initializer : public IDatabaseListener {
 		private:
 			void create_table();
 			void check_app_list();
 			void duplicate_app_list();
 
-			void on_creation_result_received(unsigned int query_id, int error);
-			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id);
-			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
+			void onTableCreated(unsigned int query_id, int error);
+			void onInserted(unsigned int query_id, int error, int64_t row_id);
+			void onExecuted(unsigned int query_id, int error, std::vector<Json>& records);
 
 			static bool package_info_cb(package_info_h package_info, void *user_data);
 			static bool app_info_cb(package_info_app_component_type_e comp_type, const char *app_id, void *user_data);
+
+			DatabaseManager __dbManager;
 
 		public:
 			app_db_initializer();

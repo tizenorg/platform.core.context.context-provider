@@ -18,20 +18,19 @@
 #define __CONTEXT_APP_INSTALL_MONITOR_H__
 
 #include <package_manager.h>
-#include <db_listener_iface.h>
 
 namespace ctx {
 
-	class app_install_monitor : public db_listener_iface {
+	class app_install_monitor : public IDatabaseListener {
 	private:
 		package_manager_h pkgmgr_h;
 
 		bool start_monitoring();
 		void stop_monitoring();
 
-		void on_creation_result_received(unsigned int query_id, int error) {}
-		void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-		void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records) {}
+		void onTableCreated(unsigned int query_id, int error) {}
+		void onInserted(unsigned int query_id, int error, int64_t row_id) {}
+		void onExecuted(unsigned int query_id, int error, std::vector<Json>& records) {}
 
 		static std::string create_deletion_query(const char* table_name, const char* app_id);
 		static void package_event_cb(const char *type, const char *package, package_manager_event_type_e event_type, package_manager_event_state_e event_state, int progress, package_manager_error_e error, void *user_data);

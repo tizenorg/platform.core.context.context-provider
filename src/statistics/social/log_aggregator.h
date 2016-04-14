@@ -18,16 +18,18 @@
 #define __CONTEXT_SOCIAL_CONTACT_LOG_AGGREGATOR_H__
 
 #include <contacts.h>
-#include <db_listener_iface.h>
+#include <DatabaseManager.h>
 #include <TimerManager.h>
 
 namespace ctx {
 
-	class contact_log_aggregator : public db_listener_iface, public ITimerListener {
+	class contact_log_aggregator : public IDatabaseListener, public ITimerListener {
 		private:
 			int timer_id;
 			int time_diff;
 			TimerManager __timerManager;
+			DatabaseManager __dbManager;
+
 			void create_table();
 			void get_updated_contact_log_list(int last_time, contacts_list_h *list);
 			void insert_contact_log_list(contacts_list_h list);
@@ -40,9 +42,9 @@ namespace ctx {
 
 			void aggregate_contact_log();
 
-			void on_creation_result_received(unsigned int query_id, int error) {}
-			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id) {}
-			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
+			void onTableCreated(unsigned int queryId, int error) {}
+			void onInserted(unsigned int queryId, int error, int64_t rowId) {}
+			void onExecuted(unsigned int query_id, int error, std::vector<Json>& records);
 			bool onTimerExpired(int timer_id);
 
 	};	/* class phone_contact_log_aggregator */

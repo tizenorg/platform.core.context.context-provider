@@ -19,14 +19,15 @@
 
 #include <string>
 #include <Json.h>
-#include <db_listener_iface.h>
+#include <DatabaseManager.h>
 
 namespace ctx {
-	class stats_db_handle_base : public db_listener_iface {
+	class stats_db_handle_base : public IDatabaseListener {
 		protected:
 			bool is_trigger_item;
 			std::string req_subject;
 			ctx::Json req_filter;
+			DatabaseManager __dbManager;
 
 			stats_db_handle_base();
 			~stats_db_handle_base();
@@ -42,9 +43,9 @@ namespace ctx {
 		private:
 			void json_vector_to_array(std::vector<Json> &vec_json, ctx::Json &json_result);
 
-			void on_creation_result_received(unsigned int query_id, int error);
-			void on_insertion_result_received(unsigned int query_id, int error, int64_t row_id);
-			void on_query_result_received(unsigned int query_id, int error, std::vector<Json>& records);
+			void onTableCreated(unsigned int query_id, int error);
+			void onInserted(unsigned int query_id, int error, int64_t row_id);
+			void onExecuted(unsigned int query_id, int error, std::vector<Json>& records);
 	};
 }
 

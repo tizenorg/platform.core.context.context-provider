@@ -16,7 +16,6 @@
 
 #include <sstream>
 #include <types_internal.h>
-#include <db_mgr.h>
 #include <Json.h>
 #include "similarity.h"
 #include "places_detector.h"
@@ -84,7 +83,7 @@ bool ctx::PlacesDetector::onTimerExpired(int timerId)
 std::vector<ctx::Json> ctx::PlacesDetector::__dbGetVisits()
 {
 	std::vector<Json> records;
-	bool ret = db_manager::execute_sync(__GET_VISITS_QUERY, &records);
+	bool ret = __dbManager.executeSync(__GET_VISITS_QUERY, &records);
 	_D("load visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
 	return records;
 }
@@ -92,7 +91,7 @@ std::vector<ctx::Json> ctx::PlacesDetector::__dbGetVisits()
 std::vector<ctx::Json> ctx::PlacesDetector::__dbGetPlaces()
 {
 	std::vector<Json> records;
-	bool ret = db_manager::execute_sync(__GET_PLACES_QUERY, &records);
+	bool ret = __dbManager.executeSync(__GET_PLACES_QUERY, &records);
 	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 	return records;
 }
@@ -364,7 +363,7 @@ std::shared_ptr<ctx::graph::Graph> ctx::PlacesDetector::__graphFromVisits(const 
 void ctx::PlacesDetector::__dbDeletePlaces()
 {
 	std::vector<Json> records;
-	bool ret = db_manager::execute_sync(__DELETE_PLACES_QUERY, &records);
+	bool ret = __dbManager.executeSync(__DELETE_PLACES_QUERY, &records);
 	_D("delete places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -384,7 +383,7 @@ void ctx::PlacesDetector::__dbDeleteOlderVisitsThan(time_t threshold)
 	query << " WHERE " << VISIT_COLUMN_END_TIME << " < " << threshold;
 	// query << " AND 0"; // XXX: Always false condition. Uncomment it for not deleting any visit during development.
 	std::vector<Json> records;
-	bool ret = db_manager::execute_sync(query.str().c_str(), &records);
+	bool ret = __dbManager.executeSync(query.str().c_str(), &records);
 	_D("delete old visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -402,7 +401,7 @@ ctx::PlacesDetector::PlacesDetector(bool testMode) :
 
 void ctx::PlacesDetector::__dbCreateTable()
 {
-	bool ret = db_manager::create_table(0, PLACE_TABLE, __PLACE_TABLE_COLUMNS);
+	bool ret = __dbManager.createTable(0, PLACE_TABLE, __PLACE_TABLE_COLUMNS);
 	_D("db: place Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -421,7 +420,7 @@ void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 	data.set(NULL, PLACE_COLUMN_CREATE_DATE, static_cast<int>(place.createDate));
 
 	int64_t rowId;
-	bool ret = db_manager::insert_sync(PLACE_TABLE, data, &rowId);
+	bool ret = __dbManager.insertSync(PLACE_TABLE, data, &rowId);
 	_D("insert place execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 

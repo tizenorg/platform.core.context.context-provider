@@ -20,6 +20,7 @@
 #include <string>
 #include <sstream>
 #include <DBusSignalWatcher.h>
+#include <DatabaseManager.h>
 
 namespace ctx {
 
@@ -28,6 +29,7 @@ namespace ctx {
 		int64_t signal_id;
 		int last_cleanup_time;
 		DBusSignalWatcher __dbusWatcher;
+		DatabaseManager __dbManager;
 
 		bool start_logging(void);
 		void stop_logging(void);

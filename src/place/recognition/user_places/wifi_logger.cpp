@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "wifi_logger.h"
-#include <types_internal.h>
-#include "../place_recognition_types.h"
-#include <db_mgr.h>
 #include <sstream>
+#include <types_internal.h>
+#include <DatabaseManager.h>
+#include "../place_recognition_types.h"
 #include "debug_utils.h"
+#include "wifi_logger.h"
 
 #define __WIFI_CREATE_TABLE_COLUMNS \
 	WIFI_COLUMN_TIMESTAMP " timestamp NOT NULL, "\
@@ -35,7 +35,8 @@
 
 int ctx::WifiLogger::__dbCreateTable()
 {
-	bool ret = db_manager::create_table(0, WIFI_TABLE_NAME, __WIFI_CREATE_TABLE_COLUMNS, NULL, NULL);
+	ctx::DatabaseManager dbManager;
+	bool ret = dbManager.createTable(0, WIFI_TABLE_NAME, __WIFI_CREATE_TABLE_COLUMNS, NULL, NULL);
 	_D("Table Creation Request: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
@@ -43,6 +44,7 @@ int ctx::WifiLogger::__dbCreateTable()
 int ctx::WifiLogger::__dbInsertLogs()
 {
 	if (__logs.size() > 0) {
+		ctx::DatabaseManager dbManager;
 		std::stringstream query;
 		const char* separator = " ";
 		query << "BEGIN TRANSACTION; \
@@ -56,7 +58,7 @@ int ctx::WifiLogger::__dbInsertLogs()
 		__logs.clear();
 		query << "; \
 				END TRANSACTION;";
-		bool ret = ctx::db_manager::execute(0, query.str().c_str(), NULL);
+		bool ret = dbManager.execute(0, query.str().c_str(), NULL);
 		_D("DB insert request: %s", ret ? "SUCCESS" : "FAIL");
 		return ret;
 	}

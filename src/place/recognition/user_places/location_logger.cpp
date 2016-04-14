@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include "location_logger.h"
-#include <types_internal.h>
-#include "../place_recognition_types.h"
-#include <db_mgr.h>
 #include <sstream>
+#include <types_internal.h>
 #include <Json.h>
+#include <DatabaseManager.h>
+#include "../place_recognition_types.h"
 #include "user_places_params.h"
 #include "debug_utils.h"
+#include "location_logger.h"
 
 #ifdef TIZEN_ENGINEER_MODE
 #define __LOCATION_CREATE_TABLE_COLUMNS \
@@ -175,7 +175,8 @@ void ctx::LocationLogger::__log(location_accessibility_state_e state)
 
 int ctx::LocationLogger::__dbCreateTable()
 {
-	bool ret = db_manager::create_table(0, LOCATION_TABLE_NAME, __LOCATION_CREATE_TABLE_COLUMNS, NULL, NULL);
+	ctx::DatabaseManager dbManager;
+	bool ret = dbManager.createTable(0, LOCATION_TABLE_NAME, __LOCATION_CREATE_TABLE_COLUMNS, NULL, NULL);
 	_D("%s -> Table Creation Request", ret ? "SUCCESS" : "FAIL");
 	return 0;
 }
@@ -193,8 +194,9 @@ int ctx::LocationLogger::__dbInsertLog(LocationEvent locationEvent)
 	data.set(NULL, LOCATION_COLUMN_METHOD, static_cast<int>(locationEvent.method));
 #endif /* TIZEN_ENGINEER_MODE */
 
+	ctx::DatabaseManager dbManager;
 	int64_t rowId;
-	bool ret = db_manager::insert_sync(LOCATION_TABLE_NAME, data, &rowId);
+	bool ret = dbManager.insertSync(LOCATION_TABLE_NAME, data, &rowId);
 	_D("%s -> DB: location table insert result", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
