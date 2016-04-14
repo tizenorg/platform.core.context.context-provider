@@ -45,6 +45,8 @@ namespace ctx {
 		void __updateFence(int fenceId, geofence_manage_e manage);
 		void __updateState(int fenceId, geofence_state_e state);
 
+		static const char* __getStateString(geofence_state_e state);
+
 		static bool __fenceListCb(int geofenceId, geofence_h fence, int fenceIndex, int fenceCount, void* userData);
 		static void __fenceEventCb(int placeId, int geofenceId, geofence_manager_error_e error, geofence_manage_e manage, void* userData);
 		static void __fenceStateCb(int geofenceId, geofence_state_e state, void* userData);
