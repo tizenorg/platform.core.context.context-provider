@@ -18,7 +18,7 @@
 #define __CONTEXT_INACTIVE_DETECTOR_STORAGE_H__
 
 #include <vector>
-#include "app_inactive_detector_types.h"
+#include "AppInactiveDetectorTypes.h"
 #include <Json.h>
 #include <DatabaseManager.h>
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 #include <Types.h>
-#include "inactive_detector.h"
-#include "app_inactive_detector_types.h"
-#include "inactive_detector_classificator.h"
-#include "inactive_detector_classificator_kmeans.h"
+#include "InactiveDetector.h"
+#include "AppInactiveDetectorTypes.h"
+#include "InactiveDetectorClassificator.h"
+#include "InactiveDetectorClassificatorKmeans.h"
 
 int ctx::inactive_detector_classificator::classify(std::vector<app_t> *apps_with_weights)
 {

@@ -3,12 +3,13 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 # Build flag for the prediction engine.
 # Set this to "yes" to enable the engine.
-SET(enable_prediction_engine "no")
+SET(enable_prediction_engine "yes")
 
 # Common Profile
 FILE(GLOB prvd_srcs ./*.cpp)
 FILE(GLOB prvd_srcs ${prvd_srcs} shared/*.cpp)
 FILE(GLOB prvd_srcs ${prvd_srcs} app/*.cpp)
+FILE(GLOB prvd_srcs ${prvd_srcs} app/app_inactive_detector/*.cpp)
 IF("${enable_prediction_engine}" STREQUAL "yes")
 	FILE(GLOB prvd_srcs ${prvd_srcs} prediction/*.cpp)
 ELSE("${enable_prediction_engine}" STREQUAL "yes")

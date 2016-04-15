@@ -17,9 +17,9 @@
 #include <Types.h>
 #include <ContextManager.h>
 #include <Json.h>
-#include "app_inactive_detector.h"
-#include "app_inactive_detector_types.h"
-#include "inactive_detector.h"
+#include "AppInactiveDetector.h"
+#include "AppInactiveDetectorTypes.h"
+#include "InactiveDetector.h"
 
 
 ctx::app_inactive_detector_provider *ctx::app_inactive_detector_provider::__instance = NULL;

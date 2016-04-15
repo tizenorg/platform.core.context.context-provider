@@ -18,7 +18,7 @@
 #define __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H__
 
 #include <vector>
-#include "inactive_detector_classificator_kmeans_types.h"
+#include "InactiveDetectorClassificatorKmeansTypes.h"
 #include <Json.h>
 
 namespace ctx {
