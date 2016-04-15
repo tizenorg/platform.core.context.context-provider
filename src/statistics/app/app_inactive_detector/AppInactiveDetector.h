@@ -18,8 +18,8 @@
 #define __CONTEXT_APP_INACTIVE_DETECTOR_H__
 
 #include <ContextProviderBase.h>
-#include "app_inactive_detector_types.h"
-#include "inactive_detector.h"
+#include "AppInactiveDetectorTypes.h"
+#include "InactiveDetector.h"
 
 namespace ctx {
 

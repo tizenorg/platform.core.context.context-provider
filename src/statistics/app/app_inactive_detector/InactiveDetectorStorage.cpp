@@ -19,11 +19,11 @@
 #include <string>
 #include <memory>
 #include <Types.h>
-#include "inactive_detector.h"
-#include "inactive_detector_storage.h"
-#include "inactive_detector_storage_queries.h"
-#include "inactive_detector_classificator.h"
-#include "app_inactive_detector_types.h"
+#include "InactiveDetector.h"
+#include "InactiveDetectorStorage.h"
+#include "InactiveDetectorStorageQueries.h"
+#include "InactiveDetectorClassificator.h"
+#include "AppInactiveDetectorTypes.h"
 
 /*int ctx::inactive_detector_storage::create_table()
 {

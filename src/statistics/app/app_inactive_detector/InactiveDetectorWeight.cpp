@@ -15,9 +15,8 @@
  */
 
 #include <Types.h>
-#include "inactive_detector_weight.h"
-#include "inactive_detector_storage.h"
-
+#include "InactiveDetectorWeight.h"
+#include "InactiveDetectorStorage.h"
 
 int ctx::inactive_detector_weight::request_weights(
 			double timestamp_from)

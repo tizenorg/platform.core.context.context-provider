@@ -20,7 +20,7 @@
 #include <string>
 #include <Json.h>
 #include <vector>
-#include "app_inactive_detector_types.h"
+#include "AppInactiveDetectorTypes.h"
 #include <TimerManager.h>
 
 namespace ctx {

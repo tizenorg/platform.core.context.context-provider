@@ -16,10 +16,10 @@
 
 #include <ctime>
 #include <Types.h>
-#include "inactive_detector.h"
-#include "inactive_detector_weight.h"
-#include "inactive_detector_storage.h"
-#include "inactive_detector_classificator.h"
+#include "InactiveDetector.h"
+#include "InactiveDetectorWeight.h"
+#include "InactiveDetectorStorage.h"
+#include "InactiveDetectorClassificator.h"
 #include "TimerManager.h"
 
 ctx::inactive_detector::inactive_detector()

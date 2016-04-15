@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 #include <Types.h>
-#include "app_inactive_detector_types.h"
-#include "inactive_detector_classificator_kmeans.h"
-#include "inactive_detector_classificator_kmeans_types.h"
+#include "AppInactiveDetectorTypes.h"
+#include "InactiveDetectorClassificatorKmeans.h"
+#include "InactiveDetectorClassificatorKmeansTypes.h"
 #include <math.h>
 #include <stdlib.h>
 
