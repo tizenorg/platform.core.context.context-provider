@@ -15,7 +15,7 @@
  */
 
 #include <sstream>
-#include <types_internal.h>
+#include <Types.h>
 #include <ContextManager.h>
 #include "AppStatisticsTypes.h"
 #include "DbHandle.h"

@@ -15,7 +15,7 @@
  */
 
 #include <algorithm>
-#include <types_internal.h>
+#include <Types.h>
 #include "median.h"
 
 ctx::num_t ctx::median(std::vector<ctx::num_t> &v)

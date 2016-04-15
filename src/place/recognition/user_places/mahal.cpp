@@ -16,7 +16,7 @@
 
 #include "mahal.h"
 #include <math.h>
-#include <types_internal.h>
+#include <Types.h>
 
 ctx::num_t ctx::MahalModel::distance(const std::vector<num_t> &v1, const std::vector<num_t> &v2, const std::vector<num_t> &m)
 {

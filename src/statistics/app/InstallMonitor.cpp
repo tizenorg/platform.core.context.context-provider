@@ -17,7 +17,7 @@
 #include <sstream>
 #include <glib.h>
 #include <Json.h>
-#include <types_internal.h>
+#include <Types.h>
 #include <DatabaseManager.h>
 #include "AppStatisticsTypes.h"
 #include "InstallMonitor.h"

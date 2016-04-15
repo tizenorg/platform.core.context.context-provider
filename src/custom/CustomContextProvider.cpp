@@ -16,7 +16,7 @@
 
 #include <map>
 #include <vector>
-#include <types_internal.h>
+#include <Types.h>
 #include <ContextManager.h>
 #include <ContextProviderBase.h>
 #include <DatabaseManager.h>

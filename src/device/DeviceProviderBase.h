@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_DEVICE_PROVIDER_BASE_H_
 #define _CONTEXT_DEVICE_PROVIDER_BASE_H_
 
-#include <types_internal.h>
+#include <Types.h>
 #include <Json.h>
 #include <ContextProviderBase.h>
 

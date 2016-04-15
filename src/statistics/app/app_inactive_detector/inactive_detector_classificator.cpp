@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <types_internal.h>
+#include <Types.h>
 #include "inactive_detector.h"
 #include "app_inactive_detector_types.h"
 #include "inactive_detector_classificator.h"

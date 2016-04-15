@@ -19,7 +19,7 @@
 #include <time.h>
 #include "../place_recognition_types.h"
 #include "prob_features_model.h"
-#include <types_internal.h>
+#include <Types.h>
 
 // categorizer model parameters trained offline (implemented in python):
 const std::map<int, ctx::MahalModel> ctx::VisitCateger::__models({

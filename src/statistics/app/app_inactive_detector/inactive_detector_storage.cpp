@@ -18,7 +18,7 @@
 #include <ctime>
 #include <string>
 #include <memory>
-#include <types_internal.h>
+#include <Types.h>
 #include "inactive_detector.h"
 #include "inactive_detector_storage.h"
 #include "inactive_detector_storage_queries.h"

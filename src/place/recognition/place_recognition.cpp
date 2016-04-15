@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <types_internal.h>
+#include <Types.h>
 #include <ContextManager.h>
 #include "place_recognition.h"
 #include "user_places/user_places.h"

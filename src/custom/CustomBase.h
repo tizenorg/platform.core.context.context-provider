@@ -19,7 +19,7 @@
 
 #include <Json.h>
 #include <ContextProviderBase.h>
-#include <types_internal.h>
+#include <Types.h>
 
 namespace ctx {
 

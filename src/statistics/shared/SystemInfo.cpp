@@ -17,7 +17,7 @@
 #include <glib.h>
 #include <runtime_info.h>
 #include <sound_manager.h>
-#include <types_internal.h>
+#include <Types.h>
 #include <SharedVars.h>
 #include "SystemInfo.h"
 

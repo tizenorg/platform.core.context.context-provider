@@ -19,7 +19,7 @@
 #include <app_manager.h>
 
 #include <Json.h>
-#include <types_internal.h>
+#include <Types.h>
 #include "../shared/SystemInfo.h"
 #include "AppStatisticsTypes.h"
 #include "ActiveWindowMonitor.h"

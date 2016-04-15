@@ -15,7 +15,7 @@
  */
 
 #include <sstream>
-#include <types_internal.h>
+#include <Types.h>
 #include <Json.h>
 #include <DatabaseManager.h>
 #include "../place_recognition_types.h"

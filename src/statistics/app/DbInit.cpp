@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <Json.h>
-#include <types_internal.h>
+#include <Types.h>
 #include "AppStatisticsTypes.h"
 #include "DbInit.h"
 

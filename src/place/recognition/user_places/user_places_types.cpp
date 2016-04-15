@@ -19,7 +19,7 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
-#include <types_internal.h>
+#include <Types.h>
 #include "user_places_types.h"
 #include "user_places_params.h"
 #include "debug_utils.h"

@@ -15,7 +15,7 @@
  */
 
 #include "debug_utils.h"
-#include <types_internal.h>
+#include <Types.h>
 
 std::string ctx::DebugUtils::humanReadableDateTime(time_t timestamp, std::string format, size_t size, bool utc)
 {

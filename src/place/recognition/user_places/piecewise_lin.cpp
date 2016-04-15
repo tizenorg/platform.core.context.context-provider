@@ -15,7 +15,7 @@
  */
 
 #include "piecewise_lin.h"
-#include <types_internal.h>
+#include <Types.h>
 
 ctx::PiecewiseLin::PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs) :
 	__xs(xs),

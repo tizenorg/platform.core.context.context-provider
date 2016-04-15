@@ -16,7 +16,7 @@
 
 #include <ctime>
 #include <memory>
-#include <types_internal.h>
+#include <Types.h>
 #include "user_places.h"
 #include "places_detector.h"
 #include "../place_recognition_types.h"

@@ -20,7 +20,7 @@
 #include "user_places_params.h"
 #include "user_places_types.h"
 #include <algorithm>
-#include <types_internal.h>
+#include <Types.h>
 
 void ctx::PlaceCateger::reduceOutliers(ctx::Visits &visits)
 {
