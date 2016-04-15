@@ -11,7 +11,6 @@ Source0:    %{name}-%{version}.tar.gz
 
 BuildRequires: cmake
 
-BuildRequires: pkgconfig(libcontext-shared)
 BuildRequires: pkgconfig(libcontext-server)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(capi-system-info)

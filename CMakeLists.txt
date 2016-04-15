@@ -12,7 +12,7 @@ ADD_DEFINITIONS(-O2 -Wall -fPIC -fdata-sections -ffunction-sections -fvisibility
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC -Wl,--as-needed -Wl,--gc-section -Wl,--print-gc-section")
 
 # Base Dependency
-SET(dependencies libcontext-shared libcontext-server)
+SET(dependencies libcontext-server)
 
 # Profiles
 IF("${PROFILE}" STREQUAL "mobile")
