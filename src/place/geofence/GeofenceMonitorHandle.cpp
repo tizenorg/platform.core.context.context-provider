@@ -16,23 +16,25 @@
 
 #include <Types.h>
 #include <Json.h>
-#include <ContextManager.h>
-#include "PlaceGeofenceTypes.h"
+#include "PlaceGeofenceProvider.h"
 #include "GeofenceMonitorHandle.h"
 
-ctx::GeofenceMonitorHandle::GeofenceMonitorHandle() :
+using namespace ctx;
+
+GeofenceMonitorHandle::GeofenceMonitorHandle(PlaceGeofenceProvider *provider) :
+	__provider(provider),
 	__placeId(-1),
 	__prevState(GEOFENCE_STATE_UNCERTAIN),
 	__geoHandle(NULL)
 {
 }
 
-ctx::GeofenceMonitorHandle::~GeofenceMonitorHandle()
+GeofenceMonitorHandle::~GeofenceMonitorHandle()
 {
 	__stopMonitor();
 }
 
-bool ctx::GeofenceMonitorHandle::startMonitor(int placeId)
+bool GeofenceMonitorHandle::startMonitor(int placeId)
 {
 	_D("Starts to monitor Place-%d", placeId);
 
@@ -61,12 +63,12 @@ CATCH:
 	return false;
 }
 
-int ctx::GeofenceMonitorHandle::getPlaceId()
+int GeofenceMonitorHandle::getPlaceId()
 {
 	return __placeId;
 }
 
-void ctx::GeofenceMonitorHandle::__stopMonitor()
+void GeofenceMonitorHandle::__stopMonitor()
 {
 	_D("Stops monitoring Place-%d", __placeId);
 
@@ -81,7 +83,7 @@ void ctx::GeofenceMonitorHandle::__stopMonitor()
 	__prevState = GEOFENCE_STATE_UNCERTAIN;
 }
 
-bool ctx::GeofenceMonitorHandle::__startFence(int fenceId)
+bool GeofenceMonitorHandle::__startFence(int fenceId)
 {
 	int ret;
 
@@ -101,48 +103,48 @@ bool ctx::GeofenceMonitorHandle::__startFence(int fenceId)
 	return true;
 }
 
-void ctx::GeofenceMonitorHandle::__removeFence(int fenceId)
+void GeofenceMonitorHandle::__removeFence(int fenceId)
 {
 	geofence_manager_stop(__geoHandle, fenceId);
 	__geoStateMap.erase(fenceId);
 }
 
-void ctx::GeofenceMonitorHandle::__updateFence(int fenceId, geofence_manage_e manage)
+void GeofenceMonitorHandle::__updateFence(int fenceId, geofence_manage_e manage)
 {
 	switch (manage) {
-		case GEOFENCE_MANAGE_PLACE_REMOVED:
-			_W("[Place-%d] Removed", __placeId);
-			__stopMonitor();
-			break;
-		case GEOFENCE_MANAGE_FENCE_ADDED:
-			_I("[Place %d] Fence-%d added", __placeId, fenceId);
-			__startFence(fenceId);
-			__emitStateChange();
-			break;
-		case GEOFENCE_MANAGE_FENCE_REMOVED:
-			_I("[Place-%d] Fence-%d removed", __placeId, fenceId);
-			__removeFence(fenceId);
-			__emitStateChange();
-			break;
-		case GEOFENCE_MANAGE_FENCE_STARTED:
-			_D("[Place-%d] Fence-%d started", __placeId, fenceId);
-			break;
-		case GEOFENCE_MANAGE_FENCE_STOPPED:
-			_D("[Place-%d] Fence-%d stopped", __placeId, fenceId);
-			//TODO: Do we need to restart this?
-			break;
-		default:
-			_D("[Place-%d] Ignoring the manage event %d", __placeId, manage);
-			break;
+	case GEOFENCE_MANAGE_PLACE_REMOVED:
+		_W("[Place-%d] Removed", __placeId);
+		__stopMonitor();
+		break;
+	case GEOFENCE_MANAGE_FENCE_ADDED:
+		_I("[Place %d] Fence-%d added", __placeId, fenceId);
+		__startFence(fenceId);
+		__emitStateChange();
+		break;
+	case GEOFENCE_MANAGE_FENCE_REMOVED:
+		_I("[Place-%d] Fence-%d removed", __placeId, fenceId);
+		__removeFence(fenceId);
+		__emitStateChange();
+		break;
+	case GEOFENCE_MANAGE_FENCE_STARTED:
+		_D("[Place-%d] Fence-%d started", __placeId, fenceId);
+		break;
+	case GEOFENCE_MANAGE_FENCE_STOPPED:
+		_D("[Place-%d] Fence-%d stopped", __placeId, fenceId);
+		//TODO: Do we need to restart this?
+		break;
+	default:
+		_D("[Place-%d] Ignoring the manage event %d", __placeId, manage);
+		break;
 	}
 }
 
-void ctx::GeofenceMonitorHandle::__updateState(int fenceId, geofence_state_e state)
+void GeofenceMonitorHandle::__updateState(int fenceId, geofence_state_e state)
 {
 	__geoStateMap[fenceId] = state;
 }
 
-void ctx::GeofenceMonitorHandle::__emitStateChange()
+void GeofenceMonitorHandle::__emitStateChange()
 {
 	geofence_state_e currentState = GEOFENCE_STATE_UNCERTAIN;
 	int outCount = 0;
@@ -173,10 +175,10 @@ void ctx::GeofenceMonitorHandle::__emitStateChange()
 	data.set(NULL, PLACE_GEOFENCE_PLACE_ID, __placeId);
 	data.set(NULL, PLACE_GEOFENCE_EVENT, __getStateString(currentState));
 
-	context_manager::publish(PLACE_SUBJ_GEOFENCE, option, ERR_NONE, data);
+	__provider->publish(option, ERR_NONE, data);
 }
 
-const char* ctx::GeofenceMonitorHandle::__getStateString(geofence_state_e state)
+const char* GeofenceMonitorHandle::__getStateString(geofence_state_e state)
 {
 	switch (state) {
 	case GEOFENCE_STATE_IN:
@@ -190,7 +192,7 @@ const char* ctx::GeofenceMonitorHandle::__getStateString(geofence_state_e state)
 	}
 }
 
-bool ctx::GeofenceMonitorHandle::__fenceListCb(int geofenceId, geofence_h fence, int fenceIndex, int fenceCount, void* userData)
+bool GeofenceMonitorHandle::__fenceListCb(int geofenceId, geofence_h fence, int fenceIndex, int fenceCount, void* userData)
 {
 	_D("FenceID: %d, Index: %d, Count: %d", geofenceId, fenceIndex, fenceCount);
 	IF_FAIL_RETURN(fenceCount > 0, false);
@@ -199,7 +201,7 @@ bool ctx::GeofenceMonitorHandle::__fenceListCb(int geofenceId, geofence_h fence,
 	return handle->__startFence(geofenceId);
 }
 
-void ctx::GeofenceMonitorHandle::__fenceEventCb(int placeId, int geofenceId, geofence_manager_error_e error, geofence_manage_e manage, void* userData)
+void GeofenceMonitorHandle::__fenceEventCb(int placeId, int geofenceId, geofence_manager_error_e error, geofence_manage_e manage, void* userData)
 {
 	IF_FAIL_VOID_TAG(error == GEOFENCE_MANAGER_ERROR_NONE, _W, "Geofence error: %d", error);
 
@@ -210,7 +212,7 @@ void ctx::GeofenceMonitorHandle::__fenceEventCb(int placeId, int geofenceId, geo
 	handle->__updateFence(geofenceId, manage);
 }
 
-void ctx::GeofenceMonitorHandle::__fenceStateCb(int geofenceId, geofence_state_e state, void* userData)
+void GeofenceMonitorHandle::__fenceStateCb(int geofenceId, geofence_state_e state, void* userData)
 {
 	GeofenceMonitorHandle *handle = reinterpret_cast<GeofenceMonitorHandle*>(userData);
 	handle->__updateState(geofenceId, state);

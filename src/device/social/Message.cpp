@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-#include <Json.h>
-#include <ContextManager.h>
 #include "SocialTypes.h"
 #include "Message.h"
 
 #define MAX_ADDR_SIZE 20
 
-GENERATE_PROVIDER_COMMON_IMPL(SocialStatusMessage);
+using namespace ctx;
 
-ctx::SocialStatusMessage::SocialStatusMessage() :
+SocialStatusMessage::SocialStatusMessage() :
+	DeviceProviderBase(SOCIAL_ST_SUBJ_MESSAGE),
 	__messageHandle(NULL)
 {
 }
 
-ctx::SocialStatusMessage::~SocialStatusMessage()
+SocialStatusMessage::~SocialStatusMessage()
 {
 }
 
-bool ctx::SocialStatusMessage::isSupported()
+bool SocialStatusMessage::isSupported()
 {
 	return getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void ctx::SocialStatusMessage::submitTriggerItem()
+void SocialStatusMessage::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_MESSAGE, OPS_SUBSCRIBE,
+	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"Received\"]},"
 				"\"Type\":{\"type\":\"string\",\"values\":[\"SMS\",\"MMS\"]},"
@@ -48,18 +47,18 @@ void ctx::SocialStatusMessage::submitTriggerItem()
 			NULL);
 }
 
-void ctx::SocialStatusMessage::__updateCb(msg_handle_t handle, msg_struct_t msg, void* userData)
+void SocialStatusMessage::__updateCb(msg_handle_t handle, msg_struct_t msg, void* userData)
 {
 	SocialStatusMessage *instance = static_cast<SocialStatusMessage*>(userData);
 	instance->__handleUpdate(msg);
 }
 
-void ctx::SocialStatusMessage::__handleUpdate(msg_struct_t msg)
+void SocialStatusMessage::__handleUpdate(msg_struct_t msg)
 {
 	int err;
 	int type;
 	char address[MAX_ADDR_SIZE];
-	ctx::Json data;
+	Json data;
 
 	err = msg_get_int_value(msg, MSG_MESSAGE_TYPE_INT, &type);
 	IF_FAIL_VOID_TAG(err == MSG_SUCCESS, _W, "Getting message type failed");
@@ -91,10 +90,10 @@ void ctx::SocialStatusMessage::__handleUpdate(msg_struct_t msg)
 	data.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
 	data.set(NULL, SOCIAL_ST_ADDRESS, address);
 
-	context_manager::publish(SOCIAL_ST_SUBJ_MESSAGE, NULL, ERR_NONE, data);
+	publish(NULL, ERR_NONE, data);
 }
 
-bool ctx::SocialStatusMessage::__setCallback()
+bool SocialStatusMessage::__setCallback()
 {
 	int err;
 
@@ -112,7 +111,7 @@ bool ctx::SocialStatusMessage::__setCallback()
 	return true;
 }
 
-void ctx::SocialStatusMessage::__unsetCallback()
+void SocialStatusMessage::__unsetCallback()
 {
 	if (__messageHandle)
 		msg_close_msg_handle(&__messageHandle);
@@ -120,14 +119,14 @@ void ctx::SocialStatusMessage::__unsetCallback()
 	__messageHandle = NULL;
 }
 
-int ctx::SocialStatusMessage::subscribe()
+int SocialStatusMessage::subscribe()
 {
 	bool ret = __setCallback();
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::SocialStatusMessage::unsubscribe()
+int SocialStatusMessage::unsubscribe()
 {
 	__unsetCallback();
 	return ERR_NONE;

@@ -22,20 +22,17 @@
 namespace ctx {
 
 	class DeviceStatusGps : public DeviceStatusRuntimeInfo {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusGps);
-
 	public:
+		DeviceStatusGps();
+		~DeviceStatusGps();
+
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	protected:
 		void handleUpdate();
-
-	private:
-		DeviceStatusGps();
-		~DeviceStatusGps();
 	};
 }
 

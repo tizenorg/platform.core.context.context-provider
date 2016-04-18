@@ -23,22 +23,21 @@
 namespace ctx {
 
 	class SocialStatusEmail : public DeviceProviderBase, public IDBusSignalListener {
-
-		GENERATE_PROVIDER_COMMON_DECL(SocialStatusEmail);
-
 	public:
+		SocialStatusEmail();
+		~SocialStatusEmail();
+
 		int subscribe();
 		int unsubscribe();
+
+		bool isSupported();
+		void submitTriggerItem();
+
 		void onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param);
-		static bool isSupported();
-		static void submitTriggerItem();
 
 	private:
 		int64_t __dbusSignalId;
 		DBusSignalWatcher __dbusWatcher;
-
-		SocialStatusEmail();
-		~SocialStatusEmail();
 	};
 }
 

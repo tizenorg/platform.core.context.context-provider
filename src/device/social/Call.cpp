@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
-#include <Json.h>
-#include <ContextManager.h>
 #include "SocialTypes.h"
 #include "Call.h"
 
 #define TELEPHONY_NOTI_ID_CNT 8
-GENERATE_PROVIDER_COMMON_IMPL(SocialStatusCall);
+
+using namespace ctx;
 
 static bool __telephonyInitialized = false;
 static telephony_noti_e __callNotiIds[] =
@@ -38,42 +36,43 @@ static telephony_noti_e __callNotiIds[] =
    TELEPHONY_NOTI_VIDEO_CALL_STATUS_ALERTING,
    TELEPHONY_NOTI_VIDEO_CALL_STATUS_INCOMING,
 };
-static ctx::Json __latest;
+static Json __latest;
 
-ctx::SocialStatusCall::SocialStatusCall()
+SocialStatusCall::SocialStatusCall() :
+	DeviceProviderBase(SOCIAL_ST_SUBJ_CALL)
 {
 	__handleList.count = 0;
 	__handleList.handle = NULL;
 }
 
-ctx::SocialStatusCall::~SocialStatusCall()
+SocialStatusCall::~SocialStatusCall()
 {
 }
 
-bool ctx::SocialStatusCall::isSupported()
+bool SocialStatusCall::isSupported()
 {
 	return getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void ctx::SocialStatusCall::submitTriggerItem()
+void SocialStatusCall::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_CALL, OPS_SUBSCRIBE | OPS_READ,
+	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"Medium\":{\"type\":\"string\",\"values\":[\"Voice\",\"Video\"]},"
 				"\"State\":{\"type\":\"string\",\"values\":[\"Idle\",\"Connecting\",\"Connected\"]},"
 				"\"Address\":{\"type\":\"string\"}"
 			"}",
 			NULL);
-	//TODO remove Connecting, Connected
+	/* TODO remove Connecting, Connected */
 }
 
-void ctx::SocialStatusCall::__updateCb(telephony_h handle, telephony_noti_e notiId, void *data, void *userData)
+void SocialStatusCall::__updateCb(telephony_h handle, telephony_noti_e notiId, void *data, void *userData)
 {
 	SocialStatusCall *instance = static_cast<SocialStatusCall*>(userData);
 	instance->__handleUpdate(handle, notiId, data);
 }
 
-void ctx::SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiId, void* id)
+void SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiId, void* id)
 {
 	Json data;
 	unsigned int count;
@@ -153,13 +152,13 @@ void ctx::SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e 
 	}
 
 	if (__latest != data) {
-		context_manager::publish(SOCIAL_ST_SUBJ_CALL, NULL, ERR_NONE, data);
+		publish(NULL, ERR_NONE, data);
 		__latest = data.str();
 	}
 	telephony_call_release_call_list(count, &callList);
 }
 
-bool ctx::SocialStatusCall::__initTelephony()
+bool SocialStatusCall::__initTelephony()
 {
 	IF_FAIL_RETURN(!__telephonyInitialized, true);
 
@@ -170,7 +169,7 @@ bool ctx::SocialStatusCall::__initTelephony()
 	return true;
 }
 
-void ctx::SocialStatusCall::__releaseTelephony()
+void SocialStatusCall::__releaseTelephony()
 {
 	IF_FAIL_VOID(__telephonyInitialized);
 
@@ -179,9 +178,9 @@ void ctx::SocialStatusCall::__releaseTelephony()
 	__telephonyInitialized = false;
 }
 
-bool ctx::SocialStatusCall::__setCallback()
+bool SocialStatusCall::__setCallback()
 {
-	//TODO: Consider dual-sim devices
+	/* TODO: Consider dual-sim devices */
 	IF_FAIL_RETURN_TAG(__initTelephony(), false, _E, "Initialization failed");
 
 	int err;
@@ -201,7 +200,7 @@ CATCH:
 	return false;
 }
 
-void ctx::SocialStatusCall::__unsetCallback()
+void SocialStatusCall::__unsetCallback()
 {
 	for (unsigned int i = 0; i < __handleList.count; i++) {
 		for (unsigned int j = 0; j < TELEPHONY_NOTI_ID_CNT; j++) {
@@ -212,7 +211,7 @@ void ctx::SocialStatusCall::__unsetCallback()
 	__releaseTelephony();
 }
 
-bool ctx::SocialStatusCall::__getCallState(telephony_call_h& handle, std::string& state)
+bool SocialStatusCall::__getCallState(telephony_call_h& handle, std::string& state)
 {
 	state.clear();
 
@@ -245,7 +244,7 @@ bool ctx::SocialStatusCall::__getCallState(telephony_call_h& handle, std::string
 	return true;
 }
 
-bool ctx::SocialStatusCall::__getCallType(telephony_call_h& handle, std::string& type)
+bool SocialStatusCall::__getCallType(telephony_call_h& handle, std::string& type)
 {
 	type.clear();
 
@@ -270,7 +269,7 @@ bool ctx::SocialStatusCall::__getCallType(telephony_call_h& handle, std::string&
 	return true;
 }
 
-bool ctx::SocialStatusCall::__getCallAddress(telephony_call_h& handle, std::string& address)
+bool SocialStatusCall::__getCallAddress(telephony_call_h& handle, std::string& address)
 {
 	address.clear();
 
@@ -280,7 +279,7 @@ bool ctx::SocialStatusCall::__getCallAddress(telephony_call_h& handle, std::stri
 
 	if (number) {
 		address = number;
-		free(number);
+		g_free(number);
 		number = NULL;
 	}
 
@@ -289,7 +288,7 @@ bool ctx::SocialStatusCall::__getCallAddress(telephony_call_h& handle, std::stri
 	return true;
 }
 
-bool ctx::SocialStatusCall::__getCallHandleId(telephony_call_h& handle, unsigned int& id)
+bool SocialStatusCall::__getCallHandleId(telephony_call_h& handle, unsigned int& id)
 {
 	int err = telephony_call_get_handle_id(handle, &id);
 	IF_FAIL_RETURN_TAG(err == TELEPHONY_ERROR_NONE, false, _E, "Getting handle id failed");
@@ -297,20 +296,20 @@ bool ctx::SocialStatusCall::__getCallHandleId(telephony_call_h& handle, unsigned
 	return true;
 }
 
-int ctx::SocialStatusCall::subscribe()
+int SocialStatusCall::subscribe()
 {
 	bool ret = __setCallback();
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::SocialStatusCall::unsubscribe()
+int SocialStatusCall::unsubscribe()
 {
 	__unsetCallback();
 	return ERR_NONE;
 }
 
-bool ctx::SocialStatusCall::__readCurrentStatus(telephony_h& handle, ctx::Json* data)
+bool SocialStatusCall::__readCurrentStatus(telephony_h& handle, Json* data)
 {
 	unsigned int count = 0;
 	telephony_call_h *callList = NULL;
@@ -352,7 +351,7 @@ bool ctx::SocialStatusCall::__readCurrentStatus(telephony_h& handle, ctx::Json* 
 	return true;
 }
 
-int ctx::SocialStatusCall::read()
+int SocialStatusCall::read()
 {
 	bool temporaryHandle = false;
 	if (!__telephonyInitialized) {
@@ -380,7 +379,7 @@ int ctx::SocialStatusCall::read()
 		__releaseTelephony();
 
 	if (ret) {
-		ctx::context_manager::replyToRead(SOCIAL_ST_SUBJ_CALL, NULL, ERR_NONE, data);
+		replyToRead(NULL, ERR_NONE, data);
 		return ERR_NONE;
 	}
 

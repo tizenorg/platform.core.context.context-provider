@@ -27,7 +27,7 @@ namespace ctx {
 		int removeItem(std::string subject);
 		int publishData(std::string subject, ctx::Json fact);
 
-		ContextProviderBase* create(void* data);
+		ContextProvider* create(void* data);
 		void destroy(void* data);
 
 	}	/* namespace custom_context_provider */

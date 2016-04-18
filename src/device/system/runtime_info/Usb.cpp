@@ -14,55 +14,54 @@
  * limitations under the License.
  */
 
-#include <ContextManager.h>
 #include "../SystemTypes.h"
 #include "Usb.h"
 
-GENERATE_PROVIDER_COMMON_IMPL(DeviceStatusUsb);
+using namespace ctx;
 
-ctx::DeviceStatusUsb::DeviceStatusUsb()	:
-	DeviceStatusRuntimeInfo(RUNTIME_INFO_KEY_USB_CONNECTED)
+DeviceStatusUsb::DeviceStatusUsb()	:
+	DeviceStatusRuntimeInfo(DEVICE_ST_SUBJ_USB, RUNTIME_INFO_KEY_USB_CONNECTED)
 {
 }
 
-ctx::DeviceStatusUsb::~DeviceStatusUsb()
+DeviceStatusUsb::~DeviceStatusUsb()
 {
 }
 
-bool ctx::DeviceStatusUsb::isSupported()
+bool DeviceStatusUsb::isSupported()
 {
 	return getSystemInfoBool("tizen.org/feature/usb.host");
 }
 
-void ctx::DeviceStatusUsb::submitTriggerItem()
+void DeviceStatusUsb::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_USB, OPS_SUBSCRIBE | OPS_READ,
+	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsConnected") "}", NULL);
 }
 
-void ctx::DeviceStatusUsb::handleUpdate()
+void DeviceStatusUsb::handleUpdate()
 {
 	bool status = false;
 
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_USB_CONNECTED, &status);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::Json dataRead;
+	Json dataRead;
 	dataRead.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
-	context_manager::publish(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, dataRead);
+	publish(NULL, ERR_NONE, dataRead);
 }
 
-int ctx::DeviceStatusUsb::read()
+int DeviceStatusUsb::read()
 {
 	bool status = false;
-	ctx::Json dataRead;
+	Json dataRead;
 
 	int ret = runtime_info_get_value_bool(RUNTIME_INFO_KEY_USB_CONNECTED, &status);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");
 
 	dataRead.set(NULL, DEVICE_ST_IS_CONNECTED, status ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
-	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_USB, NULL, ERR_NONE, dataRead);
+	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

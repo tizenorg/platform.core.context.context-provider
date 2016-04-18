@@ -15,7 +15,7 @@
 
 #include <Types.h>
 #include <ContextManager.h>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include <StatisticsContextProvider.h>
 
 #include "app/AppStatisticsProvider.h"

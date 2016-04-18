@@ -7,7 +7,7 @@ SET(prvd_deps vconf capi-system-info capi-system-device capi-system-runtime-info
 
 # Mobile Profile
 IF("${PROFILE}" STREQUAL "mobile")
-	SET(prvd_deps ${prvd_deps} capi-network-bluetooth capi-network-wifi)
+	SET(prvd_deps ${prvd_deps} capi-network-bluetooth capi-network-wifi contacts-service2)
 	SET(prvd_deps ${prvd_deps} capi-telephony tapi msg-service capi-messaging-email motion)
 	FILE(GLOB_RECURSE prvd_srcs ${prvd_srcs} activity/*.cpp)
 	FILE(GLOB_RECURSE prvd_srcs ${prvd_srcs} system/*.cpp)

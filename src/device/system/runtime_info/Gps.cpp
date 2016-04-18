@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-#include <ContextManager.h>
 #include "../SystemTypes.h"
 #include "Gps.h"
 
-GENERATE_PROVIDER_COMMON_IMPL(DeviceStatusGps);
+using namespace ctx;
 
 static const char* __getStatusString(int gpsStatus)
 {
@@ -38,49 +37,49 @@ static const char* __getStatusString(int gpsStatus)
 	}
 }
 
-ctx::DeviceStatusGps::DeviceStatusGps() :
-	DeviceStatusRuntimeInfo(RUNTIME_INFO_KEY_GPS_STATUS)
+DeviceStatusGps::DeviceStatusGps() :
+	DeviceStatusRuntimeInfo(DEVICE_ST_SUBJ_GPS, RUNTIME_INFO_KEY_GPS_STATUS)
 {
 }
 
-ctx::DeviceStatusGps::~DeviceStatusGps()
+DeviceStatusGps::~DeviceStatusGps()
 {
 }
 
-bool ctx::DeviceStatusGps::isSupported()
+bool DeviceStatusGps::isSupported()
 {
 	return getSystemInfoBool("tizen.org/feature/location.gps");
 }
 
-void ctx::DeviceStatusGps::submitTriggerItem()
+void DeviceStatusGps::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_GPS, OPS_SUBSCRIBE | OPS_READ,
+	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Searching\",\"Connected\"]}"
 			"}",
 			NULL);
 }
 
-void ctx::DeviceStatusGps::handleUpdate()
+void DeviceStatusGps::handleUpdate()
 {
 	int gpsStatus;
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gpsStatus);
 	IF_FAIL_VOID_TAG(ret == RUNTIME_INFO_ERROR_NONE, _E, "Getting runtime info failed");
 
-	ctx::Json dataRead;
+	Json dataRead;
 
 	const char* stateStr = __getStatusString(gpsStatus);
 	IF_FAIL_VOID(stateStr);
 
 	dataRead.set(NULL, DEVICE_ST_STATE, stateStr);
 
-	context_manager::publish(DEVICE_ST_SUBJ_GPS, NULL, ERR_NONE, dataRead);
+	publish(NULL, ERR_NONE, dataRead);
 }
 
-int ctx::DeviceStatusGps::read()
+int DeviceStatusGps::read()
 {
 	int gpsStatus;
-	ctx::Json dataRead;
+	Json dataRead;
 
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gpsStatus);
 	IF_FAIL_RETURN_TAG(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED, _E, "Getting runtime info failed");
@@ -90,6 +89,6 @@ int ctx::DeviceStatusGps::read()
 
 	dataRead.set(NULL, DEVICE_ST_STATE, stateStr);
 
-	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_GPS, NULL, ERR_NONE, dataRead);
+	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

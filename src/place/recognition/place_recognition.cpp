@@ -14,41 +14,20 @@
  * limitations under the License.
  */
 
-#include <Types.h>
-#include <ContextManager.h>
 #include "place_recognition.h"
 #include "user_places/user_places.h"
 
-ctx::PlaceRecognitionProvider *ctx::PlaceRecognitionProvider::__instance = NULL;
-
-ctx::ContextProviderBase *ctx::PlaceRecognitionProvider::create(void *data)
-{
-	IF_FAIL_RETURN(!__instance, __instance);
-	__instance = new(std::nothrow) PlaceRecognitionProvider();
-	IF_FAIL_RETURN_TAG(__instance, NULL, _E, "Memory allocation failed");
-	_I(BLUE("Created"));
-	return __instance;
-}
-
-void ctx::PlaceRecognitionProvider::destroy(void *data)
-{
-	IF_FAIL_VOID(__instance);
-	delete __instance;
-	__instance = NULL;
-	_I(BLUE("Destroyed"));
-}
-
-int ctx::PlaceRecognitionProvider::subscribe(const char *subject, ctx::Json option, ctx::Json* requestResult)
+int ctx::PlaceRecognitionProvider::subscribe(ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::PlaceRecognitionProvider::unsubscribe(const char *subject, ctx::Json option)
+int ctx::PlaceRecognitionProvider::unsubscribe(ctx::Json option)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::PlaceRecognitionProvider::read(const char *subject, ctx::Json option, ctx::Json* requestResult)
+int ctx::PlaceRecognitionProvider::read(ctx::Json option, ctx::Json* requestResult)
 {
 	_I(BLUE("Read"));
 	_J("Option", option);
@@ -63,17 +42,18 @@ int ctx::PlaceRecognitionProvider::read(const char *subject, ctx::Json option, c
 	 * Please just be sure that, the 2nd input parameter "option" should be the same to the
 	 * "option" parameter received via ctx::PlaceRecognitionProvider::read().
 	 */
-	ctx::context_manager::replyToRead(PLACE_SUBJ_RECOGNITION, option, ERR_NONE, dataRead);
+	replyToRead(option, ERR_NONE, dataRead);
 
 	return ERR_NONE;
 }
 
-int ctx::PlaceRecognitionProvider::write(const char *subject, ctx::Json data, ctx::Json* requestResult)
+int ctx::PlaceRecognitionProvider::write(ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
 bool ctx::PlaceRecognitionProvider::isSupported()
 {
+	/* TODO: This function should be implemented properly */
 	return true;
 }

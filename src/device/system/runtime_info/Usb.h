@@ -22,20 +22,17 @@
 namespace ctx {
 
 	class DeviceStatusUsb : public DeviceStatusRuntimeInfo {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusUsb);
-
 	public:
+		DeviceStatusUsb();
+		~DeviceStatusUsb();
+
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	protected:
 		void handleUpdate();
-
-	private:
-		DeviceStatusUsb();
-		~DeviceStatusUsb();
 	};
 }
 

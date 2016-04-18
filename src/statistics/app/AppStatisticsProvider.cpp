@@ -41,7 +41,7 @@ ctx::AppStatisticsProvider::~AppStatisticsProvider()
 	__launchMon = NULL;
 }
 
-ctx::ContextProviderBase *ctx::AppStatisticsProvider::create(void *data)
+ctx::ContextProvider *ctx::AppStatisticsProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 
