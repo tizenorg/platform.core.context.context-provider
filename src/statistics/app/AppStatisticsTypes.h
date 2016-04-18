@@ -20,6 +20,7 @@
 #include "../shared/CommonTypes.h"
 
 #define APP_HISTORY_PRIV			"apphistory.read"
+#define APP_SUBJ_LOGGER				"stats/app/logger"
 #define APP_SUBJ_RECENTLY_USED		"stats/app/recently"
 #define APP_SUBJ_FREQUENTLY_USED	"stats/app/often"
 #define APP_SUBJ_RARELY_USED		"stats/app/rarely"

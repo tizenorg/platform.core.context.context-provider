@@ -25,15 +25,16 @@
 namespace ctx {
 
 	class DeviceStatusHeadphone : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusHeadphone);
-
 	public:
+		DeviceStatusHeadphone();
+		~DeviceStatusHeadphone();
+
 		int subscribe();
 		int unsubscribe();
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
 		bool __connected;
@@ -42,9 +43,6 @@ namespace ctx {
 		bool __btAudioCallbackOn;
 		bool __btEventHandlerAdded;
 		int __btEventHandlingCount;
-
-		DeviceStatusHeadphone();
-		~DeviceStatusHeadphone();
 
 		bool __getCurrentStatus();
 		void __setBtAudioCallback();

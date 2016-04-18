@@ -15,8 +15,7 @@
  */
 
 #include <Types.h>
-#include <ContextManager.h>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include <DeviceContextProvider.h>
 
 #include "system/SystemTypes.h"
@@ -54,11 +53,6 @@
 #include "activity/Activity.h"
 #endif
 
-#ifdef _TV_
-#include "system/Wifi.h"
-#include "system/Headphone.h"
-#endif
-
 #define PRIV_NETWORK	"network.get"
 #define PRIV_TELEPHONY	"telephony"
 #define PRIV_MESSAGE	"message.read"
@@ -67,12 +61,16 @@
 template<typename Provider>
 void registerProvider(const char *subject, const char *privilege)
 {
-	if (!Provider::isSupported())
-		return;
+	Provider *provider = new(std::nothrow) Provider();
+	IF_FAIL_VOID_TAG(provider, _E, "Memory allocation failed");
 
-	ctx::ContextProviderInfo providerInfo(Provider::create, Provider::destroy, NULL, privilege);
-	ctx::context_manager::registerProvider(subject, providerInfo);
-	Provider::submitTriggerItem();
+	if (!provider->isSupported()) {
+		delete provider;
+		return;
+	}
+
+	provider->registerProvider(privilege, provider);
+	provider->submitTriggerItem();
 }
 
 SO_EXPORT bool ctx::initDeviceContextProvider()
@@ -101,8 +99,10 @@ SO_EXPORT bool ctx::initDeviceContextProvider()
 	registerProvider<UserActivityInVehicle>(USER_ACT_SUBJ_IN_VEHICLE, NULL);
 
 	/* Create context providers, which need to be initiated before being subscribed */
+	/*
 	if (DeviceStatusWifi::isSupported())
 		DeviceStatusWifi::create(NULL);
+	*/
 #endif
 
 #ifdef _WEARABLE_
@@ -122,19 +122,6 @@ SO_EXPORT bool ctx::initDeviceContextProvider()
 	registerProvider<UserActivityWalking>(USER_ACT_SUBJ_WALKING, NULL);
 	registerProvider<UserActivityRunning>(USER_ACT_SUBJ_RUNNING, NULL);
 	registerProvider<UserActivityInVehicle>(USER_ACT_SUBJ_IN_VEHICLE, NULL);
-
-	/* Create context providers, which need to be initiated before being subscribed */
-	if (DeviceStatusWifi::isSupported())
-		DeviceStatusWifi::create(NULL);
-#endif
-
-#ifdef _TV_
-	registerProvider<DeviceStatusWifi>(DEVICE_ST_SUBJ_WIFI, PRIV_NETWORK);
-	registerProvider<DeviceStatusHeadphone>(DEVICE_ST_SUBJ_HEADPHONE, NULL);
-
-	/* Create context providers, which need to be initiated before being subscribed */
-	if (DeviceStatusWifi::isSupported())
-		DeviceStatusWifi::create(NULL);
 #endif
 
 	return true;

@@ -22,19 +22,16 @@
 namespace ctx {
 
 	class DeviceStatusTime : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusTime);
-
 	public:
+		DeviceStatusTime();
+		~DeviceStatusTime();
+
 		int subscribe();
 		int unsubscribe();
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
 
-	private:
-		DeviceStatusTime();
-		~DeviceStatusTime();
+		bool isSupported();
+		void submitTriggerItem();
 	};
 }
 

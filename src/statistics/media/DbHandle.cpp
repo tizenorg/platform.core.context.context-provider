@@ -16,23 +16,26 @@
 
 #include <sstream>
 #include <Types.h>
-#include <ContextManager.h>
 #include "../shared/SystemInfo.h"
 #include "MediaStatisticsTypes.h"
 #include "DbHandle.h"
 
-ctx::MediaDbHandle::MediaDbHandle()
+using namespace ctx;
+
+MediaDbHandle::MediaDbHandle(ContextProvider *provider) :
+	StatsDbHandleBase(provider)
 {
 }
 
-ctx::MediaDbHandle::~MediaDbHandle()
+MediaDbHandle::~MediaDbHandle()
 {
 }
 
-int ctx::MediaDbHandle::read(const char* subject, ctx::Json filter)
+int MediaDbHandle::read(Json filter)
 {
 	//TODO: filter validation (in the API side?)
 	std::string query;
+	const char *subject = reqProvider->getSubject();
 
 	if (STR_EQ(subject, MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC)) {
 		query = createSqlPeakTime(MEDIA_TYPE_MUSIC, filter);
@@ -47,23 +50,23 @@ int ctx::MediaDbHandle::read(const char* subject, ctx::Json filter)
 		query = createSqlCommonSetting(MEDIA_TYPE_VIDEO, filter);
 
 	} else if (STR_EQ(subject, MEDIA_SUBJ_MUSIC_FREQUENCY)) {
-		__isTriggerItem = true;
+		isTriggerItem = true;
 		query = createSqlFrequency(MEDIA_TYPE_MUSIC, filter);
 
 	} else if (STR_EQ(subject, MEDIA_SUBJ_VIDEO_FREQUENCY)) {
-		__isTriggerItem = true;
+		isTriggerItem = true;
 		query = createSqlFrequency(MEDIA_TYPE_VIDEO, filter);
 	}
 
 	IF_FAIL_RETURN(!query.empty(), ERR_OPERATION_FAILED);
 
-	bool ret = executeQuery(subject, filter, query.c_str());
+	bool ret = executeQuery(filter, query.c_str());
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 
 	return ERR_NONE;
 }
 
-std::string ctx::MediaDbHandle::createWhereClause(int mediaType, ctx::Json filter)
+std::string MediaDbHandle::createWhereClause(int mediaType, Json filter)
 {
 	std::stringstream whereClause;
 
@@ -73,21 +76,21 @@ std::string ctx::MediaDbHandle::createWhereClause(int mediaType, ctx::Json filte
 	return whereClause.str();
 }
 
-std::string ctx::MediaDbHandle::createSqlPeakTime(int mediaType, ctx::Json filter)
+std::string MediaDbHandle::createSqlPeakTime(int mediaType, Json filter)
 {
 	std::string where = createWhereClause(mediaType, filter);
 	return StatsDbHandleBase::createSqlPeakTime(filter, MEDIA_TABLE_NAME, where);
 }
 
-std::string ctx::MediaDbHandle::createSqlCommonSetting(int mediaType, ctx::Json filter)
+std::string MediaDbHandle::createSqlCommonSetting(int mediaType, Json filter)
 {
 	std::string where = createWhereClause(mediaType, filter);
 	return StatsDbHandleBase::createSqlCommonSetting(filter, MEDIA_TABLE_NAME, where);
 }
 
-std::string ctx::MediaDbHandle::createSqlFrequency(int mediaType, ctx::Json filter)
+std::string MediaDbHandle::createSqlFrequency(int mediaType, Json filter)
 {
-	ctx::Json filterCleaned;
+	Json filterCleaned;
 	std::string weekStr;
 	std::string timeOfDay;
 
@@ -108,16 +111,16 @@ std::string ctx::MediaDbHandle::createSqlFrequency(int mediaType, ctx::Json filt
 	return query.str();
 }
 
-void ctx::MediaDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
+void MediaDbHandle::replyTriggerItem(int error, Json &jsonResult)
 {
-	IF_FAIL_VOID_TAG(STR_EQ(__reqSubject.c_str(), MEDIA_SUBJ_MUSIC_FREQUENCY) ||
-		STR_EQ(__reqSubject.c_str(), MEDIA_SUBJ_VIDEO_FREQUENCY), _E, "Invalid subject");
+	IF_FAIL_VOID_TAG(STR_EQ(reqProvider->getSubject(), MEDIA_SUBJ_MUSIC_FREQUENCY) ||
+		STR_EQ(reqProvider->getSubject(), MEDIA_SUBJ_VIDEO_FREQUENCY), _E, "Invalid subject");
 
-	ctx::Json results;
+	Json results;
 	int val;
 
 	jsonResult.get(NULL, STATS_TOTAL_COUNT, &val);
 	results.set(NULL, STATS_TOTAL_COUNT, val);
 
-	context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, error, results);
+	reqProvider->replyToRead(reqFilter, error, results);
 }

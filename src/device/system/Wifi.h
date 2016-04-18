@@ -24,15 +24,16 @@
 namespace ctx {
 
 	class DeviceStatusWifi : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusWifi);
-
 	public:
+		DeviceStatusWifi();
+		~DeviceStatusWifi();
+
 		int subscribe();
 		int unsubscribe();
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
 		enum InternalState {
@@ -47,9 +48,6 @@ namespace ctx {
 		bool __isActivated;
 		wifi_connection_state_e __connState;
 		std::string __bssid;
-
-		DeviceStatusWifi();
-		~DeviceStatusWifi();
 
 		bool __getCurrentState();
 		bool __getBssid();

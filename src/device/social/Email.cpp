@@ -14,40 +14,38 @@
  * limitations under the License.
  */
 
-#include <gio/gio.h>
 #include <email-api-etc.h>
-
-#include <ContextManager.h>
 #include "SocialTypes.h"
 #include "Email.h"
 
-GENERATE_PROVIDER_COMMON_IMPL(SocialStatusEmail);
+using namespace ctx;
 
-ctx::SocialStatusEmail::SocialStatusEmail()	:
+SocialStatusEmail::SocialStatusEmail()	:
+	DeviceProviderBase(SOCIAL_ST_SUBJ_EMAIL),
 	__dbusSignalId(-1),
 	__dbusWatcher(DBusType::SESSION)
 {
 }
 
-ctx::SocialStatusEmail::~SocialStatusEmail()
+SocialStatusEmail::~SocialStatusEmail()
 {
 }
 
-bool ctx::SocialStatusEmail::isSupported()
+bool SocialStatusEmail::isSupported()
 {
 	return getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void ctx::SocialStatusEmail::submitTriggerItem()
+void SocialStatusEmail::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_EMAIL, OPS_SUBSCRIBE,
+	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"Received\",\"Sent\"]}"
 			"}",
 			NULL);
 }
 
-void ctx::SocialStatusEmail::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
+void SocialStatusEmail::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
 {
 	gint subType = 0;
 	gint gi1 = 0;
@@ -60,20 +58,20 @@ void ctx::SocialStatusEmail::onSignal(const char* sender, const char* path, cons
 	if (subType == NOTI_DOWNLOAD_FINISH) {
 		//TODO: Check if this signal actually means that there are new mails
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", subType, gi1, gc, gi2, gi3);
-		ctx::Json dataUpdated;
+		Json dataUpdated;
 		dataUpdated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
-		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, dataUpdated);
+		publish(NULL, ERR_NONE, dataUpdated);
 
 	} else if (subType == NOTI_SEND_FINISH) {
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", subType, gi1, gc, gi2, gi3);
-		ctx::Json dataUpdated;
+		Json dataUpdated;
 		dataUpdated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_SENT);
-		context_manager::publish(SOCIAL_ST_SUBJ_EMAIL, NULL, ERR_NONE, dataUpdated);
+		publish(NULL, ERR_NONE, dataUpdated);
 	}
 }
 
 
-int ctx::SocialStatusEmail::subscribe()
+int SocialStatusEmail::subscribe()
 {
 	__dbusSignalId = __dbusWatcher.watch(NULL, NULL, "User.Email.NetworkStatus", "email", this);
 	IF_FAIL_RETURN_TAG(__dbusSignalId >= 0, ERR_OPERATION_FAILED, _E, "Email dbus signal subscription failed");
@@ -81,7 +79,7 @@ int ctx::SocialStatusEmail::subscribe()
 }
 
 
-int ctx::SocialStatusEmail::unsubscribe()
+int SocialStatusEmail::unsubscribe()
 {
 	__dbusWatcher.unwatch(__dbusSignalId);
 	return ERR_NONE;
