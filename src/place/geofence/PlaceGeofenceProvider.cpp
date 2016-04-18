@@ -15,45 +15,26 @@
  */
 
 #include <geofence_manager.h>
-
-#include <Types.h>
-#include <Json.h>
-#include <ContextManager.h>
+#include "GeofenceMonitorHandle.h"
 #include "PlaceGeofenceProvider.h"
 
-ctx::PlaceGeofenceProvider *ctx::PlaceGeofenceProvider::__instance = NULL;
+using namespace ctx;
 
-ctx::PlaceGeofenceProvider::PlaceGeofenceProvider()
+PlaceGeofenceProvider::PlaceGeofenceProvider() :
+	ContextProvider(PLACE_SUBJ_GEOFENCE)
 {
 }
 
-ctx::PlaceGeofenceProvider::~PlaceGeofenceProvider()
+PlaceGeofenceProvider::~PlaceGeofenceProvider()
 {
-	for (auto it = __handleMap.begin(); it != __handleMap.end(); ++it) {
-		delete it->second;
+	for (auto& it : __handleMap) {
+		delete it.second;
 	}
 
 	__handleMap.clear();
 }
 
-ctx::ContextProviderBase *ctx::PlaceGeofenceProvider::create(void *data)
-{
-	IF_FAIL_RETURN(!__instance, __instance);
-	__instance = new(std::nothrow) PlaceGeofenceProvider();
-	IF_FAIL_RETURN_TAG(__instance, NULL, _E, "Memory allocation failed");
-	_I(BLUE("Created"));
-	return __instance;
-}
-
-void ctx::PlaceGeofenceProvider::destroy(void *data)
-{
-	IF_FAIL_VOID(__instance);
-	delete __instance;
-	__instance = NULL;
-	_I(BLUE("Destroyed"));
-}
-
-bool ctx::PlaceGeofenceProvider::isSupported()
+bool PlaceGeofenceProvider::isSupported()
 {
 	bool supported = false;
 	int ret = geofence_manager_is_supported(&supported);
@@ -61,9 +42,9 @@ bool ctx::PlaceGeofenceProvider::isSupported()
 	return supported;
 }
 
-void ctx::PlaceGeofenceProvider::submitTriggerItem()
+void PlaceGeofenceProvider::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(PLACE_SUBJ_GEOFENCE, OPS_SUBSCRIBE,
+	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"In\",\"Out\"]}"
 			"}",
@@ -72,40 +53,7 @@ void ctx::PlaceGeofenceProvider::submitTriggerItem()
 			"}");
 }
 
-void ctx::PlaceGeofenceProvider::__destroyIfUnused()
-{
-	IF_FAIL_VOID(__handleMap.empty());
-	destroy(NULL);
-}
-
-
-int ctx::PlaceGeofenceProvider::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
-{
-	int ret = __subscribe(option);
-	__destroyIfUnused();
-	return ret;
-}
-
-int ctx::PlaceGeofenceProvider::unsubscribe(const char *subject, ctx::Json option)
-{
-	int ret = __unsubscribe(option);
-	__destroyIfUnused();
-	return ret;
-}
-
-int ctx::PlaceGeofenceProvider::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
-{
-	__destroyIfUnused();
-	return ERR_NOT_SUPPORTED;
-}
-
-int ctx::PlaceGeofenceProvider::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
-{
-	__destroyIfUnused();
-	return ERR_NOT_SUPPORTED;
-}
-
-int ctx::PlaceGeofenceProvider::__subscribe(ctx::Json option)
+int PlaceGeofenceProvider::subscribe(Json option, Json *requestResult)
 {
 	int placeId = -1;
 	option.get(NULL, PLACE_GEOFENCE_PLACE_ID, &placeId);
@@ -117,7 +65,7 @@ int ctx::PlaceGeofenceProvider::__subscribe(ctx::Json option)
 		return ERR_NONE;
 	}
 
-	GeofenceMonitorHandle *handle = new(std::nothrow) GeofenceMonitorHandle();
+	GeofenceMonitorHandle *handle = new(std::nothrow) GeofenceMonitorHandle(this);
 	ASSERT_ALLOC(handle);
 
 	bool ret = handle->startMonitor(placeId);
@@ -132,7 +80,7 @@ int ctx::PlaceGeofenceProvider::__subscribe(ctx::Json option)
 	return ERR_NONE;
 }
 
-int ctx::PlaceGeofenceProvider::__unsubscribe(ctx::Json option)
+int PlaceGeofenceProvider::unsubscribe(Json option)
 {
 	int placeId = -1;
 	option.get(NULL, PLACE_GEOFENCE_PLACE_ID, &placeId);

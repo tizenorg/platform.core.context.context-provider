@@ -24,21 +24,19 @@
 namespace ctx {
 
 	class SocialStatusMessage : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(SocialStatusMessage);
-
 	public:
+		SocialStatusMessage();
+		~SocialStatusMessage();
+
 		int subscribe();
 		int unsubscribe();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
 		msg_handle_t __messageHandle;
 		bool __beingSubscribed;
-
-		SocialStatusMessage();
-		~SocialStatusMessage();
 
 		bool __setCallback();
 		void __unsetCallback();

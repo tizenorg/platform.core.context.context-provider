@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
-#define _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
+#ifndef _CONTEXT_APP_STATS_LOGGER_H_
+#define _CONTEXT_APP_STATS_LOGGER_H_
+
+#include <ContextProvider.h>
+#include "DbInit.h"
+#include "InstallMonitor.h"
+#include "ActiveWindowMonitor.h"
 
 namespace ctx {
 
-	bool initCustomContextProvider();
+	class AppStatsLogger : public ContextProvider {
+	public:
+		AppStatsLogger();
+		~AppStatsLogger();
 
-	namespace custom_context_provider {
+		int subscribe(Json option, Json *requestResult);
+		int unsubscribe(Json option);
 
-		int addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit = false);
-		int removeItem(std::string subject);
-		int publishData(std::string subject, ctx::Json fact);
+		void submitTriggerItem() {}
 
-		ContextProvider* create(void* data);
-		void destroy(void* data);
-
-	}	/* namespace custom_context_provider */
+	private:
+		AppDbInitializer *__initializer;
+		AppInstallMonitor *__installMon;
+		AppUseMonitor *__launchMon;
+	};
 
 }	/* namespace ctx */
 
-#endif	/* End of _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_ */
+#endif	/* _CONTEXT_APP_STATS_LOGGER_H_ */

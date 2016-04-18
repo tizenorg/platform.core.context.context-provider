@@ -23,27 +23,25 @@
 namespace ctx {
 
 	class SocialStatusCall : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(SocialStatusCall);
-
 	public:
+		SocialStatusCall();
+		~SocialStatusCall();
+
 		int subscribe();
 		int unsubscribe();
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
 		telephony_handle_list_s __handleList;
-
-		SocialStatusCall();
-		~SocialStatusCall();
 
 		bool __initTelephony();
 		void __releaseTelephony();
 		bool __setCallback();
 		void __unsetCallback();
-		bool __readCurrentStatus(telephony_h& handle, ctx::Json* data);
+		bool __readCurrentStatus(telephony_h& handle, Json* data);
 
 		bool __getCallState(telephony_call_h& handle, std::string& state);
 		bool __getCallType(telephony_call_h& handle, std::string& type);

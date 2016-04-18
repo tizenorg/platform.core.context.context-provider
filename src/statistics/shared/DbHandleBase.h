@@ -18,34 +18,35 @@
 #define _CONTEXT_STATS_DB_HANDLE_BASE_H_
 
 #include <string>
-#include <Json.h>
+#include <ContextProvider.h>
 #include <DatabaseManager.h>
 
 namespace ctx {
 	class StatsDbHandleBase : public IDatabaseListener {
 	protected:
-		bool __isTriggerItem;
-		std::string __reqSubject;
-		ctx::Json __reqFilter;
-		DatabaseManager __dbManager;
+		bool isTriggerItem;
+		ContextProvider *reqProvider;
+		Json reqFilter;
 
-		StatsDbHandleBase();
+		StatsDbHandleBase(ContextProvider *provider);
 		~StatsDbHandleBase();
 
-		std::string createWhereClause(ctx::Json filter);
-		std::string createSqlPeakTime(ctx::Json filter, const char* tableName, std::string whereClause);
-		std::string createSqlCommonSetting(ctx::Json filter, const char* tableName, std::string whereClause);
+		std::string createWhereClause(Json filter);
+		std::string createSqlPeakTime(Json filter, const char* tableName, std::string whereClause);
+		std::string createSqlCommonSetting(Json filter, const char* tableName, std::string whereClause);
 
-		bool executeQuery(const char* subject, ctx::Json filter, const char* query);
-		virtual void replyTriggerItem(int error, ctx::Json &jsonResult) = 0;
+		bool executeQuery(Json filter, const char* query);
+		virtual void replyTriggerItem(int error, Json &jsonResult) = 0;
 		static int generateQid();
 
 	private:
-		void jsonVectorToArray(std::vector<Json> &vecJson, ctx::Json &jsonResult);
+		void __jsonVectorToArray(std::vector<Json> &vecJson, Json &jsonResult);
 
 		void onTableCreated(unsigned int queryId, int error);
 		void onInserted(unsigned int queryId, int error, int64_t rowId);
 		void onExecuted(unsigned int queryId, int error, std::vector<Json>& records);
+
+		DatabaseManager __dbManager;
 	};
 }
 

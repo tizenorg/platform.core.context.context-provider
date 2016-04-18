@@ -16,21 +16,24 @@
 
 #include <sstream>
 #include <Types.h>
-#include <ContextManager.h>
 #include "AppStatisticsTypes.h"
 #include "DbHandle.h"
 
-ctx::AppDbHandle::AppDbHandle()
+using namespace ctx;
+
+AppDbHandle::AppDbHandle(ContextProvider *provider) :
+	StatsDbHandleBase(provider)
 {
 }
 
-ctx::AppDbHandle::~AppDbHandle()
+AppDbHandle::~AppDbHandle()
 {
 }
 
-int ctx::AppDbHandle::read(const char* subject, ctx::Json filter)
+int AppDbHandle::read(Json filter)
 {
 	std::string query;
+	const char *subject = reqProvider->getSubject();
 
 	if (STR_EQ(subject, APP_SUBJ_RECENTLY_USED)) {
 		query = createSqlRecentlyUsed(filter);
@@ -48,19 +51,19 @@ int ctx::AppDbHandle::read(const char* subject, ctx::Json filter)
 		query = createSqlCommonSetting(filter);
 
 	} else if (STR_EQ(subject, APP_SUBJ_FREQUENCY)) {
-		__isTriggerItem = true;
+		isTriggerItem = true;
 		query = createSqlFrequency(filter);
 	}
 
 	IF_FAIL_RETURN(!query.empty(), ERR_OPERATION_FAILED);
 
-	bool ret = executeQuery(subject, filter, query.c_str());
+	bool ret = executeQuery(filter, query.c_str());
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 
 	return ERR_NONE;
 }
 
-std::string ctx::AppDbHandle::createWhereClauseWithDeviceStatus(ctx::Json filter)
+std::string AppDbHandle::createWhereClauseWithDeviceStatus(Json filter)
 {
 	std::stringstream whereClause;
 	std::string bssid;
@@ -77,19 +80,19 @@ std::string ctx::AppDbHandle::createWhereClauseWithDeviceStatus(ctx::Json filter
 	return whereClause.str();
 }
 
-std::string ctx::AppDbHandle::createSqlPeakTime(ctx::Json filter)
+std::string AppDbHandle::createSqlPeakTime(Json filter)
 {
 	return StatsDbHandleBase::createSqlPeakTime(filter, APP_TABLE_USAGE_LOG, createWhereClause(filter));
 }
 
-std::string ctx::AppDbHandle::createSqlCommonSetting(ctx::Json filter)
+std::string AppDbHandle::createSqlCommonSetting(Json filter)
 {
 	return StatsDbHandleBase::createSqlCommonSetting(filter, APP_TABLE_USAGE_LOG, createWhereClause(filter));
 }
 
-std::string ctx::AppDbHandle::createSqlFrequency(ctx::Json filter)
+std::string AppDbHandle::createSqlFrequency(Json filter)
 {
-	ctx::Json filterCleaned;
+	Json filterCleaned;
 	std::string weekStr;
 	std::string timeOfDay;
 	std::string appId;
@@ -133,7 +136,7 @@ std::string ctx::AppDbHandle::createSqlFrequency(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::AppDbHandle::createSqlRecentlyUsed(ctx::Json filter)
+std::string AppDbHandle::createSqlRecentlyUsed(Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -154,7 +157,7 @@ std::string ctx::AppDbHandle::createSqlRecentlyUsed(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::AppDbHandle::createSqlFrequentlyUsed(ctx::Json filter)
+std::string AppDbHandle::createSqlFrequentlyUsed(Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -175,7 +178,7 @@ std::string ctx::AppDbHandle::createSqlFrequentlyUsed(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::AppDbHandle::createSqlRarelyUsed(ctx::Json filter)
+std::string AppDbHandle::createSqlRarelyUsed(Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -198,11 +201,11 @@ std::string ctx::AppDbHandle::createSqlRarelyUsed(ctx::Json filter)
 	return query.str();
 }
 
-void ctx::AppDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
+void AppDbHandle::replyTriggerItem(int error, Json &jsonResult)
 {
-	IF_FAIL_VOID_TAG(STR_EQ(__reqSubject.c_str(), APP_SUBJ_FREQUENCY), _E, "Invalid subject");
+	IF_FAIL_VOID_TAG(STR_EQ(reqProvider->getSubject(), APP_SUBJ_FREQUENCY), _E, "Invalid subject");
 
-	ctx::Json results;
+	Json results;
 	std::string valStr;
 	int val;
 
@@ -213,5 +216,5 @@ void ctx::AppDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
 	jsonResult.get(NULL, STATS_RANK, &val);
 	results.set(NULL, STATS_RANK, val);
 
-	context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, error, results);
+	reqProvider->replyToRead(reqFilter, error, results);
 }

@@ -23,16 +23,18 @@
 
 namespace ctx {
 
-	class GeofenceMonitorHandle {
+	class PlaceGeofenceProvider;
 
+	class GeofenceMonitorHandle {
 	public:
-		GeofenceMonitorHandle();
+		GeofenceMonitorHandle(PlaceGeofenceProvider *provider);
 		~GeofenceMonitorHandle();
 
 		bool startMonitor(int placeId);
 		int getPlaceId();
 
 	private:
+		PlaceGeofenceProvider *__provider;
 		int __placeId;
 		geofence_state_e __prevState;
 		geofence_manager_h __geoHandle;

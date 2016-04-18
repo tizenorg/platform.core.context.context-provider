@@ -24,20 +24,20 @@
 namespace ctx {
 	class AppDbHandle : public StatsDbHandleBase {
 	public:
-		AppDbHandle();
+		AppDbHandle(ContextProvider *provider);
 		~AppDbHandle();
 
-		int read(const char* subject, ctx::Json filter);
+		int read(Json filter);
 
 	protected:
-		std::string createWhereClauseWithDeviceStatus(ctx::Json filter);
-		std::string createSqlRecentlyUsed(ctx::Json filter);
-		std::string createSqlFrequentlyUsed(ctx::Json filter);
-		std::string createSqlRarelyUsed(ctx::Json filter);
-		std::string createSqlPeakTime(ctx::Json filter);
-		std::string createSqlCommonSetting(ctx::Json filter);
-		std::string createSqlFrequency(ctx::Json filter);
-		void replyTriggerItem(int error, ctx::Json &jsonResult);
+		std::string createWhereClauseWithDeviceStatus(Json filter);
+		std::string createSqlRecentlyUsed(Json filter);
+		std::string createSqlFrequentlyUsed(Json filter);
+		std::string createSqlRarelyUsed(Json filter);
+		std::string createSqlPeakTime(Json filter);
+		std::string createSqlCommonSetting(Json filter);
+		std::string createSqlFrequency(Json filter);
+		void replyTriggerItem(int error, Json &jsonResult);
 	};
 }
 

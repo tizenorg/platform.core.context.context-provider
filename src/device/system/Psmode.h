@@ -23,19 +23,18 @@
 namespace ctx {
 
 	class DeviceStatusPsmode : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusPsmode);
-
 	public:
+		DeviceStatusPsmode();
+		~DeviceStatusPsmode();
+
 		int subscribe();
 		int unsubscribe();
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
-		DeviceStatusPsmode();
-		~DeviceStatusPsmode();
 		void __handleUpdate(keynode_t *node);
 		static void __updateCb(keynode_t *node, void* userData);
 	};
