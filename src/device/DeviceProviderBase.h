@@ -19,7 +19,7 @@
 
 #include <Types.h>
 #include <Json.h>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 
 #define CREATE_INSTANCE(prvd) \
 	do { \
@@ -40,7 +40,7 @@
 
 #define GENERATE_PROVIDER_COMMON_DECL(prvd) \
 	public: \
-		static ContextProviderBase *create(void *data); \
+		static ContextProvider *create(void *data); \
 		static void destroy(void *data); \
 	protected: \
 		void destroySelf(); \
@@ -49,7 +49,7 @@
 
 #define GENERATE_PROVIDER_COMMON_IMPL(prvd) \
 	ctx::prvd *ctx::prvd::__instance = NULL; \
-	ctx::ContextProviderBase *ctx::prvd::create(void *data) \
+	ctx::ContextProvider *ctx::prvd::create(void *data) \
 	{ \
 		CREATE_INSTANCE(prvd); \
 	} \
@@ -64,7 +64,7 @@
 
 namespace ctx {
 
-	class DeviceProviderBase : public ContextProviderBase {
+	class DeviceProviderBase : public ContextProvider {
 	public:
 		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
 		int unsubscribe(const char *subject, ctx::Json option);

@@ -16,7 +16,7 @@
 
 #include <Types.h>
 #include <ContextManager.h>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include <DeviceContextProvider.h>
 
 #include "system/SystemTypes.h"

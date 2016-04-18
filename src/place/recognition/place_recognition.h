@@ -17,16 +17,16 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_H_
 #define _CONTEXT_PLACE_RECOGNITION_H_
 
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include "place_recognition_types.h"
 #include "user_places/user_places.h"
 
 namespace ctx {
 
-	class PlaceRecognitionProvider : public ContextProviderBase {
+	class PlaceRecognitionProvider : public ContextProvider {
 
 	public:
-		static ContextProviderBase *create(void *data);
+		static ContextProvider *create(void *data);
 		static void destroy(void *data);
 		static bool isSupported();
 
