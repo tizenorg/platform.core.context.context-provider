@@ -14,73 +14,73 @@
  * limitations under the License.
  */
 
-#include <ContextManager.h>
 #include "SystemTypes.h"
 #include "Psmode.h"
 
-GENERATE_PROVIDER_COMMON_IMPL(DeviceStatusPsmode);
+using namespace ctx;
 
-ctx::DeviceStatusPsmode::DeviceStatusPsmode()
+DeviceStatusPsmode::DeviceStatusPsmode() :
+	DeviceProviderBase(DEVICE_ST_SUBJ_PSMODE)
 {
 }
 
-ctx::DeviceStatusPsmode::~DeviceStatusPsmode()
+DeviceStatusPsmode::~DeviceStatusPsmode()
 {
 }
 
-bool ctx::DeviceStatusPsmode::isSupported()
+bool DeviceStatusPsmode::isSupported()
 {
 	return true;
 }
 
-void ctx::DeviceStatusPsmode::submitTriggerItem()
+void DeviceStatusPsmode::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_PSMODE, OPS_SUBSCRIBE | OPS_READ,
+	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsEnabled") "}", NULL);
 }
 
-void ctx::DeviceStatusPsmode::__updateCb(keynode_t *node, void* userData)
+void DeviceStatusPsmode::__updateCb(keynode_t *node, void* userData)
 {
 	DeviceStatusPsmode *instance = static_cast<DeviceStatusPsmode*>(userData);
 	instance->__handleUpdate(node);
 }
 
-void ctx::DeviceStatusPsmode::__handleUpdate(keynode_t *node)
+void DeviceStatusPsmode::__handleUpdate(keynode_t *node)
 {
 	int status;
-	ctx::Json dataRead;
+	Json dataRead;
 
 	status = vconf_keynode_get_int(node);
 	IF_FAIL_VOID_TAG(status >= 0, _E, "Getting state failed");
 
 	dataRead.set(NULL, DEVICE_ST_IS_ENABLED, status == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
 
-	context_manager::publish(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, dataRead);
+	publish(NULL, ERR_NONE, dataRead);
 }
 
-int ctx::DeviceStatusPsmode::subscribe()
+int DeviceStatusPsmode::subscribe()
 {
 	int ret = vconf_notify_key_changed(VCONFKEY_SETAPPL_PSMODE, __updateCb, this);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusPsmode::unsubscribe()
+int DeviceStatusPsmode::unsubscribe()
 {
 	int ret = vconf_ignore_key_changed(VCONFKEY_SETAPPL_PSMODE, __updateCb);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusPsmode::read()
+int DeviceStatusPsmode::read()
 {
 	int mode;
 	int ret = vconf_get_int(VCONFKEY_SETAPPL_PSMODE, &mode);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 
-	ctx::Json dataRead;
+	Json dataRead;
 	dataRead.set(NULL, DEVICE_ST_IS_ENABLED, mode == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
 
-	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_PSMODE, NULL, ERR_NONE, dataRead);
+	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

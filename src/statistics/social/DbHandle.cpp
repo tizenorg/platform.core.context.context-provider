@@ -17,39 +17,42 @@
 #include <sstream>
 #include <contacts.h>
 #include <Types.h>
-#include <ContextManager.h>
 #include "SocialStatisticsTypes.h"
 #include "DbHandle.h"
 
-ctx::SocialDbHandle::SocialDbHandle()
+using namespace ctx;
+
+SocialDbHandle::SocialDbHandle(ContextProvider *provider) :
+	StatsDbHandleBase(provider)
 {
 }
 
-ctx::SocialDbHandle::~SocialDbHandle()
+SocialDbHandle::~SocialDbHandle()
 {
 }
 
-int ctx::SocialDbHandle::read(const char* subject, ctx::Json filter)
+int SocialDbHandle::read(Json filter)
 {
 	std::string query;
+	const char *subject = reqProvider->getSubject();
 
 	if (STR_EQ(subject, SOCIAL_SUBJ_FREQ_ADDRESS)) {
 		query = createSqlFreqAddress(filter);
 
 	} else if (STR_EQ(subject, SOCIAL_SUBJ_FREQUENCY)) {
-		__isTriggerItem = true;
+		isTriggerItem = true;
 		query = createSqlFrequency(filter);
 	}
 
 	IF_FAIL_RETURN(!query.empty(), ERR_OPERATION_FAILED);
 
-	bool ret = executeQuery(subject, filter, query.c_str());
+	bool ret = executeQuery(filter, query.c_str());
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 
 	return ERR_NONE;
 }
 
-std::string ctx::SocialDbHandle::createWhereClause(ctx::Json filter)
+std::string SocialDbHandle::createWhereClause(Json filter)
 {
 	std::stringstream whereClause;
 	int commType = -1;
@@ -76,7 +79,7 @@ std::string ctx::SocialDbHandle::createWhereClause(ctx::Json filter)
 	return whereClause.str();
 }
 
-std::string ctx::SocialDbHandle::createSqlFreqAddress(ctx::Json filter)
+std::string SocialDbHandle::createSqlFreqAddress(Json filter)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -97,9 +100,9 @@ std::string ctx::SocialDbHandle::createSqlFreqAddress(ctx::Json filter)
 	return query.str();
 }
 
-std::string ctx::SocialDbHandle::createSqlFrequency(ctx::Json filter)
+std::string SocialDbHandle::createSqlFrequency(Json filter)
 {
-	ctx::Json filterCleaned;
+	Json filterCleaned;
 	std::string weekStr;
 	std::string timeOfDay;
 	std::string address;
@@ -142,11 +145,11 @@ std::string ctx::SocialDbHandle::createSqlFrequency(ctx::Json filter)
 	return query.str();
 }
 
-void ctx::SocialDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
+void SocialDbHandle::replyTriggerItem(int error, Json &jsonResult)
 {
-	IF_FAIL_VOID_TAG(STR_EQ(__reqSubject.c_str(), SOCIAL_SUBJ_FREQUENCY), _E, "Invalid subject");
+	IF_FAIL_VOID_TAG(STR_EQ(reqProvider->getSubject(), SOCIAL_SUBJ_FREQUENCY), _E, "Invalid subject");
 
-	ctx::Json results;
+	Json results;
 	std::string valStr;
 	int val;
 
@@ -157,5 +160,5 @@ void ctx::SocialDbHandle::replyTriggerItem(int error, ctx::Json &jsonResult)
 	jsonResult.get(NULL, STATS_RANK, &val);
 	results.set(NULL, STATS_RANK, val);
 
-	context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, error, results);
+	reqProvider->replyToRead(reqFilter, error, results);
 }

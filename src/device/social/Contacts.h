@@ -23,21 +23,19 @@
 namespace ctx {
 
 	class SocialStatusContacts : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(SocialStatusContacts);
-
 	public:
+		SocialStatusContacts();
+		~SocialStatusContacts();
+
 		int subscribe();
 		int unsubscribe();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
 		time_t __latestMyProfile;
 		time_t __latestPerson;
-
-		SocialStatusContacts();
-		~SocialStatusContacts();
 
 		bool __setCallback();
 		void __unsetCallback();

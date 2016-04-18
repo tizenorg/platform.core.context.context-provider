@@ -24,16 +24,16 @@
 namespace ctx {
 	class SocialDbHandle : public StatsDbHandleBase {
 	public:
-		SocialDbHandle();
+		SocialDbHandle(ContextProvider *provider);
 		~SocialDbHandle();
 
-		int read(const char* subject, ctx::Json filter);
+		int read(Json filter);
 
 	protected:
-		std::string createWhereClause(ctx::Json filter);
-		std::string createSqlFreqAddress(ctx::Json filter);
-		std::string createSqlFrequency(ctx::Json filter);
-		void replyTriggerItem(int error, ctx::Json &jsonResult);
+		std::string createWhereClause(Json filter);
+		std::string createSqlFreqAddress(Json filter);
+		std::string createSqlFrequency(Json filter);
+		void replyTriggerItem(int error, Json &jsonResult);
 	};
 }
 

@@ -15,13 +15,13 @@
  */
 
 #include <SharedVars.h>
-#include <ContextManager.h>
 #include "SystemTypes.h"
 #include "Wifi.h"
 
-ctx::DeviceStatusWifi *ctx::DeviceStatusWifi::__instance = NULL;
+using namespace ctx;
 
-ctx::DeviceStatusWifi::DeviceStatusWifi() :
+DeviceStatusWifi::DeviceStatusWifi() :
+	DeviceProviderBase(DEVICE_ST_SUBJ_WIFI),
 	__lastState(UNKNOWN),
 	__isInitialized(false),
 	__isActivated(false),
@@ -35,34 +35,19 @@ ctx::DeviceStatusWifi::DeviceStatusWifi() :
 	}
 }
 
-ctx::DeviceStatusWifi::~DeviceStatusWifi()
+DeviceStatusWifi::~DeviceStatusWifi()
 {
+	__stopMonitor();
 }
 
-ctx::ContextProviderBase *ctx::DeviceStatusWifi::create(void *data)
-{
-	CREATE_INSTANCE(DeviceStatusWifi);
-}
-
-void ctx::DeviceStatusWifi::destroy(void *data)
-{
-	__instance->__stopMonitor();
-	DESTROY_INSTANCE();
-}
-
-void ctx::DeviceStatusWifi::destroySelf()
-{
-	/* WiFi status will be monitored continuously, even if no client is subscribing it */
-}
-
-bool ctx::DeviceStatusWifi::isSupported()
+bool DeviceStatusWifi::isSupported()
 {
 	return getSystemInfoBool("tizen.org/feature/network.wifi");
 }
 
-void ctx::DeviceStatusWifi::submitTriggerItem()
+void DeviceStatusWifi::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_WIFI, OPS_SUBSCRIBE | OPS_READ,
+	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Unconnected\",\"Connected\"]},"
 				"\"BSSID\":{\"type\":\"string\"}"
@@ -70,7 +55,7 @@ void ctx::DeviceStatusWifi::submitTriggerItem()
 			NULL);
 }
 
-bool ctx::DeviceStatusWifi::__getCurrentState()
+bool DeviceStatusWifi::__getCurrentState()
 {
 	int err;
 
@@ -104,7 +89,7 @@ bool ctx::DeviceStatusWifi::__getCurrentState()
 	return true;
 }
 
-bool ctx::DeviceStatusWifi::__getBssid()
+bool DeviceStatusWifi::__getBssid()
 {
 	int err;
 	char *strBuf = NULL;
@@ -122,20 +107,20 @@ bool ctx::DeviceStatusWifi::__getBssid()
 	if (__bssid.empty())
 		_W("Failed to get BSSID");
 
-	SharedVars().set(ctx::SharedVars::WIFI_BSSID, __bssid);
+	SharedVars().set(SharedVars::WIFI_BSSID, __bssid);
 	_D("BSSID: %s", __bssid.c_str());
 
 	return !__bssid.empty();
 }
 
-void ctx::DeviceStatusWifi::__clearBssid()
+void DeviceStatusWifi::__clearBssid()
 {
 	__bssid.clear();
-	SharedVars().clear(ctx::SharedVars::WIFI_BSSID);
+	SharedVars().clear(SharedVars::WIFI_BSSID);
 	_D("No WiFi connection");
 }
 
-bool ctx::DeviceStatusWifi::__getResponsePacket(ctx::Json* data)
+bool DeviceStatusWifi::__getResponsePacket(Json* data)
 {
 	switch (__lastState) {
 	case DISABLED:
@@ -158,20 +143,20 @@ bool ctx::DeviceStatusWifi::__getResponsePacket(ctx::Json* data)
 	return true;
 }
 
-int ctx::DeviceStatusWifi::read()
+int DeviceStatusWifi::read()
 {
 	IF_FAIL_RETURN(__getCurrentState(), ERR_OPERATION_FAILED);
 
-	ctx::Json dataRead;
+	Json dataRead;
 	if (__getResponsePacket(&dataRead)) {
-		ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, dataRead);
+		replyToRead(NULL, ERR_NONE, dataRead);
 		return ERR_NONE;
 	}
 
 	return ERR_OPERATION_FAILED;
 }
 
-bool ctx::DeviceStatusWifi::__startMonitor()
+bool DeviceStatusWifi::__startMonitor()
 {
 	IF_FAIL_RETURN(!__isInitialized, true);
 
@@ -193,7 +178,7 @@ CATCH:
 	return false;
 }
 
-void ctx::DeviceStatusWifi::__stopMonitor()
+void DeviceStatusWifi::__stopMonitor()
 {
 	IF_FAIL_VOID(__isInitialized);
 
@@ -203,7 +188,7 @@ void ctx::DeviceStatusWifi::__stopMonitor()
 	__isInitialized = false;
 }
 
-int ctx::DeviceStatusWifi::subscribe()
+int DeviceStatusWifi::subscribe()
 {
 #if 0
 	IF_FAIL_RETURN(__startMonitor(), ERR_OPERATION_FAILED);
@@ -216,7 +201,7 @@ int ctx::DeviceStatusWifi::subscribe()
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusWifi::unsubscribe()
+int DeviceStatusWifi::unsubscribe()
 {
 #if 0
 	__stopMonitor();
@@ -224,7 +209,7 @@ int ctx::DeviceStatusWifi::unsubscribe()
 	return ERR_NONE;
 }
 
-void ctx::DeviceStatusWifi::__handleUpdate()
+void DeviceStatusWifi::__handleUpdate()
 {
 	int prevState = __lastState;
 
@@ -245,20 +230,20 @@ void ctx::DeviceStatusWifi::__handleUpdate()
 			__clearBssid();
 		}
 
-		ctx::Json data;
+		Json data;
 		if (__beingSubscribed && __getResponsePacket(&data))
-			context_manager::publish(DEVICE_ST_SUBJ_WIFI, NULL, ERR_NONE, data);
+			publish(NULL, ERR_NONE, data);
 	}
 }
 
-void ctx::DeviceStatusWifi::__deviceStateChangedCb(wifi_device_state_e state, void *userData)
+void DeviceStatusWifi::__deviceStateChangedCb(wifi_device_state_e state, void *userData)
 {
 	DeviceStatusWifi *instance = static_cast<DeviceStatusWifi*>(userData);
 	instance->__isActivated = (state == WIFI_DEVICE_STATE_ACTIVATED);
 	instance->__handleUpdate();
 }
 
-void ctx::DeviceStatusWifi::__connectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *userData)
+void DeviceStatusWifi::__connectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *userData)
 {
 	DeviceStatusWifi *instance = static_cast<DeviceStatusWifi*>(userData);
 	instance->__connState = state;

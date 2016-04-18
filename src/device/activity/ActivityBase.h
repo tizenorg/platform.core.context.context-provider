@@ -25,16 +25,18 @@ namespace ctx {
 
 	class UserActivityBase : public DeviceProviderBase {
 	public:
+		UserActivityBase(const char *subject, activity_type_e type);
+		virtual ~UserActivityBase();
+
 		int subscribe();
 		int unsubscribe();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	protected:
 		activity_type_e __activityType;
 		activity_h __activityHandle;
-		std::string __subject;
-
-		UserActivityBase(const char *subj, activity_type_e type);
-		virtual ~UserActivityBase();
 
 	private:
 		void __handleUpdate(activity_type_e activity, const activity_data_h data, double timestamp);

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#include <ContextManager.h>
 #include "SystemTypes.h"
 #include "Alarm.h"
 
-GENERATE_PROVIDER_COMMON_IMPL(DeviceStatusAlarm);
+using namespace ctx;
 
-ctx::DeviceStatusAlarm::DeviceStatusAlarm()
+DeviceStatusAlarm::DeviceStatusAlarm()
+	: ContextProvider(DEVICE_ST_SUBJ_ALARM)
 {
 }
 
-ctx::DeviceStatusAlarm::~DeviceStatusAlarm()
+DeviceStatusAlarm::~DeviceStatusAlarm()
 {
 	__clear();
 
@@ -34,14 +34,14 @@ ctx::DeviceStatusAlarm::~DeviceStatusAlarm()
 	__optionSet.clear();
 }
 
-bool ctx::DeviceStatusAlarm::isSupported()
+bool DeviceStatusAlarm::isSupported()
 {
 	return true;
 }
 
-void ctx::DeviceStatusAlarm::submitTriggerItem()
+void DeviceStatusAlarm::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_ALARM, OPS_SUBSCRIBE,
+	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
 				"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
 				"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
@@ -49,33 +49,7 @@ void ctx::DeviceStatusAlarm::submitTriggerItem()
 			NULL);
 }
 
-int ctx::DeviceStatusAlarm::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
-{
-	int ret = subscribe(option);
-	__destroyIfUnused();
-	return ret;
-}
-
-int ctx::DeviceStatusAlarm::unsubscribe(const char *subject, ctx::Json option)
-{
-	int ret = unsubscribe(option);
-	__destroyIfUnused();
-	return ret;
-}
-
-int ctx::DeviceStatusAlarm::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
-{
-	__destroyIfUnused();
-	return ERR_NOT_SUPPORTED;
-}
-
-int ctx::DeviceStatusAlarm::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
-{
-	__destroyIfUnused();
-	return ERR_NOT_SUPPORTED;
-}
-
-int ctx::DeviceStatusAlarm::subscribe(ctx::Json option)
+int DeviceStatusAlarm::subscribe(Json option, Json *requestResult)
 {
 	int dow = __getArrangedDayOfWeek(option);
 
@@ -84,7 +58,7 @@ int ctx::DeviceStatusAlarm::subscribe(ctx::Json option)
 		__add(time, dow);
 	}
 
-	ctx::Json* elem = new(std::nothrow) ctx::Json(option);
+	Json* elem = new(std::nothrow) Json(option);
 	if (elem) {
 		__optionSet.insert(elem);
 	} else {
@@ -96,7 +70,7 @@ int ctx::DeviceStatusAlarm::subscribe(ctx::Json option)
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusAlarm::unsubscribe(ctx::Json option)
+int DeviceStatusAlarm::unsubscribe(Json option)
 {
 	int dow = __getArrangedDayOfWeek(option);
 
@@ -114,25 +88,25 @@ int ctx::DeviceStatusAlarm::unsubscribe(ctx::Json option)
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusAlarm::__getArrangedDayOfWeek(ctx::Json& option)
+int DeviceStatusAlarm::__getArrangedDayOfWeek(Json& option)
 {
 	int dow = 0;
 
 	std::string tempDay;
 	for (int i = 0; option.getAt(NULL, DEVICE_ST_DAY_OF_WEEK, i, &tempDay); i++) {
-		dow |= ctx::TimerManager::dowToInt(tempDay);
+		dow |= TimerManager::dowToInt(tempDay);
 	}
 	_D("Requested day of week (%#x)", dow);
 
 	return dow;
 }
 
-ctx::DeviceStatusAlarm::RefCountArray::RefCountArray()
+DeviceStatusAlarm::RefCountArray::RefCountArray()
 {
 	memset(count, 0, sizeof(int) * DAYS_PER_WEEK);
 }
 
-int ctx::DeviceStatusAlarm::__mergeDayOfWeek(int* refCnt)
+int DeviceStatusAlarm::__mergeDayOfWeek(int* refCnt)
 {
 	int dayOfWeek = 0;
 
@@ -145,7 +119,7 @@ int ctx::DeviceStatusAlarm::__mergeDayOfWeek(int* refCnt)
 	return dayOfWeek;
 }
 
-bool ctx::DeviceStatusAlarm::__add(int minute, int dayOfWeek)
+bool DeviceStatusAlarm::__add(int minute, int dayOfWeek)
 {
 	IF_FAIL_RETURN_TAG(minute >=0 && minute < 1440 &&
 			dayOfWeek > 0 && dayOfWeek <= static_cast<int>(DayOfWeek::EVERYDAY),
@@ -162,7 +136,7 @@ bool ctx::DeviceStatusAlarm::__add(int minute, int dayOfWeek)
 	return __resetTimer(minute);
 }
 
-bool ctx::DeviceStatusAlarm::__remove(int minute, int dayOfWeek)
+bool DeviceStatusAlarm::__remove(int minute, int dayOfWeek)
 {
 	IF_FAIL_RETURN_TAG(minute >= 0 && minute < 1440 &&
 			dayOfWeek > 0 && dayOfWeek <= static_cast<int>(DayOfWeek::EVERYDAY),
@@ -179,7 +153,7 @@ bool ctx::DeviceStatusAlarm::__remove(int minute, int dayOfWeek)
 	return __resetTimer(minute);
 }
 
-bool ctx::DeviceStatusAlarm::__resetTimer(int minute)
+bool DeviceStatusAlarm::__resetTimer(int minute)
 {
 	int dayOfWeek = __mergeDayOfWeek(__refCountMap[minute].count);
 	TimerState &timer = __timerStateMap[minute];
@@ -216,7 +190,7 @@ bool ctx::DeviceStatusAlarm::__resetTimer(int minute)
 	return true;
 }
 
-void ctx::DeviceStatusAlarm::__clear()
+void DeviceStatusAlarm::__clear()
 {
 	for (auto it = __timerStateMap.begin(); it != __timerStateMap.end(); ++it) {
 		if (it->second.timerId > 0) {
@@ -228,7 +202,7 @@ void ctx::DeviceStatusAlarm::__clear()
 	__refCountMap.clear();
 }
 
-bool ctx::DeviceStatusAlarm::onTimerExpired(int timerId)
+bool DeviceStatusAlarm::onTimerExpired(int timerId)
 {
 	time_t rawTime;
 	struct tm timeInfo;
@@ -246,25 +220,25 @@ bool ctx::DeviceStatusAlarm::onTimerExpired(int timerId)
 	return true;
 }
 
-void ctx::DeviceStatusAlarm::__handleUpdate(int hour, int min, int dayOfWeek)
+void DeviceStatusAlarm::__handleUpdate(int hour, int min, int dayOfWeek)
 {
 	_I("Time: %02d:%02d, Day of Week: %#x", hour, min, dayOfWeek);
 
-	ctx::Json dataRead;
+	Json dataRead;
 	int resultTime = hour * 60 + min;
-	std::string resultDay = ctx::TimerManager::dowToStr(dayOfWeek);
+	std::string resultDay = TimerManager::dowToStr(dayOfWeek);
 	dataRead.set(NULL, DEVICE_ST_TIME_OF_DAY, resultTime);
 	dataRead.set(NULL, DEVICE_ST_DAY_OF_WEEK, resultDay);
 
 	for (auto it = __optionSet.begin(); it != __optionSet.end(); ++it) {
-		ctx::Json option = (**it);
+		Json option = (**it);
 		if (__isMatched(option, resultTime, resultDay)) {
-			context_manager::publish(DEVICE_ST_SUBJ_ALARM, option, ERR_NONE, dataRead);
+			publish(option, ERR_NONE, dataRead);
 		}
 	}
 }
 
-bool ctx::DeviceStatusAlarm::__isMatched(ctx::Json& option, int time, std::string day)
+bool DeviceStatusAlarm::__isMatched(Json& option, int time, std::string day)
 {
 	bool ret = false;
 	int optionTime;
@@ -286,17 +260,11 @@ bool ctx::DeviceStatusAlarm::__isMatched(ctx::Json& option, int time, std::strin
 	return false;
 }
 
-ctx::DeviceStatusAlarm::OptionSet::iterator ctx::DeviceStatusAlarm::__findOption(ctx::Json& option)
+DeviceStatusAlarm::OptionSet::iterator DeviceStatusAlarm::__findOption(Json& option)
 {
 	for (auto it = __optionSet.begin(); it != __optionSet.end(); ++it) {
 		if (option == (**it))
 			return it;
 	}
 	return __optionSet.end();
-}
-
-void ctx::DeviceStatusAlarm::__destroyIfUnused()
-{
-	IF_FAIL_VOID(__optionSet.empty());
-	destroy(NULL);
 }

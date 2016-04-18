@@ -15,8 +15,6 @@
  */
 
 #include <Types.h>
-#include <ContextManager.h>
-#include <ContextProviderBase.h>
 #include <PlaceContextProvider.h>
 
 #ifdef _MOBILE_
@@ -29,21 +27,24 @@
 template<typename Provider>
 void registerProvider(const char *subject, const char *privilege)
 {
-	if (!Provider::isSupported())
-		return;
+	Provider *provider = new(std::nothrow) Provider();
+	IF_FAIL_VOID_TAG(provider, _E, "Memory allocation failed");
 
-	ctx::ContextProviderInfo providerInfo(Provider::create, Provider::destroy, NULL, privilege);
-	ctx::context_manager::registerProvider(subject, providerInfo);
+	if (!provider->isSupported()) {
+		delete provider;
+		return;
+	}
+
+	provider->registerProvider(privilege, provider);
+	provider->submitTriggerItem();
 }
 
 SO_EXPORT bool ctx::initPlaceContextProvider()
 {
 #ifdef _MOBILE_
 	registerProvider<PlaceGeofenceProvider>(PLACE_SUBJ_GEOFENCE, PLACE_PRIV_GEOFENCE);
-	PlaceGeofenceProvider::submitTriggerItem();
 
 #ifndef _DISABLE_RECOG_ENGINE_
-	PlaceRecognitionProvider::create(NULL);
 	registerProvider<PlaceRecognitionProvider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);
 #endif	/* _DISABLE_RECOG_ENGINE_ */
 

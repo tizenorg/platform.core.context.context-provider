@@ -29,9 +29,3 @@ ENDIF("${PROFILE}" STREQUAL "mobile")
 # Wearable Profile
 #IF("${PROFILE}" STREQUAL "wearable")
 #ENDIF("${PROFILE}" STREQUAL "wearable")
-
-# TV Profile
-IF("${PROFILE}" STREQUAL "tv")
-	FILE(GLOB prvd_srcs ${prvd_srcs} media/*.cpp)
-	SET(prvd_deps ${prvd_deps} capi-content-media-content)
-ENDIF("${PROFILE}" STREQUAL "tv")

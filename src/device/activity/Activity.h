@@ -17,41 +17,13 @@
 #ifndef _DEVICE_ACTIVITY_STATUS_H_
 #define _DEVICE_ACTIVITY_STATUS_H_
 
-#include <system_info.h>
 #include "ActivityBase.h"
 
 #define GENERATE_ACTIVITY_PROVIDER(actPrvd, actSubj, actType) \
 	class actPrvd : public UserActivityBase { \
 	public: \
-		static ContextProviderBase *create(void *data) \
-		{ \
-			CREATE_INSTANCE(ctx::actPrvd); \
-		} \
-		static void destroy(void *data) \
-		{ \
-			DESTROY_INSTANCE(); \
-		} \
-		static bool isSupported() \
-		{ \
-			return getSystemInfoBool("tizen.org/feature/sensor.activity_recognition"); \
-		} \
-		static void submitTriggerItem() \
-		{ \
-			context_manager::registerTriggerItem((actSubj), OPS_SUBSCRIBE, \
-					"{\"Event\":{\"type\":\"string\", \"values\":[\"Detected\"]}}", \
-					"{\"Accuracy\":{\"type\":\"string\", \"values\":[\"Low\", \"Normal\", \"High\"]}}" \
-					); \
-		} \
-	protected: \
-		void destroySelf() \
-		{ \
-			destroy(NULL); \
-		} \
-	private: \
-		static actPrvd *__instance; \
-		actPrvd() : UserActivityBase((actSubj), (actType)) {} \
+		actPrvd() : UserActivityBase(actSubj, actType) {} \
 	}; \
-	ctx::actPrvd *ctx::actPrvd::__instance = NULL; \
 
 namespace ctx {
 	GENERATE_ACTIVITY_PROVIDER(UserActivityStationary, USER_ACT_SUBJ_STATIONARY, ACTIVITY_STATIONARY);

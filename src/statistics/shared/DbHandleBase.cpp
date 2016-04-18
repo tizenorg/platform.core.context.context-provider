@@ -16,23 +16,25 @@
 
 #include <sstream>
 #include <Types.h>
-#include <ContextManager.h>
 #include "CommonTypes.h"
 #include "DbHandleBase.h"
 
 #define DAY_OF_WEEK(SECOND) "CAST(strftime('%w', " SECOND ", 'unixepoch') AS INTEGER)"
 #define HOUR_OF_DAY(SECOND) "CAST(strftime('%H', " SECOND ", 'unixepoch') AS INTEGER)"
 
-ctx::StatsDbHandleBase::StatsDbHandleBase() :
-	__isTriggerItem(false)
+using namespace ctx;
+
+StatsDbHandleBase::StatsDbHandleBase(ContextProvider *provider) :
+	isTriggerItem(false),
+	reqProvider(provider)
 {
 }
 
-ctx::StatsDbHandleBase::~StatsDbHandleBase()
+StatsDbHandleBase::~StatsDbHandleBase()
 {
 }
 
-int ctx::StatsDbHandleBase::generateQid()
+int StatsDbHandleBase::generateQid()
 {
 	static int qid = 0;
 
@@ -40,18 +42,17 @@ int ctx::StatsDbHandleBase::generateQid()
 	return qid;
 }
 
-bool ctx::StatsDbHandleBase::executeQuery(const char* subject, ctx::Json filter, const char* query)
+bool StatsDbHandleBase::executeQuery(Json filter, const char* query)
 {
 	bool ret = __dbManager.execute(generateQid(), query, this);
 	IF_FAIL_RETURN(ret, false);
 
-	__reqSubject = subject;
-	__reqFilter = filter;
+	reqFilter = filter;
 
 	return true;
 }
 
-std::string ctx::StatsDbHandleBase::createWhereClause(ctx::Json filter)
+std::string StatsDbHandleBase::createWhereClause(Json filter)
 {
 	std::stringstream whereClause;
 	int week = 0;
@@ -141,7 +142,7 @@ std::string ctx::StatsDbHandleBase::createWhereClause(ctx::Json filter)
 	return whereClause.str();
 }
 
-std::string ctx::StatsDbHandleBase::createSqlPeakTime(ctx::Json filter, const char* tableName, std::string whereClause)
+std::string StatsDbHandleBase::createSqlPeakTime(Json filter, const char* tableName, std::string whereClause)
 {
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
@@ -160,7 +161,7 @@ std::string ctx::StatsDbHandleBase::createSqlPeakTime(ctx::Json filter, const ch
 	return query.str();
 }
 
-std::string ctx::StatsDbHandleBase::createSqlCommonSetting(ctx::Json filter, const char* tableName, std::string whereClause)
+std::string StatsDbHandleBase::createSqlCommonSetting(Json filter, const char* tableName, std::string whereClause)
 {
 	std::stringstream query;
 
@@ -187,16 +188,16 @@ std::string ctx::StatsDbHandleBase::createSqlCommonSetting(ctx::Json filter, con
 	return query.str();
 }
 
-void ctx::StatsDbHandleBase::onTableCreated(unsigned int queryId, int error)
+void StatsDbHandleBase::onTableCreated(unsigned int queryId, int error)
 {
 }
 
-void ctx::StatsDbHandleBase::onInserted(unsigned int queryId, int error, int64_t rowId)
+void StatsDbHandleBase::onInserted(unsigned int queryId, int error, int64_t rowId)
 {
 	delete this;
 }
 
-void ctx::StatsDbHandleBase::jsonVectorToArray(std::vector<Json> &vecJson, ctx::Json &jsonResult)
+void StatsDbHandleBase::__jsonVectorToArray(std::vector<Json> &vecJson, Json &jsonResult)
 {
 	std::vector<Json>::iterator vecJsonEnd = vecJson.end();
 
@@ -206,20 +207,20 @@ void ctx::StatsDbHandleBase::jsonVectorToArray(std::vector<Json> &vecJson, ctx::
 	}
 }
 
-void ctx::StatsDbHandleBase::onExecuted(unsigned int queryId, int error, std::vector<Json>& records)
+void StatsDbHandleBase::onExecuted(unsigned int queryId, int error, std::vector<Json>& records)
 {
-	if (__isTriggerItem) {
+	if (isTriggerItem) {
 		if (records.size() == 1) {
 			replyTriggerItem(error, records[0]);
 		} else {
 			_E("Invalid query result");
 			Json dummy;
-			context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, ERR_OPERATION_FAILED, dummy);
+			reqProvider->replyToRead(reqFilter, ERR_OPERATION_FAILED, dummy);
 		}
 	} else {
 		Json results = "{\"" STATS_QUERY_RESULT "\":[]}";
-		jsonVectorToArray(records, results);
-		context_manager::replyToRead(__reqSubject.c_str(), __reqFilter, error, results);
+		__jsonVectorToArray(records, results);
+		reqProvider->replyToRead(reqFilter, error, results);
 	}
 
 	delete this;
