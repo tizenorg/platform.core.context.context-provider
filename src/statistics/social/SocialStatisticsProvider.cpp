@@ -34,7 +34,7 @@ ctx::SocialStatisticsProvider::~SocialStatisticsProvider()
 	delete __aggregator;
 }
 
-ctx::ContextProviderBase *ctx::SocialStatisticsProvider::create(void *data)
+ctx::ContextProvider *ctx::SocialStatisticsProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 

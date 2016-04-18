@@ -17,14 +17,14 @@
 #ifndef _CONTEXT_STATS_MEDIA_STATS_PROVIDER_H_
 #define _CONTEXT_STATS_MEDIA_STATS_PROVIDER_H_
 
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include "MediaStatisticsTypes.h"
 
 namespace ctx {
 
-	class MediaStatisticsProvider : public ContextProviderBase {
+	class MediaStatisticsProvider : public ContextProvider {
 	public:
-		static ContextProviderBase *create(void *data);
+		static ContextProvider *create(void *data);
 		static void destroy(void *data);
 		static bool isSupported(const char *subject);
 		static void submitTriggerItem();

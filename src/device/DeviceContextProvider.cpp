@@ -16,7 +16,7 @@
 
 #include <Types.h>
 #include <ContextManager.h>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include <DeviceContextProvider.h>
 
 #include "system/SystemTypes.h"
@@ -75,7 +75,7 @@ void registerProvider(const char *subject, const char *privilege)
 	Provider::submitTriggerItem();
 }
 
-EXTAPI bool ctx::initDeviceContextProvider()
+SO_EXPORT bool ctx::initDeviceContextProvider()
 {
 	registerProvider<DeviceStatusAlarm>(DEVICE_ST_SUBJ_ALARM, NULL);
 	registerProvider<DeviceStatusTime>(DEVICE_ST_SUBJ_TIME, NULL);

@@ -21,7 +21,7 @@
 
 ctx::PlaceRecognitionProvider *ctx::PlaceRecognitionProvider::__instance = NULL;
 
-ctx::ContextProviderBase *ctx::PlaceRecognitionProvider::create(void *data)
+ctx::ContextProvider *ctx::PlaceRecognitionProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 	__instance = new(std::nothrow) PlaceRecognitionProvider();

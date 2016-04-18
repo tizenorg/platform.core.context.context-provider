@@ -39,7 +39,7 @@ ctx::DeviceStatusWifi::~DeviceStatusWifi()
 {
 }
 
-ctx::ContextProviderBase *ctx::DeviceStatusWifi::create(void *data)
+ctx::ContextProvider *ctx::DeviceStatusWifi::create(void *data)
 {
 	CREATE_INSTANCE(DeviceStatusWifi);
 }
