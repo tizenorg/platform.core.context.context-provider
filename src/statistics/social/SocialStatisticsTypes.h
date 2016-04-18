@@ -20,6 +20,7 @@
 #include "../shared/CommonTypes.h"
 
 #define SOCIAL_HISTORY_PRIV			"callhistory.read"
+#define SOCIAL_SUBJ_LOGGER			"stats/contact/logger"
 #define SOCIAL_SUBJ_FREQ_ADDRESS	"stats/contact/often"
 #define SOCIAL_SUBJ_FREQUENCY		"stats/contact/frequency"
 

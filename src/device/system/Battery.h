@@ -24,19 +24,18 @@
 namespace ctx {
 
 	class DeviceStatusBattery : public DeviceProviderBase {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusBattery);
-
 	public:
+		DeviceStatusBattery();
+		~DeviceStatusBattery();
+
 		int subscribe();
 		int unsubscribe();
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	private:
-		DeviceStatusBattery();
-		~DeviceStatusBattery();
 		const char* __transToString(intptr_t level);
 		void __handleUpdate(device_callback_e deviceType, void* value);
 		static void __updateCb(device_callback_e deviceType, void* value, void* userData);

@@ -24,7 +24,9 @@
 #define CONNECTED		1
 #define NOT_CONNECTED	0
 
-bool ctx::system_info::getAudioJackState(int* state)
+using namespace ctx;
+
+bool system_info::getAudioJackState(int* state)
 {
 	int value = NOT_CONNECTED;
 	int err = runtime_info_get_value_int(RUNTIME_INFO_KEY_AUDIO_JACK_STATUS, &value);
@@ -35,7 +37,7 @@ bool ctx::system_info::getAudioJackState(int* state)
 	return true;
 }
 
-bool ctx::system_info::getVolume(int* systemVolume, int* mediaVolume)
+bool system_info::getVolume(int* systemVolume, int* mediaVolume)
 {
 	int err;
 
@@ -48,7 +50,7 @@ bool ctx::system_info::getVolume(int* systemVolume, int* mediaVolume)
 	return true;
 }
 
-bool ctx::system_info::getWifiBssid(std::string& bssid)
+bool system_info::getWifiBssid(std::string& bssid)
 {
 #if 0
 	/* NOTE: This routine does not work, because the wifi API does not support multi-sessions in one process */
@@ -75,6 +77,6 @@ bool ctx::system_info::getWifiBssid(std::string& bssid)
 
 	return !bssid.empty();
 #endif
-	bssid = ctx::SharedVars().get(ctx::SharedVars::WIFI_BSSID);
+	bssid = SharedVars().get(SharedVars::WIFI_BSSID);
 	return true;
 }

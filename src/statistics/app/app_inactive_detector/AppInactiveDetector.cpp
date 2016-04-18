@@ -32,7 +32,7 @@ ctx::app_inactive_detector_provider::~app_inactive_detector_provider()
 {
 }
 
-ctx::ContextProviderBase *ctx::app_inactive_detector_provider::create(void *data)
+ctx::ContextProvider *ctx::app_inactive_detector_provider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 	__instance = new(std::nothrow) app_inactive_detector_provider();

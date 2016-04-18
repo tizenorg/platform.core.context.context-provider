@@ -18,35 +18,26 @@
 #define _CONTEXT_PLACE_GEOFENCE_PROVIDER_H_
 
 #include <map>
-#include <ContextProviderBase.h>
-#include "GeofenceMonitorHandle.h"
+#include <ContextProvider.h>
 #include "PlaceGeofenceTypes.h"
 
 namespace ctx {
 
-	class PlaceGeofenceProvider : public ContextProviderBase {
+	class GeofenceMonitorHandle;
 
+	class PlaceGeofenceProvider : public ContextProvider {
 	public:
-		static ContextProviderBase *create(void *data);
-		static void destroy(void *data);
-		static bool isSupported();
-		static void submitTriggerItem();
-
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
-
-	private:
-		static PlaceGeofenceProvider *__instance;
-		std::map<int, ctx::GeofenceMonitorHandle*> __handleMap;
-
 		PlaceGeofenceProvider();
 		~PlaceGeofenceProvider();
 
-		int __subscribe(ctx::Json option);
-		int __unsubscribe(ctx::Json option);
-		void __destroyIfUnused();
+		int subscribe(Json option, Json *requestResult);
+		int unsubscribe(Json option);
+
+		bool isSupported();
+		void submitTriggerItem();
+
+	private:
+		std::map<int, GeofenceMonitorHandle*> __handleMap;
 	};
 
 }	/* namespace ctx */

@@ -17,12 +17,24 @@
 #include <system_info.h>
 #include "DeviceProviderBase.h"
 
-ctx::DeviceProviderBase::DeviceProviderBase() :
+using namespace ctx;
+
+DeviceProviderBase::DeviceProviderBase(const char *subject) :
+	ContextProvider(subject),
 	__beingSubscribed(false)
 {
 }
 
-int ctx::DeviceProviderBase::subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult)
+bool DeviceProviderBase::isSupported()
+{
+	return true;
+}
+
+void DeviceProviderBase::submitTriggerItem()
+{
+}
+
+int DeviceProviderBase::subscribe(Json option, Json *requestResult)
 {
 	IF_FAIL_RETURN(!__beingSubscribed, ERR_NONE);
 
@@ -30,64 +42,51 @@ int ctx::DeviceProviderBase::subscribe(const char *subject, ctx::Json option, ct
 
 	if (ret == ERR_NONE)
 		__beingSubscribed = true;
-	else
-		destroySelf();
 
 	return ret;
 }
 
-int ctx::DeviceProviderBase::unsubscribe(const char *subject, ctx::Json option)
+int DeviceProviderBase::unsubscribe(Json option)
 {
 	int ret = ERR_NONE;
 
 	if (__beingSubscribed)
 		ret = unsubscribe();
 
-	destroySelf();
 	return ret;
 }
 
-int ctx::DeviceProviderBase::read(const char *subject, ctx::Json option, ctx::Json *requestResult)
+int DeviceProviderBase::read(Json option, Json *requestResult)
 {
-	int ret = read();
-
-	if (!__beingSubscribed)
-		destroySelf();
-
-	return ret;
+	return read();
 }
 
-int ctx::DeviceProviderBase::write(const char *subject, ctx::Json data, ctx::Json *requestResult)
+int DeviceProviderBase::write(Json data, Json *requestResult)
 {
-	int ret = write();
-
-	if (!__beingSubscribed)
-		destroySelf();
-
-	return ret;
+	return write();
 }
 
-int ctx::DeviceProviderBase::subscribe()
+int DeviceProviderBase::subscribe()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::DeviceProviderBase::unsubscribe()
+int DeviceProviderBase::unsubscribe()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::DeviceProviderBase::read()
+int DeviceProviderBase::read()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::DeviceProviderBase::write()
+int DeviceProviderBase::write()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-bool ctx::DeviceProviderBase::getSystemInfoBool(const char *key)
+bool DeviceProviderBase::getSystemInfoBool(const char *key)
 {
 	bool supported = false;
 	int ret = system_info_get_platform_bool(key, &supported);

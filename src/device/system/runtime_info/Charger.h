@@ -22,20 +22,17 @@
 namespace ctx {
 
 	class DeviceStatusCharger : public DeviceStatusRuntimeInfo {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusCharger);
-
 	public:
+		DeviceStatusCharger();
+		~DeviceStatusCharger();
+
 		int read();
-		static bool isSupported();
-		static void submitTriggerItem();
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	protected:
 		void handleUpdate();
-
-	private:
-		DeviceStatusCharger();
-		~DeviceStatusCharger();
 	};
 }
 
