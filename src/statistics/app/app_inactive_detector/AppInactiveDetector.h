@@ -17,16 +17,16 @@
 #ifndef __CONTEXT_APP_INACTIVE_DETECTOR_H__
 #define __CONTEXT_APP_INACTIVE_DETECTOR_H__
 
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include "AppInactiveDetectorTypes.h"
 #include "InactiveDetector.h"
 
 namespace ctx {
 
-	class app_inactive_detector_provider : public ContextProviderBase {
+	class app_inactive_detector_provider : public ContextProvider {
 
 		public:
-			static ContextProviderBase *create(void *data);
+			static ContextProvider *create(void *data);
 			static void destroy(void *data);
 			static bool is_supported();
 

@@ -12,9 +12,9 @@ ENDFUNCTION(add_provider)
 
 
 add_provider(device)
-add_provider(statistics)
+#add_provider(statistics)
 add_provider(place)
-add_provider(custom)
+#add_provider(custom)
 
 
 LIST(REMOVE_DUPLICATES deps_collected)
