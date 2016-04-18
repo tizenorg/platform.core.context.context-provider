@@ -17,14 +17,14 @@
 #ifndef _CONTEXT_STATS_SOCIAL_STATS_PROVIDER_H_
 #define _CONTEXT_STATS_SOCIAL_STATS_PROVIDER_H_
 
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include "SocialStatisticsTypes.h"
 
 namespace ctx {
 
-	class SocialStatisticsProvider : public ContextProviderBase {
+	class SocialStatisticsProvider : public ContextProvider {
 	public:
-		static ContextProviderBase *create(void *data);
+		static ContextProvider *create(void *data);
 		static void destroy(void *data);
 		static bool isSupported(const char *subject);
 		static void submitTriggerItem();

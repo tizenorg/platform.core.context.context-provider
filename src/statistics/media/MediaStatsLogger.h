@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_GPS_H_
-#define _DEVICE_SYSTEM_STATUS_GPS_H_
+#ifndef _CONTEXT_MEDIA_STATS_LOGGER_H_
+#define _CONTEXT_MEDIA_STATS_LOGGER_H_
 
-#include "RuntimeInfoBase.h"
+#include <ContextProvider.h>
+#include "MediaContentMonitor.h"
 
 namespace ctx {
 
-	class DeviceStatusGps : public DeviceStatusRuntimeInfo {
+	class MediaStatsLogger : public ContextProvider {
 	public:
-		DeviceStatusGps();
-		~DeviceStatusGps();
+		MediaStatsLogger();
+		~MediaStatsLogger();
 
-		int read();
+		int subscribe(Json option, Json *requestResult);
+		int unsubscribe(Json option);
 
-		bool isSupported();
-		void submitTriggerItem();
+		void submitTriggerItem() {}
 
-	protected:
-		void handleUpdate();
+	private:
+		MediaContentMonitor __contentMon;
 	};
-}
 
-#endif // _DEVICE_SYSTEM_STATUS_GPS_H_
+}	/* namespace ctx */
+
+#endif	/* _CONTEXT_MEDIA_STATS_LOGGER_H_ */
+

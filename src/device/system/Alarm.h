@@ -19,34 +19,26 @@
 
 #include <map>
 #include <set>
-#include <ContextProviderBase.h>
 #include <TimerManager.h>
-#include "../DeviceProviderBase.h"
+#include <ContextProvider.h>
 
 namespace ctx {
 
-	class DeviceStatusAlarm : public ContextProviderBase, ITimerListener {
-
-		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusAlarm);
-
+	class DeviceStatusAlarm : public ContextProvider, ITimerListener {
 	public:
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
+		DeviceStatusAlarm();
+		~DeviceStatusAlarm();
 
-		int subscribe(ctx::Json option);
-		int unsubscribe(ctx::Json option);
-		static bool isSupported();
-		static void submitTriggerItem();
+		int subscribe(Json option, Json *requestResult);
+		int unsubscribe(Json option);
+
+		bool isSupported();
+		void submitTriggerItem();
 
 	protected:
 		bool onTimerExpired(int timerId);
 
 	private:
-		DeviceStatusAlarm();
-		~DeviceStatusAlarm();
-
 		struct RefCountArray {
 			int count[7];	/* reference counts for days of week*/
 			RefCountArray();
@@ -60,7 +52,7 @@ namespace ctx {
 
 		typedef std::map<int, RefCountArray> RefCountMap;
 		typedef std::map<int, TimerState> TimerStateMap;
-		typedef std::set<ctx::Json*> OptionSet;
+		typedef std::set<Json*> OptionSet;
 
 		RefCountMap __refCountMap;
 		TimerStateMap __timerStateMap;
@@ -73,14 +65,11 @@ namespace ctx {
 		void __clear();
 		void __handleUpdate(int hour, int min, int dayOfWeek);
 
-		int __getArrangedDayOfWeek(ctx::Json& option);
+		int __getArrangedDayOfWeek(Json& option);
 		int __mergeDayOfWeek(int *refCnt);
 
-		bool __isMatched(ctx::Json& option, int time, std::string day);
-		OptionSet::iterator __findOption(ctx::Json& option);
-
-		void __destroyIfUnused();
-
+		bool __isMatched(Json& option, int time, std::string day);
+		OptionSet::iterator __findOption(Json& option);
 	};
 }
 

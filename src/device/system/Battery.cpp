@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-#include <ContextManager.h>
 #include "SystemTypes.h"
 #include "Battery.h"
 
-GENERATE_PROVIDER_COMMON_IMPL(DeviceStatusBattery);
+using namespace ctx;
 
-ctx::DeviceStatusBattery::DeviceStatusBattery()
+DeviceStatusBattery::DeviceStatusBattery()
+	: DeviceProviderBase(DEVICE_ST_SUBJ_BATTERY)
 {
 }
 
-ctx::DeviceStatusBattery::~DeviceStatusBattery()
+DeviceStatusBattery::~DeviceStatusBattery()
 {
 }
 
-bool ctx::DeviceStatusBattery::isSupported()
+bool DeviceStatusBattery::isSupported()
 {
 	return true;
 }
 
-void ctx::DeviceStatusBattery::submitTriggerItem()
+void DeviceStatusBattery::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(DEVICE_ST_SUBJ_BATTERY, OPS_SUBSCRIBE | OPS_READ,
+	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
 				"\"Level\":{\"type\":\"string\",\"values\":[\"Empty\",\"Critical\",\"Low\",\"Normal\",\"High\",\"Full\"]},"
 				TRIG_BOOL_ITEM_DEF("IsCharging")
@@ -43,7 +43,7 @@ void ctx::DeviceStatusBattery::submitTriggerItem()
 			NULL);
 }
 
-void ctx::DeviceStatusBattery::__updateCb(device_callback_e deviceType, void* value, void* userData)
+void DeviceStatusBattery::__updateCb(device_callback_e deviceType, void* value, void* userData)
 {
 	IF_FAIL_VOID(deviceType == DEVICE_CALLBACK_BATTERY_LEVEL);
 
@@ -51,14 +51,14 @@ void ctx::DeviceStatusBattery::__updateCb(device_callback_e deviceType, void* va
 	instance->__handleUpdate(deviceType, value);
 }
 
-void ctx::DeviceStatusBattery::__handleUpdate(device_callback_e deviceType, void* value)
+void DeviceStatusBattery::__handleUpdate(device_callback_e deviceType, void* value)
 {
 	intptr_t level = (intptr_t)value;
 
 	const char* levelString = __transToString(level);
 	IF_FAIL_VOID(levelString);
 
-	ctx::Json dataRead;
+	Json dataRead;
 	dataRead.set(NULL, DEVICE_ST_LEVEL, levelString);
 
 	bool chargingState = false;
@@ -66,10 +66,10 @@ void ctx::DeviceStatusBattery::__handleUpdate(device_callback_e deviceType, void
 	IF_FAIL_VOID_TAG(ret == DEVICE_ERROR_NONE, _E, "Getting state failed");
 
 	dataRead.set(NULL, DEVICE_ST_IS_CHARGING, chargingState ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
-	ctx::context_manager::publish(DEVICE_ST_SUBJ_BATTERY, NULL, ERR_NONE, dataRead);
+	publish(NULL, ERR_NONE, dataRead);
 }
 
-const char* ctx::DeviceStatusBattery::__transToString(intptr_t level)
+const char* DeviceStatusBattery::__transToString(intptr_t level)
 {
 	switch (level) {
 	case DEVICE_BATTERY_LEVEL_EMPTY:
@@ -103,24 +103,24 @@ const char* ctx::DeviceStatusBattery::__transToString(intptr_t level)
 	}
 }
 
-int ctx::DeviceStatusBattery::subscribe()
+int DeviceStatusBattery::subscribe()
 {
 	int ret = device_add_callback(DEVICE_CALLBACK_BATTERY_LEVEL, __updateCb, this);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusBattery::unsubscribe()
+int DeviceStatusBattery::unsubscribe()
 {
 	int ret = device_remove_callback(DEVICE_CALLBACK_BATTERY_LEVEL, __updateCb);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::DeviceStatusBattery::read()
+int DeviceStatusBattery::read()
 {
 	device_battery_level_e level;
-	ctx::Json dataRead;
+	Json dataRead;
 
 	int ret = device_battery_get_level_status(&level);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);
@@ -136,6 +136,6 @@ int ctx::DeviceStatusBattery::read()
 
 	dataRead.set(NULL, DEVICE_ST_IS_CHARGING, chargingState ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
 
-	ctx::context_manager::replyToRead(DEVICE_ST_SUBJ_BATTERY, NULL, ERR_NONE, dataRead);
+	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
 }

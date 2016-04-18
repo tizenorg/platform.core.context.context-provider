@@ -24,17 +24,17 @@
 namespace ctx {
 	class MediaDbHandle : public StatsDbHandleBase {
 	public:
-		MediaDbHandle();
+		MediaDbHandle(ContextProvider *provider);
 		~MediaDbHandle();
 
-		int read(const char* subject, ctx::Json filter);
+		int read(Json filter);
 
 	protected:
-		std::string createWhereClause(int mediaType, ctx::Json filter);
-		std::string createSqlPeakTime(int mediaType, ctx::Json filter);
-		std::string createSqlCommonSetting(int mediaType, ctx::Json filter);
-		std::string createSqlFrequency(int mediaType, ctx::Json filter);
-		void replyTriggerItem(int error, ctx::Json &jsonResult);
+		std::string createWhereClause(int mediaType, Json filter);
+		std::string createSqlPeakTime(int mediaType, Json filter);
+		std::string createSqlCommonSetting(int mediaType, Json filter);
+		std::string createSqlFrequency(int mediaType, Json filter);
+		void replyTriggerItem(int error, Json &jsonResult);
 	};
 }
 

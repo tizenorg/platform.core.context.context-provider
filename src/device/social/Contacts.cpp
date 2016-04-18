@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include <Json.h>
-#include <ContextManager.h>
 #include "SocialTypes.h"
 #include "Contacts.h"
 
@@ -23,26 +21,27 @@
 #define PERSON_VIEW _contacts_person._uri
 #define TIME_INTERVAL 1
 
-GENERATE_PROVIDER_COMMON_IMPL(SocialStatusContacts);
+using namespace ctx;
 
-ctx::SocialStatusContacts::SocialStatusContacts() :
+SocialStatusContacts::SocialStatusContacts() :
+	DeviceProviderBase(SOCIAL_ST_SUBJ_CONTACTS),
 	__latestMyProfile(0),
 	__latestPerson(0)
 {
 }
 
-ctx::SocialStatusContacts::~SocialStatusContacts()
+SocialStatusContacts::~SocialStatusContacts()
 {
 }
 
-bool ctx::SocialStatusContacts::isSupported()
+bool SocialStatusContacts::isSupported()
 {
 	return true;
 }
 
-void ctx::SocialStatusContacts::submitTriggerItem()
+void SocialStatusContacts::submitTriggerItem()
 {
-	context_manager::registerTriggerItem(SOCIAL_ST_SUBJ_CONTACTS, OPS_SUBSCRIBE,
+	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
 				"\"Event\":{\"type\":\"string\",\"values\":[\"Changed\"]},"
 				"\"Type\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
@@ -50,13 +49,13 @@ void ctx::SocialStatusContacts::submitTriggerItem()
 			NULL);
 }
 
-void ctx::SocialStatusContacts::__updateCb(const char* viewUri, void* userData)
+void SocialStatusContacts::__updateCb(const char* viewUri, void* userData)
 {
 	SocialStatusContacts *instance = static_cast<SocialStatusContacts*>(userData);
 	instance->__handleUpdate(viewUri);
 }
 
-void ctx::SocialStatusContacts::__handleUpdate(const char* viewUri)
+void SocialStatusContacts::__handleUpdate(const char* viewUri)
 {
 	if (!STR_EQ(viewUri, _contacts_my_profile._uri) && !STR_EQ(viewUri, _contacts_person._uri)) {
 		_W("Unknown view uri");
@@ -66,13 +65,13 @@ void ctx::SocialStatusContacts::__handleUpdate(const char* viewUri)
 	std::string view = (STR_EQ(viewUri, _contacts_my_profile._uri)? SOCIAL_ST_MY_PROFILE : SOCIAL_ST_PERSON);
 	IF_FAIL_VOID_TAG(!__isConsecutiveChange(viewUri), _D, "Ignore consecutive db change: %s", view.c_str());
 
-	ctx::Json data;
+	Json data;
 	data.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_CHANGED);
 	data.set(NULL, SOCIAL_ST_TYPE, view);
-	context_manager::publish(SOCIAL_ST_SUBJ_CONTACTS, NULL, ERR_NONE, data);
+	publish(NULL, ERR_NONE, data);
 }
 
-bool ctx::SocialStatusContacts::__isConsecutiveChange(const char* viewUri)
+bool SocialStatusContacts::__isConsecutiveChange(const char* viewUri)
 {
 	time_t now = time(NULL);
 	double diff = 0;
@@ -91,7 +90,7 @@ bool ctx::SocialStatusContacts::__isConsecutiveChange(const char* viewUri)
 	return false;
 }
 
-bool ctx::SocialStatusContacts::__setCallback()
+bool SocialStatusContacts::__setCallback()
 {
 	int err;
 
@@ -111,7 +110,7 @@ CATCH:
 	return false;
 }
 
-void ctx::SocialStatusContacts::__unsetCallback()
+void SocialStatusContacts::__unsetCallback()
 {
 	contacts_db_remove_changed_cb(MY_PROFILE_VIEW, __updateCb, this);
 	contacts_db_remove_changed_cb(PERSON_VIEW, __updateCb, this);
@@ -122,14 +121,14 @@ void ctx::SocialStatusContacts::__unsetCallback()
 	__latestPerson = 0;
 }
 
-int ctx::SocialStatusContacts::subscribe()
+int SocialStatusContacts::subscribe()
 {
 	bool ret = __setCallback();
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int ctx::SocialStatusContacts::unsubscribe()
+int SocialStatusContacts::unsubscribe()
 {
 	__unsetCallback();
 	return ERR_NONE;

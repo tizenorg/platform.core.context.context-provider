@@ -20,6 +20,7 @@
 #include "../shared/CommonTypes.h"
 
 #define MEDIA_HISTORY_PRIV					"mediahistory.read"
+#define MEDIA_SUBJ_LOGGER					"stats/media/logger"
 #define MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC		"stats/music/peak_time"
 #define MEDIA_SUBJ_PEAK_TIME_FOR_VIDEO		"stats/video/peak_time"
 #define MEDIA_SUBJ_COMMON_SETTING_FOR_MUSIC	"stats/music/setting"

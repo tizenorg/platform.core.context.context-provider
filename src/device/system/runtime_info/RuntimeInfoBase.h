@@ -24,7 +24,7 @@ namespace ctx {
 
 	class DeviceStatusRuntimeInfo : public DeviceProviderBase {
 	public:
-		DeviceStatusRuntimeInfo(runtime_info_key_e key);
+		DeviceStatusRuntimeInfo(const char *subject, runtime_info_key_e key);
 
 		int subscribe();
 		int unsubscribe();

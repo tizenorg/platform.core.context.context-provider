@@ -8,7 +8,7 @@ SET(enable_prediction_engine "no")
 # Common Profile
 FILE(GLOB prvd_srcs ./*.cpp)
 FILE(GLOB prvd_srcs ${prvd_srcs} shared/*.cpp)
-FILE(GLOB prvd_srcs ${prvd_srcs} app/*.cpp)
+#FILE(GLOB prvd_srcs ${prvd_srcs} app/*.cpp)
 IF("${enable_prediction_engine}" STREQUAL "yes")
 	FILE(GLOB prvd_srcs ${prvd_srcs} prediction/*.cpp)
 ELSE("${enable_prediction_engine}" STREQUAL "yes")
@@ -22,7 +22,7 @@ SET(prvd_deps ${prvd_deps} capi-media-sound-manager)
 # Mobile Profile
 IF("${PROFILE}" STREQUAL "mobile")
 	FILE(GLOB prvd_srcs ${prvd_srcs} media/*.cpp)
-	FILE(GLOB prvd_srcs ${prvd_srcs} social/*.cpp)
+#	FILE(GLOB prvd_srcs ${prvd_srcs} social/*.cpp)
 	SET(prvd_deps ${prvd_deps} contacts-service2 capi-content-media-content)
 ENDIF("${PROFILE}" STREQUAL "mobile")
 
