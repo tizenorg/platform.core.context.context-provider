@@ -35,7 +35,7 @@ ctx::MediaStatisticsProvider::~MediaStatisticsProvider()
 	__contentMon = NULL;
 }
 
-ctx::ContextProviderBase *ctx::MediaStatisticsProvider::create(void *data)
+ctx::ContextProvider *ctx::MediaStatisticsProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
 

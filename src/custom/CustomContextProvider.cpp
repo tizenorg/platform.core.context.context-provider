@@ -18,7 +18,7 @@
 #include <vector>
 #include <Types.h>
 #include <ContextManager.h>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include <DatabaseManager.h>
 #include <CustomContextProvider.h>
 #include "CustomBase.h"
@@ -45,7 +45,7 @@ void unregisterProvider(const char* subject)
 	ctx::context_manager::unregisterProvider(subject);
 }
 
-SO_EXPORT ctx::ContextProviderBase* ctx::custom_context_provider::create(void *data)
+SO_EXPORT ctx::ContextProvider* ctx::custom_context_provider::create(void *data)
 {
 	// Already created in addItem() function. Return corresponding custom provider
 	return __customMap[static_cast<const char*>(data)];

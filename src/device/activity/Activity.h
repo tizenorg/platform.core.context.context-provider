@@ -23,7 +23,7 @@
 #define GENERATE_ACTIVITY_PROVIDER(actPrvd, actSubj, actType) \
 	class actPrvd : public UserActivityBase { \
 	public: \
-		static ContextProviderBase *create(void *data) \
+		static ContextProvider *create(void *data) \
 		{ \
 			CREATE_INSTANCE(ctx::actPrvd); \
 		} \

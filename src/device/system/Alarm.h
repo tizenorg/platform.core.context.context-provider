@@ -19,13 +19,13 @@
 
 #include <map>
 #include <set>
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include <TimerManager.h>
 #include "../DeviceProviderBase.h"
 
 namespace ctx {
 
-	class DeviceStatusAlarm : public ContextProviderBase, ITimerListener {
+	class DeviceStatusAlarm : public ContextProvider, ITimerListener {
 
 		GENERATE_PROVIDER_COMMON_DECL(DeviceStatusAlarm);
 

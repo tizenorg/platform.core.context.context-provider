@@ -17,31 +17,30 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_H_
 #define _CONTEXT_PLACE_RECOGNITION_H_
 
-#include <ContextProviderBase.h>
+#include <ContextProvider.h>
 #include "place_recognition_types.h"
 #include "user_places/user_places.h"
 
 namespace ctx {
 
-	class PlaceRecognitionProvider : public ContextProviderBase {
-
+	class PlaceRecognitionProvider : public ContextProvider {
 	public:
-		static ContextProviderBase *create(void *data);
-		static void destroy(void *data);
-		static bool isSupported();
+		PlaceRecognitionProvider() :
+			ContextProvider(PLACE_SUBJ_RECOGNITION),
+			__engine(PLACE_RECOG_HIGH_ACCURACY_MODE) {}
 
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
-
-	private:
-		static PlaceRecognitionProvider *__instance;
-		UserPlaces __engine;
-
-		PlaceRecognitionProvider() : __engine(PLACE_RECOG_HIGH_ACCURACY_MODE) {}
 		~PlaceRecognitionProvider() {}
 
+		bool isSupported();
+		void submitTriggerItem() {}
+
+		int subscribe(ctx::Json option, ctx::Json *requestResult);
+		int unsubscribe(ctx::Json option);
+		int read(ctx::Json option, ctx::Json *requestResult);
+		int write(ctx::Json data, ctx::Json *requestResult);
+
+	private:
+		UserPlaces __engine;
 	};	/* class PlaceRecognitionProvider */
 
 }	/* namespace ctx */
