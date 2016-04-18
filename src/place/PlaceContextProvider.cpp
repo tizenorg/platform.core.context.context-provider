@@ -36,7 +36,7 @@ void registerProvider(const char *subject, const char *privilege)
 	ctx::context_manager::registerProvider(subject, providerInfo);
 }
 
-EXTAPI bool ctx::initPlaceContextProvider()
+SO_EXPORT bool ctx::initPlaceContextProvider()
 {
 #ifdef _MOBILE_
 	registerProvider<PlaceGeofenceProvider>(PLACE_SUBJ_GEOFENCE, PLACE_PRIV_GEOFENCE);

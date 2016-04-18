@@ -45,13 +45,13 @@ void unregisterProvider(const char* subject)
 	ctx::context_manager::unregisterProvider(subject);
 }
 
-EXTAPI ctx::ContextProviderBase* ctx::custom_context_provider::create(void *data)
+SO_EXPORT ctx::ContextProviderBase* ctx::custom_context_provider::create(void *data)
 {
 	// Already created in addItem() function. Return corresponding custom provider
 	return __customMap[static_cast<const char*>(data)];
 }
 
-EXTAPI void ctx::custom_context_provider::destroy(void *data)
+SO_EXPORT void ctx::custom_context_provider::destroy(void *data)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it = __customMap.find(static_cast<char*>(data));
 	if (it != __customMap.end()) {
@@ -60,7 +60,7 @@ EXTAPI void ctx::custom_context_provider::destroy(void *data)
 	}
 }
 
-EXTAPI bool ctx::initCustomContextProvider()
+SO_EXPORT bool ctx::initCustomContextProvider()
 {
 	// Create custom template db
 	std::string q = std::string("CREATE TABLE IF NOT EXISTS context_trigger_custom_template ")
@@ -99,7 +99,7 @@ EXTAPI bool ctx::initCustomContextProvider()
 	return true;
 }
 
-EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit)
+SO_EXPORT int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it;
 	it = __customMap.find(subject);
@@ -131,7 +131,7 @@ EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::strin
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
+SO_EXPORT int ctx::custom_context_provider::removeItem(std::string subject)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it;
 	it = __customMap.find(subject);
@@ -148,7 +148,7 @@ EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
+SO_EXPORT int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it;
 	it = __customMap.find(subject);
