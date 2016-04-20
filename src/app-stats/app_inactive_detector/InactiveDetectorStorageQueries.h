@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_INACTIVE_DETECTOR_STORAGE_QUERIES_H__
-#define __CONTEXT_INACTIVE_DETECTOR_STORAGE_QUERIES_H__
+#ifndef _CONTEXT_INACTIVE_DETECTOR_STORAGE_QUERIES_H_
+#define _CONTEXT_INACTIVE_DETECTOR_STORAGE_QUERIES_H_
 
 #include <vector>
 #include "AppInactiveDetectorTypes.h"
@@ -31,7 +31,7 @@ SELECT
 	app_info.is_atboot,
 	app_info.is_preloaded,
 	app_info.timestamp,
-	
+
 	app_hist_g.weight as weight
 FROM
 	context_app_info app_info
@@ -43,7 +43,7 @@ INNER JOIN
 			IFNULL((select count(package_name) from context_app_launch_log
 				where package_name == app_hist.package_name  AND timestamp> 8640412900), 0 )
 				*
-			IFNULL((select sum(duration) from  context_app_launch_log	
+			IFNULL((select sum(duration) from  context_app_launch_log
 				where package_name == app_hist.package_name AND timestamp> 8640412900) , 0)
 		as weight
 
@@ -144,9 +144,9 @@ WHERE
 
 /*
 --3 update ranks and clusters for each timeframe: delete all for each time frame, add new calculations for apps
-DELETE FROM 
-	context_activity_classified 
-WHERE 
+DELETE FROM
+	context_activity_classified
+WHERE
 	timeframe = 1
 */
 
@@ -156,20 +156,20 @@ WHERE
 	" timeframe = " APP_INACTIVE_DETECTOR_VALUE_PLACEHOLDER_TIMEFRAME
 
 
-/*INSERT INTO 
-	context_activity_classified  
-	(is_active, 
-	timeframe, 
+/*INSERT INTO
+	context_activity_classified
+	(is_active,
+	timeframe,
 	context_app_info_id)
-SELECT 
-	is_active, 
+SELECT
+	is_active,
 	timeframe,
 	context_app_info_id
 FROM  --make loop
 	(
 	SELECT 1 as is_active, 1 as timeframe,  3964 as context_app_info_id
-	UNION 
-	SELECT 0 as is_active, 1 as timeframe,  3964 as context_app_info_id 
+	UNION
+	SELECT 0 as is_active, 1 as timeframe,  3964 as context_app_info_id
 	) q
 */
 
@@ -189,4 +189,4 @@ FROM  --make loop
 
 
 
-#endif /* __CONTEXT_INACTIVE_DETECTOR_STORAGE_QUERIES_H__ */
+#endif /* _CONTEXT_INACTIVE_DETECTOR_STORAGE_QUERIES_H_ */

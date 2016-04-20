@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H__
-#define __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H__
+#ifndef _CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H_
+#define _CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H_
 
 #include <vector>
 #include "InactiveDetectorClassificatorKmeansTypes.h"
@@ -23,27 +23,28 @@
 
 namespace ctx {
 
-	#define for_n for (c = centers, i = 0; i < cluster_number; i++, c++)
-	#define for_len for (j = 0, p = points; j < length; j++, p++)
+	#define FOR_N for (c = centers, i = 0; i < clusterNumber; i++, c++)
+	#define FOR_LEN for (j = 0, p = points; j < length; j++, p++)
 
-	class inactive_detector_classificator_kmeans
+	class InactiveDetectorClassificatorKmeans
 	{
-		private:
-			double randomf(double x);
-			double glide_function(double x);
-			point_s *reproject_to_2d(std::vector<app_t> *apps_with_weights);
-			bool annotate_data(std::vector<app_t> *apps_with_weights, point_s *c);
+	private:
+		double randomf(double x);
+		double __glideFunction(double x);
+		Point *__reprojectTo2d(std::vector<AppInfo> *appsWithWeights);
+		bool __annotateData(std::vector<AppInfo> *appsWithWeights, Point *c);
 
-			double distance_to(point_s *p_from, point_s *p_to);
-			int nearest(point_s *pt, point_s *centers, int cluster_number, double *distance);
-			void kpp(point_s *points, int length, point_s *centers, int centers_count);
-			point_s *lloyd(point_s *points, int length, int cluster_number);
-		public:
-			inactive_detector_classificator_kmeans();
-			~inactive_detector_classificator_kmeans();
+		double __distanceTo(Point *pFrom, Point *pTo);
+		int __nearest(Point *pt, Point *centers, int clusterNumber, double *distance);
+		void __kpp(Point *points, int length, Point *centers, int centersCount);
+		Point *__lloyd(Point *points, int length, int clusterNumber);
 
-			int classify(std::vector<app_t> *apps_with_weights);
-	};	/* class inactive_detector_classificator_kmeans */
+	public:
+		InactiveDetectorClassificatorKmeans();
+		~InactiveDetectorClassificatorKmeans();
+
+		int classify(std::vector<AppInfo> *appsWithWeights);
+	};	/* class InactiveDetectorClassificatorKmeans */
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H__ */
+#endif /* _CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_H_ */

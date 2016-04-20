@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
 #include "InactiveDetectorClassificator.h"
 #include "InactiveDetectorClassificatorKmeans.h"
 
-int ctx::inactive_detector_classificator::classify(std::vector<app_t> *apps_with_weights)
+int ctx::InactiveDetectorClassificator::classify(std::vector<AppInfo> *appsWithWeights)
 {
-	inactive_detector_classificator_kmeans kmeans;
-	int error = kmeans.classify(apps_with_weights);
+	InactiveDetectorClassificatorKmeans kmeans;
+	int error = kmeans.classify(appsWithWeights);
 
 	return error;
 }
