@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_INACTIVE_DETECTOR_H__
-#define __CONTEXT_INACTIVE_DETECTOR_H__
+#ifndef _CONTEXT_INACTIVE_DETECTOR_H_
+#define _CONTEXT_INACTIVE_DETECTOR_H_
 
 #include <string>
 #include <Json.h>
@@ -25,27 +25,25 @@
 
 namespace ctx {
 
-	class inactive_detector : public ITimerListener {
-		private:
-			int timer_id;
-			TimerManager timer_mgr;
-		public:
-			inactive_detector();
-			~inactive_detector();
+	class InactiveDetector : public ITimerListener {
+	private:
+		int __timerId;
+		TimerManager __timerMgr;
 
-			int read(const char *subject,
-				ctx::Json option);
+	public:
+		InactiveDetector();
+		~InactiveDetector();
 
-			int update_clusters();
-			void on_cluster_update_finished(
-				std::vector<app_t> *apps_classified,
-				int error);
-			ctx::Json to_json(std::vector<app_t> *apps);
+		int read(const char *subject, ctx::Json option);
 
-			bool onTimerExpired(int timerId);
-	};	/* class inactive_detector */
+		int updateClusters();
+		void onClusterUpdateFinished(std::vector<AppInfo> *appsClassified, int error);
+		ctx::Json toJson(std::vector<AppInfo> *apps);
+
+		bool onTimerExpired(int timerId);
+	};	/* class InactiveDetector */
 
 }	/* namespace ctx */
 
 
-#endif /* __CONTEXT_INACTIVE_DETECTOR_H__ */
+#endif /* _CONTEXT_INACTIVE_DETECTOR_H_ */

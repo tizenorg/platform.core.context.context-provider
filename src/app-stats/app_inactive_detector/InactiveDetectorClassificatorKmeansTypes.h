@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_APP_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_TYPES__
-#define __CONTEXT_APP_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_TYPES__
+#ifndef _CONTEXT_APP_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_TYPES_H_
+#define _CONTEXT_APP_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_TYPES_H_
 
 #define APP_INACTIVE_DETECTOR_KMEANS_CLUSTER_COUNT 2
 
 typedef struct {
-	std::string origin_id;
+	std::string originId;
 	double x;
 	double y;
 	int group;
-} point_s;
+} Point;
 
-#endif
+#endif /* _CONTEXT_APP_INACTIVE_DETECTOR_CLASSIFICATOR_KMEANS_TYPES_H_ */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_INACTIVE_DETECTOR_WEIGHT_H__
-#define __CONTEXT_INACTIVE_DETECTOR_WEIGHT_H__
+#ifndef _CONTEXT_INACTIVE_DETECTOR_WEIGHT_H_
+#define _CONTEXT_INACTIVE_DETECTOR_WEIGHT_H_
 
 // #include <string>
 // #include <sstream>
 
 namespace ctx {
 
-	class inactive_detector_weight {
-		public:
-			inactive_detector_weight() {};
-			~inactive_detector_weight() {};
-			int request_weights(double timestamp_from);// {};
-	};	/* class inactive_detector_weight */
+	class InactiveDetectorWeight {
+	public:
+		InactiveDetectorWeight() {};
+		~InactiveDetectorWeight() {};
+		int requestWeights(double timestampFrom);
+	};	/* class InactiveDetectorWeight */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_INACTIVE_DETECTOR_WEIGHT_H__ */
+#endif /* _CONTEXT_INACTIVE_DETECTOR_WEIGHT_H_ */

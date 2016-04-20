@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_APP_INACTIVE_DETECTOR_H__
-#define __CONTEXT_APP_INACTIVE_DETECTOR_H__
+#ifndef _CONTEXT_APP_INACTIVE_DETECTOR_H_
+#define _CONTEXT_APP_INACTIVE_DETECTOR_H_
 
 #include <ContextProvider.h>
 #include "AppInactiveDetectorTypes.h"
@@ -23,27 +23,28 @@
 
 namespace ctx {
 
-	class app_inactive_detector_provider : public ContextProvider {
+	class AppInactiveDetectorProvider : public ContextProvider {
 
 		public:
+			AppInactiveDetectorProvider();
+			~AppInactiveDetectorProvider();
+
 			static ContextProvider *create(void *data);
 			static void destroy(void *data);
-			static bool is_supported();
 
-			int subscribe(const char *subject, ctx::Json option, ctx::Json *request_result);
-			int unsubscribe(const char *subject, ctx::Json option);
-			int read(const char *subject, ctx::Json option, ctx::Json *request_result);
-			int write(const char *subject, ctx::Json data, ctx::Json *request_result);
+			int subscribe(ctx::Json option, ctx::Json *requestResult);
+			int unsubscribe(ctx::Json option);
+			int read(ctx::Json option, ctx::Json *requestResult);
+			int write(ctx::Json data, ctx::Json *requestResult);
+
+			bool isSupported();
 
 		private:
-			static app_inactive_detector_provider *__instance;
-			inactive_detector *engine;
+			static AppInactiveDetectorProvider *__instance;
+			InactiveDetector *__engine;
 
-			app_inactive_detector_provider();
-			~app_inactive_detector_provider();
-
-	};	/* class app_inactive_detector_provider */
+	};	/* class AppInactiveDetectorProvider */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_APP_INACTIVE_DETECTOR_H__ */
+#endif /* _CONTEXT_APP_INACTIVE_DETECTOR_H_ */

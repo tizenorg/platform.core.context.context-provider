@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@
 #include "InactiveDetectorWeight.h"
 #include "InactiveDetectorStorage.h"
 
-int ctx::inactive_detector_weight::request_weights(
-			double timestamp_from)
+int ctx::InactiveDetectorWeight::requestWeights(double timestampFrom)
 {
-	inactive_detector_storage ids;
+	InactiveDetectorStorage ids;
 	// query the database for the result
-	int error = ids.get_apps_info_w_weights(timestamp_from);
+	int error = ids.getAppsInfoWithWeights(timestampFrom);
 
 	return error;
 }
