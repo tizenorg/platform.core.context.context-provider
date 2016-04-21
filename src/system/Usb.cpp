@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <Util.h>
 #include "Usb.h"
 
 using namespace ctx;
@@ -29,7 +30,7 @@ DeviceStatusUsb::~DeviceStatusUsb()
 
 bool DeviceStatusUsb::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/usb.host");
+	return util::getSystemInfoBool("tizen.org/feature/usb.host");
 }
 
 void DeviceStatusUsb::submitTriggerItem()

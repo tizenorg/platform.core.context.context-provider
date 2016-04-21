@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <Util.h>
 #include "Message.h"
 
 #define MAX_ADDR_SIZE 20
@@ -32,7 +33,7 @@ SocialStatusMessage::~SocialStatusMessage()
 
 bool SocialStatusMessage::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/network.telephony");
+	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
 void SocialStatusMessage::submitTriggerItem()

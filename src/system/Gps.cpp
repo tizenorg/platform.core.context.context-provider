@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <Util.h>
 #include "Gps.h"
 
 using namespace ctx;
@@ -47,7 +48,7 @@ DeviceStatusGps::~DeviceStatusGps()
 
 bool DeviceStatusGps::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/location.gps");
+	return util::getSystemInfoBool("tizen.org/feature/location.gps");
 }
 
 void DeviceStatusGps::submitTriggerItem()

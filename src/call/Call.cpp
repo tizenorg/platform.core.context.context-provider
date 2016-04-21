@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <Util.h>
 #include "Call.h"
 
 #define TELEPHONY_NOTI_ID_CNT 8
@@ -50,7 +51,7 @@ SocialStatusCall::~SocialStatusCall()
 
 bool SocialStatusCall::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/network.telephony");
+	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
 void SocialStatusCall::submitTriggerItem()

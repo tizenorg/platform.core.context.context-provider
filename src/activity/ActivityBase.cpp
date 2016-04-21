@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <system_info.h>
+#include <Util.h>
 #include "ActivityTypes.h"
 #include "ActivityBase.h"
 
@@ -35,7 +35,7 @@ UserActivityBase::~UserActivityBase()
 
 bool UserActivityBase::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/sensor.activity_recognition");
+	return util::getSystemInfoBool("tizen.org/feature/sensor.activity_recognition");
 }
 
 void UserActivityBase::submitTriggerItem()

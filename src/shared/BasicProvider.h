@@ -46,9 +46,6 @@ namespace ctx {
 		virtual int unsubscribe();
 		virtual int read();
 		virtual int write(Json &data);
-
-		/* TODO: This function needs to be removed from here */
-		static bool getSystemInfoBool(const char *key);
 	};
 }
 

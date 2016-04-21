@@ -15,6 +15,7 @@
  */
 
 #include <SharedVars.h>
+#include <Util.h>
 #include "Wifi.h"
 
 using namespace ctx;
@@ -41,7 +42,7 @@ DeviceStatusWifi::~DeviceStatusWifi()
 
 bool DeviceStatusWifi::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/network.wifi");
+	return util::getSystemInfoBool("tizen.org/feature/network.wifi");
 }
 
 void DeviceStatusWifi::submitTriggerItem()

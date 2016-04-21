@@ -89,11 +89,3 @@ int BasicProvider::write(Json &data)
 {
 	return ERR_NOT_SUPPORTED;
 }
-
-bool BasicProvider::getSystemInfoBool(const char *key)
-{
-	bool supported = false;
-	int ret = system_info_get_platform_bool(key, &supported);
-	IF_FAIL_RETURN_TAG(ret == SYSTEM_INFO_ERROR_NONE, false, _E, "system_info_get_platform_bool() failed");
-	return supported;
-}

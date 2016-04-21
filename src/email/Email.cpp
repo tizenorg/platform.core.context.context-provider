@@ -15,6 +15,7 @@
  */
 
 #include <email-api-etc.h>
+#include <Util.h>
 #include "Email.h"
 
 using namespace ctx;
@@ -32,7 +33,7 @@ SocialStatusEmail::~SocialStatusEmail()
 
 bool SocialStatusEmail::isSupported()
 {
-	return getSystemInfoBool("tizen.org/feature/network.telephony");
+	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
 void SocialStatusEmail::submitTriggerItem()
