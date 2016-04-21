@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_DEVICE_PROVIDER_BASE_H_
-#define _CONTEXT_DEVICE_PROVIDER_BASE_H_
+#ifndef _CONTEXT_BASIC_PROVIDER_H_
+#define _CONTEXT_BASIC_PROVIDER_H_
 
 #include <ContextProvider.h>
 
 namespace ctx {
 
-	class DeviceProviderBase : public ContextProvider {
+	/* BasicProvider implements the very basic form of context providers,
+	   which has no controllable options, and does not set the requestResult
+	   parameter to reply to clients' requests immediately. */
+	class BasicProvider : public ContextProvider {
 	public:
 		int subscribe(Json option, Json *requestResult);
 		int unsubscribe(Json option);
@@ -29,21 +32,24 @@ namespace ctx {
 		int write(Json data, Json *requestResult);
 
 		virtual bool isSupported();
+
+		/* TODO: This function will be deprecated */
 		virtual void submitTriggerItem();
 
 	protected:
 		bool __beingSubscribed;
 
-		DeviceProviderBase(const char *subject);
-		virtual ~DeviceProviderBase() {}
+		BasicProvider(const char *subject);
+		virtual ~BasicProvider();
 
 		virtual int subscribe();
 		virtual int unsubscribe();
 		virtual int read();
-		virtual int write();
+		virtual int write(Json &data);
 
+		/* TODO: This function needs to be removed from here */
 		static bool getSystemInfoBool(const char *key);
 	};
 }
 
-#endif	// _CONTEXT_DEVICE_PROVIDER_BASE_H_
+#endif	/* _CONTEXT_BASIC_PROVIDER_H_ */

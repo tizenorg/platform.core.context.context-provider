@@ -20,11 +20,11 @@
 #include <device/callback.h>
 #include <device/battery.h>
 #include "../shared/SystemTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class DeviceStatusBattery : public DeviceProviderBase {
+	class DeviceStatusBattery : public BasicProvider {
 	public:
 		DeviceStatusBattery();
 		~DeviceStatusBattery();

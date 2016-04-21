@@ -38,7 +38,7 @@ static telephony_noti_e __callNotiIds[] =
 static Json __latest;
 
 SocialStatusCall::SocialStatusCall() :
-	DeviceProviderBase(SOCIAL_ST_SUBJ_CALL)
+	BasicProvider(SOCIAL_ST_SUBJ_CALL)
 {
 	__handleList.count = 0;
 	__handleList.handle = NULL;

@@ -19,11 +19,11 @@
 
 #include <runtime_info.h>
 #include "../shared/SystemTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class DeviceStatusRuntimeInfo : public DeviceProviderBase {
+	class DeviceStatusRuntimeInfo : public BasicProvider {
 	public:
 		DeviceStatusRuntimeInfo(const char *subject, runtime_info_key_e key);
 

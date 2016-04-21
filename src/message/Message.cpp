@@ -21,7 +21,7 @@
 using namespace ctx;
 
 SocialStatusMessage::SocialStatusMessage() :
-	DeviceProviderBase(SOCIAL_ST_SUBJ_MESSAGE),
+	BasicProvider(SOCIAL_ST_SUBJ_MESSAGE),
 	__messageHandle(NULL)
 {
 }

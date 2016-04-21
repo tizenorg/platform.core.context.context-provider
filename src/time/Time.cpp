@@ -20,7 +20,7 @@
 using namespace ctx;
 
 DeviceStatusTime::DeviceStatusTime() :
-	DeviceProviderBase(DEVICE_ST_SUBJ_TIME)
+	BasicProvider(DEVICE_ST_SUBJ_TIME)
 {
 }
 

@@ -19,12 +19,12 @@
 
 #include <string>
 #include <wifi.h>
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 #include "../shared/SystemTypes.h"
 
 namespace ctx {
 
-	class DeviceStatusWifi : public DeviceProviderBase {
+	class DeviceStatusWifi : public BasicProvider {
 	public:
 		DeviceStatusWifi();
 		~DeviceStatusWifi();

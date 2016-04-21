@@ -21,11 +21,11 @@
 #include <runtime_info.h>
 #include <bluetooth.h>
 #include "../shared/SystemTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class DeviceStatusHeadphone : public DeviceProviderBase {
+	class DeviceStatusHeadphone : public BasicProvider {
 	public:
 		DeviceStatusHeadphone();
 		~DeviceStatusHeadphone();

@@ -15,26 +15,30 @@
  */
 
 #include <system_info.h>
-#include "DeviceProviderBase.h"
+#include "BasicProvider.h"
 
 using namespace ctx;
 
-DeviceProviderBase::DeviceProviderBase(const char *subject) :
+BasicProvider::BasicProvider(const char *subject) :
 	ContextProvider(subject),
 	__beingSubscribed(false)
 {
 }
 
-bool DeviceProviderBase::isSupported()
+BasicProvider::~BasicProvider()
+{
+}
+
+bool BasicProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceProviderBase::submitTriggerItem()
+void BasicProvider::submitTriggerItem()
 {
 }
 
-int DeviceProviderBase::subscribe(Json option, Json *requestResult)
+int BasicProvider::subscribe(Json option, Json *requestResult)
 {
 	IF_FAIL_RETURN(!__beingSubscribed, ERR_NONE);
 
@@ -46,7 +50,7 @@ int DeviceProviderBase::subscribe(Json option, Json *requestResult)
 	return ret;
 }
 
-int DeviceProviderBase::unsubscribe(Json option)
+int BasicProvider::unsubscribe(Json option)
 {
 	int ret = ERR_NONE;
 
@@ -56,37 +60,37 @@ int DeviceProviderBase::unsubscribe(Json option)
 	return ret;
 }
 
-int DeviceProviderBase::read(Json option, Json *requestResult)
+int BasicProvider::read(Json option, Json *requestResult)
 {
 	return read();
 }
 
-int DeviceProviderBase::write(Json data, Json *requestResult)
+int BasicProvider::write(Json data, Json *requestResult)
 {
-	return write();
+	return write(data);
 }
 
-int DeviceProviderBase::subscribe()
-{
-	return ERR_NOT_SUPPORTED;
-}
-
-int DeviceProviderBase::unsubscribe()
+int BasicProvider::subscribe()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int DeviceProviderBase::read()
+int BasicProvider::unsubscribe()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int DeviceProviderBase::write()
+int BasicProvider::read()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-bool DeviceProviderBase::getSystemInfoBool(const char *key)
+int BasicProvider::write(Json &data)
+{
+	return ERR_NOT_SUPPORTED;
+}
+
+bool BasicProvider::getSystemInfoBool(const char *key)
 {
 	bool supported = false;
 	int ret = system_info_get_platform_bool(key, &supported);

@@ -19,7 +19,7 @@
 using namespace ctx;
 
 DeviceStatusRuntimeInfo::DeviceStatusRuntimeInfo(const char *subject, runtime_info_key_e key) :
-	DeviceProviderBase(subject),
+	BasicProvider(subject),
 	__infoKey(key)
 {
 }

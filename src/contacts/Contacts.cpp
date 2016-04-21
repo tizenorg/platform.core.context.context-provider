@@ -23,7 +23,7 @@
 using namespace ctx;
 
 SocialStatusContacts::SocialStatusContacts() :
-	DeviceProviderBase(SOCIAL_ST_SUBJ_CONTACTS),
+	BasicProvider(SOCIAL_ST_SUBJ_CONTACTS),
 	__latestMyProfile(0),
 	__latestPerson(0)
 {

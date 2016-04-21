@@ -19,11 +19,11 @@
 
 #include <DBusSignalWatcher.h>
 #include "../shared/SocialTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class SocialStatusEmail : public DeviceProviderBase, public IDBusSignalListener {
+	class SocialStatusEmail : public BasicProvider, public IDBusSignalListener {
 	public:
 		SocialStatusEmail();
 		~SocialStatusEmail();

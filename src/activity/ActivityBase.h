@@ -19,11 +19,11 @@
 
 #include <string>
 #include <activity_recognition.h>
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class UserActivityBase : public DeviceProviderBase {
+	class UserActivityBase : public BasicProvider {
 	public:
 		UserActivityBase(const char *subject, activity_type_e type);
 		virtual ~UserActivityBase();

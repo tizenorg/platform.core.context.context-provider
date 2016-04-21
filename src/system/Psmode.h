@@ -19,11 +19,11 @@
 
 #include <vconf.h>
 #include "../shared/SystemTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class DeviceStatusPsmode : public DeviceProviderBase {
+	class DeviceStatusPsmode : public BasicProvider {
 	public:
 		DeviceStatusPsmode();
 		~DeviceStatusPsmode();

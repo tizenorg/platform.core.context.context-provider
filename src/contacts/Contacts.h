@@ -19,11 +19,11 @@
 
 #include <contacts.h>
 #include "../shared/SocialTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class SocialStatusContacts : public DeviceProviderBase {
+	class SocialStatusContacts : public BasicProvider {
 	public:
 		SocialStatusContacts();
 		~SocialStatusContacts();

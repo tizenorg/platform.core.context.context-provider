@@ -19,7 +19,7 @@
 using namespace ctx;
 
 DeviceStatusBattery::DeviceStatusBattery()
-	: DeviceProviderBase(DEVICE_ST_SUBJ_BATTERY)
+	: BasicProvider(DEVICE_ST_SUBJ_BATTERY)
 {
 }
 

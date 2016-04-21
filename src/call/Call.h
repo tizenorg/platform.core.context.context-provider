@@ -19,11 +19,11 @@
 
 #include <telephony.h>
 #include "../shared/SocialTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class SocialStatusCall : public DeviceProviderBase {
+	class SocialStatusCall : public BasicProvider {
 	public:
 		SocialStatusCall();
 		~SocialStatusCall();

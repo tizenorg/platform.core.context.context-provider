@@ -19,7 +19,7 @@
 using namespace ctx;
 
 DeviceStatusPsmode::DeviceStatusPsmode() :
-	DeviceProviderBase(DEVICE_ST_SUBJ_PSMODE)
+	BasicProvider(DEVICE_ST_SUBJ_PSMODE)
 {
 }
 

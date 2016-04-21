@@ -21,7 +21,7 @@
 using namespace ctx;
 
 UserActivityBase::UserActivityBase(const char *subject, activity_type_e type)	:
-	DeviceProviderBase(subject),
+	BasicProvider(subject),
 	__activityType(type),
 	__activityHandle(NULL)
 {

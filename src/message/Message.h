@@ -20,11 +20,11 @@
 #include <msg.h>
 #include <msg_transport.h>
 #include "../shared/SocialTypes.h"
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 
 namespace ctx {
 
-	class SocialStatusMessage : public DeviceProviderBase {
+	class SocialStatusMessage : public BasicProvider {
 	public:
 		SocialStatusMessage();
 		~SocialStatusMessage();

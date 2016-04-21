@@ -22,7 +22,7 @@
 using namespace ctx;
 
 DeviceStatusHeadphone::DeviceStatusHeadphone() :
-	DeviceProviderBase(DEVICE_ST_SUBJ_HEADPHONE),
+	BasicProvider(DEVICE_ST_SUBJ_HEADPHONE),
 	__connected(false),
 	__audioJackState(RUNTIME_INFO_AUDIO_JACK_STATUS_UNCONNECTED),
 	__btAudioState(false),

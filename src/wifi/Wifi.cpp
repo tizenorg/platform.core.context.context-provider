@@ -20,7 +20,7 @@
 using namespace ctx;
 
 DeviceStatusWifi::DeviceStatusWifi() :
-	DeviceProviderBase(DEVICE_ST_SUBJ_WIFI),
+	BasicProvider(DEVICE_ST_SUBJ_WIFI),
 	__lastState(UNKNOWN),
 	__isInitialized(false),
 	__isActivated(false),

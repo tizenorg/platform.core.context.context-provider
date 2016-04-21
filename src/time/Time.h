@@ -17,12 +17,12 @@
 #ifndef _DEVICE_SYSTEM_STATUS_TIME_H_
 #define _DEVICE_SYSTEM_STATUS_TIME_H_
 
-#include "../shared/DeviceProviderBase.h"
+#include "../shared/BasicProvider.h"
 #include "../shared/SystemTypes.h"
 
 namespace ctx {
 
-	class DeviceStatusTime : public DeviceProviderBase {
+	class DeviceStatusTime : public BasicProvider {
 	public:
 		DeviceStatusTime();
 		~DeviceStatusTime();

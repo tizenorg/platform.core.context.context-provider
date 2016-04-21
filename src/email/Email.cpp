@@ -20,7 +20,7 @@
 using namespace ctx;
 
 SocialStatusEmail::SocialStatusEmail()	:
-	DeviceProviderBase(SOCIAL_ST_SUBJ_EMAIL),
+	BasicProvider(SOCIAL_ST_SUBJ_EMAIL),
 	__dbusSignalId(-1),
 	__dbusWatcher(DBusType::SESSION)
 {
