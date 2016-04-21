@@ -138,11 +138,11 @@ void ctx::MediaContentMonitor::__insertLog(int mediaType)
 	data.set(NULL, CX_MEDIA_TYPE, mediaType);
 
 	if (ctx::system_info::getAudioJackState(&audioJack))
-		data.set(NULL, STATS_AUDIO_JACK, audioJack);
+		data.set(NULL, KEY_AUDIO_JACK, audioJack);
 
 	if (ctx::system_info::getVolume(&systemVolume, &mediaVolume)) {
-		data.set(NULL, STATS_SYSTEM_VOLUME, systemVolume);
-		data.set(NULL, STATS_MEDIA_VOLUME, mediaVolume);
+		data.set(NULL, KEY_SYSTEM_VOLUME, systemVolume);
+		data.set(NULL, KEY_MEDIA_VOLUME, mediaVolume);
 	}
 
 	__dbManager.insert(0, MEDIA_TABLE_NAME, data, NULL);

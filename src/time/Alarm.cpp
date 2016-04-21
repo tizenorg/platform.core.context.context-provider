@@ -19,7 +19,7 @@
 using namespace ctx;
 
 DeviceStatusAlarm::DeviceStatusAlarm()
-	: ContextProvider(DEVICE_ST_SUBJ_ALARM)
+	: ContextProvider(SUBJ_STATE_ALARM)
 {
 }
 
@@ -53,7 +53,7 @@ int DeviceStatusAlarm::subscribe(Json option, Json *requestResult)
 	int dow = __getArrangedDayOfWeek(option);
 
 	int time;
-	for (int i = 0; option.getAt(NULL, DEVICE_ST_TIME_OF_DAY, i, &time); i++) {
+	for (int i = 0; option.getAt(NULL, KEY_TIME_OF_DAY, i, &time); i++) {
 		__add(time, dow);
 	}
 
@@ -74,7 +74,7 @@ int DeviceStatusAlarm::unsubscribe(Json option)
 	int dow = __getArrangedDayOfWeek(option);
 
 	int time;
-	for (int i = 0; option.getAt(NULL, DEVICE_ST_TIME_OF_DAY, i, &time); i++) {
+	for (int i = 0; option.getAt(NULL, KEY_TIME_OF_DAY, i, &time); i++) {
 		__remove(time, dow);
 	}
 
@@ -92,7 +92,7 @@ int DeviceStatusAlarm::__getArrangedDayOfWeek(Json& option)
 	int dow = 0;
 
 	std::string tempDay;
-	for (int i = 0; option.getAt(NULL, DEVICE_ST_DAY_OF_WEEK, i, &tempDay); i++) {
+	for (int i = 0; option.getAt(NULL, KEY_DAY_OF_WEEK, i, &tempDay); i++) {
 		dow |= TimerManager::dowToInt(tempDay);
 	}
 	_D("Requested day of week (%#x)", dow);
@@ -226,8 +226,8 @@ void DeviceStatusAlarm::__handleUpdate(int hour, int min, int dayOfWeek)
 	Json dataRead;
 	int resultTime = hour * 60 + min;
 	std::string resultDay = TimerManager::dowToStr(dayOfWeek);
-	dataRead.set(NULL, DEVICE_ST_TIME_OF_DAY, resultTime);
-	dataRead.set(NULL, DEVICE_ST_DAY_OF_WEEK, resultDay);
+	dataRead.set(NULL, KEY_TIME_OF_DAY, resultTime);
+	dataRead.set(NULL, KEY_DAY_OF_WEEK, resultDay);
 
 	for (auto it = __optionSet.begin(); it != __optionSet.end(); ++it) {
 		Json option = (**it);
@@ -241,7 +241,7 @@ bool DeviceStatusAlarm::__isMatched(Json& option, int time, std::string day)
 {
 	bool ret = false;
 	int optionTime;
-	for (int i = 0; option.getAt(NULL, DEVICE_ST_TIME_OF_DAY, i, &optionTime); i++){
+	for (int i = 0; option.getAt(NULL, KEY_TIME_OF_DAY, i, &optionTime); i++){
 		if (time == optionTime) {
 			ret = true;
 			break;
@@ -250,7 +250,7 @@ bool DeviceStatusAlarm::__isMatched(Json& option, int time, std::string day)
 	IF_FAIL_RETURN(ret, false);
 
 	std::string optionDay;
-	for (int i = 0; option.getAt(NULL, DEVICE_ST_DAY_OF_WEEK, i, &optionDay); i++){
+	for (int i = 0; option.getAt(NULL, KEY_DAY_OF_WEEK, i, &optionDay); i++){
 		if (day == optionDay) {
 			return true;
 		}

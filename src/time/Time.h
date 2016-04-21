@@ -18,7 +18,7 @@
 #define _DEVICE_SYSTEM_STATUS_TIME_H_
 
 #include "../shared/BasicProvider.h"
-#include "../shared/SystemTypes.h"
+#include "../shared/ProviderTypes.h"
 
 namespace ctx {
 

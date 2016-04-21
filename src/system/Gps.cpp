@@ -23,13 +23,13 @@ static const char* __getStatusString(int gpsStatus)
 {
 	switch (gpsStatus) {
 	case RUNTIME_INFO_GPS_STATUS_DISABLED:
-		return DEVICE_ST_DISABLED;
+		return VAL_DISABLED;
 
 	case RUNTIME_INFO_GPS_STATUS_SEARCHING:
-		return DEVICE_ST_SEARCHING;
+		return VAL_SEARCHING;
 
 	case RUNTIME_INFO_GPS_STATUS_CONNECTED:
-		return DEVICE_ST_CONNECTED;
+		return VAL_CONNECTED;
 
 	default:
 		_E("Unknown GPS status: %d", gpsStatus);
@@ -38,7 +38,7 @@ static const char* __getStatusString(int gpsStatus)
 }
 
 DeviceStatusGps::DeviceStatusGps() :
-	DeviceStatusRuntimeInfo(DEVICE_ST_SUBJ_GPS, RUNTIME_INFO_KEY_GPS_STATUS)
+	DeviceStatusRuntimeInfo(SUBJ_STATE_GPS, RUNTIME_INFO_KEY_GPS_STATUS)
 {
 }
 
@@ -71,7 +71,7 @@ void DeviceStatusGps::handleUpdate()
 	const char* stateStr = __getStatusString(gpsStatus);
 	IF_FAIL_VOID(stateStr);
 
-	dataRead.set(NULL, DEVICE_ST_STATE, stateStr);
+	dataRead.set(NULL, KEY_STATE, stateStr);
 
 	publish(NULL, ERR_NONE, dataRead);
 }
@@ -87,7 +87,7 @@ int DeviceStatusGps::read()
 	const char* stateStr = __getStatusString(gpsStatus);
 	IF_FAIL_RETURN(stateStr, ERR_OPERATION_FAILED);
 
-	dataRead.set(NULL, DEVICE_ST_STATE, stateStr);
+	dataRead.set(NULL, KEY_STATE, stateStr);
 
 	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;

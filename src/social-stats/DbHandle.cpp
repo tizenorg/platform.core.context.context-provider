@@ -84,13 +84,13 @@ std::string SocialDbHandle::createSqlFreqAddress(Json filter)
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
 
-	filter.get(NULL, STATS_RESULT_SIZE, &limit);
+	filter.get(NULL, KEY_RESULT_SIZE, &limit);
 
 	query <<
 		"SELECT " SOCIAL_ADDRESS ", " \
-			"COUNT(*) AS " STATS_TOTAL_COUNT ", " \
-			"SUM(" STATS_DURATION ") AS " STATS_TOTAL_DURATION ", " \
-			"MAX(" STATS_UNIV_TIME ") AS " STATS_LAST_TIME \
+			"COUNT(*) AS " KEY_TOTAL_COUNT ", " \
+			"SUM(" KEY_DURATION ") AS " KEY_TOTAL_DURATION ", " \
+			"MAX(" KEY_UNIV_TIME ") AS " KEY_LAST_TIME \
 		" FROM " SOCIAL_TABLE_CONTACT_LOG \
 		" WHERE " << createWhereClause(filter) <<
 		" GROUP BY " SOCIAL_ADDRESS \
@@ -112,11 +112,11 @@ std::string SocialDbHandle::createSqlFrequency(Json filter)
 		return "";
 	}
 
-	if (filter.get(NULL, STATS_DAY_OF_WEEK, &weekStr))
-		filterCleaned.set(NULL, STATS_DAY_OF_WEEK, weekStr);
+	if (filter.get(NULL, KEY_DAY_OF_WEEK, &weekStr))
+		filterCleaned.set(NULL, KEY_DAY_OF_WEEK, weekStr);
 
-	if (filter.get(NULL, STATS_TIME_OF_DAY, &timeOfDay))
-		filterCleaned.set(NULL, STATS_TIME_OF_DAY, timeOfDay);
+	if (filter.get(NULL, KEY_TIME_OF_DAY, &timeOfDay))
+		filterCleaned.set(NULL, KEY_TIME_OF_DAY, timeOfDay);
 
 	std::stringstream query;
 
@@ -125,7 +125,7 @@ std::string SocialDbHandle::createSqlFrequency(Json filter)
 
 	query <<
 		"INSERT INTO " SOCIAL_TEMP_CONTACT_FREQ \
-		" SELECT " SOCIAL_ADDRESS ", COUNT(*) AS " STATS_TOTAL_COUNT \
+		" SELECT " SOCIAL_ADDRESS ", COUNT(*) AS " KEY_TOTAL_COUNT \
 		" FROM " SOCIAL_TABLE_CONTACT_LOG \
 		" WHERE " << createWhereClause(filterCleaned) <<
 		" GROUP BY " SOCIAL_ADDRESS ";";
@@ -135,10 +135,10 @@ std::string SocialDbHandle::createSqlFrequency(Json filter)
 		" VALUES ('" << address << "');";
 
 	query <<
-		"SELECT S." SOCIAL_ADDRESS ", S." STATS_TOTAL_COUNT ", 1+COUNT(lesser." STATS_TOTAL_COUNT ") AS " STATS_RANK \
+		"SELECT S." SOCIAL_ADDRESS ", S." KEY_TOTAL_COUNT ", 1+COUNT(lesser." KEY_TOTAL_COUNT ") AS " KEY_RANK \
 		" FROM " SOCIAL_TEMP_CONTACT_FREQ " AS S" \
 		" LEFT JOIN " SOCIAL_TEMP_CONTACT_FREQ " AS lesser" \
-		" ON S." STATS_TOTAL_COUNT " < lesser." STATS_TOTAL_COUNT \
+		" ON S." KEY_TOTAL_COUNT " < lesser." KEY_TOTAL_COUNT \
 		" WHERE S." SOCIAL_ADDRESS " = '" << address << "'";
 
 
@@ -155,10 +155,10 @@ void SocialDbHandle::replyTriggerItem(int error, Json &jsonResult)
 
 	jsonResult.get(NULL, SOCIAL_ADDRESS, &valStr);
 	results.set(NULL, SOCIAL_ADDRESS, valStr);
-	jsonResult.get(NULL, STATS_TOTAL_COUNT, &val);
-	results.set(NULL, STATS_TOTAL_COUNT, val);
-	jsonResult.get(NULL, STATS_RANK, &val);
-	results.set(NULL, STATS_RANK, val);
+	jsonResult.get(NULL, KEY_TOTAL_COUNT, &val);
+	results.set(NULL, KEY_TOTAL_COUNT, val);
+	jsonResult.get(NULL, KEY_RANK, &val);
+	results.set(NULL, KEY_RANK, val);
 
 	reqProvider->replyToRead(reqFilter, error, results);
 }

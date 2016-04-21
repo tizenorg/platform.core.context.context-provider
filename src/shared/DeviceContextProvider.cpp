@@ -57,17 +57,17 @@ void registerProvider(const char *subject, const char *privilege)
 
 SO_EXPORT bool ctx::initDeviceContextProvider()
 {
-	registerProvider<DeviceStatusAlarm>(DEVICE_ST_SUBJ_ALARM, NULL);
-	registerProvider<DeviceStatusTime>(DEVICE_ST_SUBJ_TIME, NULL);
+	registerProvider<DeviceStatusAlarm>(SUBJ_STATE_ALARM, NULL);
+	registerProvider<DeviceStatusTime>(SUBJ_STATE_TIME, NULL);
 
-	registerProvider<DeviceStatusWifi>(DEVICE_ST_SUBJ_WIFI, PRIV_NETWORK);
-	registerProvider<DeviceStatusHeadphone>(DEVICE_ST_SUBJ_HEADPHONE, NULL);
+	registerProvider<DeviceStatusWifi>(SUBJ_STATE_WIFI, PRIV_NETWORK);
+	registerProvider<DeviceStatusHeadphone>(SUBJ_STATE_HEADPHONE, NULL);
 
-	registerProvider<DeviceStatusCharger>(DEVICE_ST_SUBJ_CHARGER, NULL);
-	registerProvider<DeviceStatusGps>(DEVICE_ST_SUBJ_GPS, NULL);
-	registerProvider<DeviceStatusUsb>(DEVICE_ST_SUBJ_USB, NULL);
-	registerProvider<DeviceStatusBattery>(DEVICE_ST_SUBJ_BATTERY, NULL);
-	registerProvider<DeviceStatusPsmode>(DEVICE_ST_SUBJ_PSMODE, NULL);
+	registerProvider<DeviceStatusCharger>(SUBJ_STATE_CHARGER, NULL);
+	registerProvider<DeviceStatusGps>(SUBJ_STATE_GPS, NULL);
+	registerProvider<DeviceStatusUsb>(SUBJ_STATE_USB, NULL);
+	registerProvider<DeviceStatusBattery>(SUBJ_STATE_BATTERY, NULL);
+	registerProvider<DeviceStatusPsmode>(SUBJ_STATE_PSMODE, NULL);
 
 	registerProvider<StationaryActivityProvider>(CTX_ACTIVITY_SUBJ_STATIONARY, NULL);
 	registerProvider<WalkingActivityProvider>(CTX_ACTIVITY_SUBJ_WALKING, NULL);
@@ -75,10 +75,10 @@ SO_EXPORT bool ctx::initDeviceContextProvider()
 	registerProvider<InVehicleActivityProvider>(CTX_ACTIVITY_SUBJ_IN_VEHICLE, NULL);
 
 #ifdef _MOBILE_
-	registerProvider<SocialStatusCall>(SOCIAL_ST_SUBJ_CALL, PRIV_TELEPHONY);
-	registerProvider<SocialStatusEmail>(SOCIAL_ST_SUBJ_EMAIL, NULL);
-	registerProvider<SocialStatusMessage>(SOCIAL_ST_SUBJ_MESSAGE, PRIV_MESSAGE);
-	registerProvider<SocialStatusContacts>(SOCIAL_ST_SUBJ_CONTACTS, PRIV_CONTACT);
+	registerProvider<SocialStatusCall>(SUBJ_STATE_CALL, PRIV_TELEPHONY);
+	registerProvider<SocialStatusEmail>(SUBJ_STATE_EMAIL, NULL);
+	registerProvider<SocialStatusMessage>(SUBJ_STATE_MESSAGE, PRIV_MESSAGE);
+	registerProvider<SocialStatusContacts>(SUBJ_STATE_CONTACTS, PRIV_CONTACT);
 
 	/* Create context providers, which need to be initiated before being subscribed */
 	/*

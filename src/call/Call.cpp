@@ -39,7 +39,7 @@ static telephony_noti_e __callNotiIds[] =
 static Json __latest;
 
 SocialStatusCall::SocialStatusCall() :
-	BasicProvider(SOCIAL_ST_SUBJ_CALL)
+	BasicProvider(SUBJ_STATE_CALL)
 {
 	__handleList.count = 0;
 	__handleList.handle = NULL;
@@ -82,19 +82,19 @@ void SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiI
 	switch (notiId) {
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_IDLE:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_IDLE:
-		data.set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_IDLE);
+		data.set(NULL, KEY_STATE, VAL_IDLE);
 		break;
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_ACTIVE:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_ACTIVE:
-		data.set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_ACTIVE);
+		data.set(NULL, KEY_STATE, VAL_ACTIVE);
 		break;
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_ALERTING:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_ALERTING:
-		data.set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_ALERTING);
+		data.set(NULL, KEY_STATE, VAL_ALERTING);
 		break;
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_INCOMING:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_INCOMING:
-		data.set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_INCOMING);
+		data.set(NULL, KEY_STATE, VAL_INCOMING);
 		break;
 /*	// Ignore below cases
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_HELD:
@@ -111,13 +111,13 @@ void SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiI
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_ACTIVE:
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_ALERTING:
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_INCOMING:
-		data.set(NULL, SOCIAL_ST_TYPE, SOCIAL_ST_VOICE);
+		data.set(NULL, KEY_TYPE, VAL_VOICE);
 		break;
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_IDLE:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_ACTIVE:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_ALERTING:
 	case TELEPHONY_NOTI_VIDEO_CALL_STATUS_INCOMING:
-		data.set(NULL, SOCIAL_ST_TYPE, SOCIAL_ST_VIDEO);
+		data.set(NULL, KEY_TYPE, VAL_VIDEO);
 		break;
 /*	// Ignore below cases
 	case TELEPHONY_NOTI_VOICE_CALL_STATUS_HELD:
@@ -146,7 +146,7 @@ void SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiI
 		// Address
 		std::string address;
 		if (__getCallAddress(callList[i], address)) {
-			data.set(NULL, SOCIAL_ST_ADDRESS, address);
+			data.set(NULL, KEY_ADDRESS, address);
 			break;
 		}
 	}
@@ -221,22 +221,22 @@ bool SocialStatusCall::__getCallState(telephony_call_h& handle, std::string& sta
 
 	switch (st) {
 	case TELEPHONY_CALL_STATUS_ACTIVE:
-		state = SOCIAL_ST_ACTIVE;
+		state = VAL_ACTIVE;
 		break;
 	case TELEPHONY_CALL_STATUS_HELD:
-		state = SOCIAL_ST_HELD;
+		state = VAL_HELD;
 		break;
 	case TELEPHONY_CALL_STATUS_DIALING:
-		state = SOCIAL_ST_DIALING;
+		state = VAL_DIALING;
 		break;
 	case TELEPHONY_CALL_STATUS_ALERTING:
-		state = SOCIAL_ST_ALERTING;
+		state = VAL_ALERTING;
 		break;
 	case TELEPHONY_CALL_STATUS_INCOMING:
-		state = SOCIAL_ST_INCOMING;
+		state = VAL_INCOMING;
 		break;
 	default:
-		state = SOCIAL_ST_IDLE;
+		state = VAL_IDLE;
 	}
 
 	IF_FAIL_RETURN_TAG(!state.empty(), false, _W, "State is empty");
@@ -254,10 +254,10 @@ bool SocialStatusCall::__getCallType(telephony_call_h& handle, std::string& type
 
 	switch (t) {
 	case TELEPHONY_CALL_TYPE_VOICE:
-		type = SOCIAL_ST_VOICE;
+		type = VAL_VOICE;
 		break;
 	case TELEPHONY_CALL_TYPE_VIDEO:
-		type = SOCIAL_ST_VIDEO;
+		type = VAL_VIDEO;
 		break;
 	default:
 		_E("Unknown type: %d", t);
@@ -316,7 +316,7 @@ bool SocialStatusCall::__readCurrentStatus(telephony_h& handle, Json* data)
 	telephony_call_get_call_list(handle, &count, &callList);
 
 	// Default data
-	data->set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_IDLE);
+	data->set(NULL, KEY_STATE, VAL_IDLE);
 
 	// Held & Dialing are ignored
 	for (unsigned int i = 0; i < count; i++) {
@@ -324,25 +324,25 @@ bool SocialStatusCall::__readCurrentStatus(telephony_h& handle, Json* data)
 		std::string state;
 		if (__getCallState(callList[i], state)) {
 			// Skip Held & Dialing
-			if (state.compare(SOCIAL_ST_HELD) == 0 || state.compare(SOCIAL_ST_DIALING) == 0)
+			if (state.compare(VAL_HELD) == 0 || state.compare(VAL_DIALING) == 0)
 				continue;
 
-			data->set(NULL, SOCIAL_ST_STATE, state);
+			data->set(NULL, KEY_STATE, state);
 		}
 
 		// Call type
 		std::string type;
 		if (__getCallType(callList[i], type)) {
-			data->set(NULL, SOCIAL_ST_MEDIUM, type);
+			data->set(NULL, KEY_MEDIUM, type);
 		}
 
 		// Address
 		std::string address;
 		if (__getCallAddress(callList[i], address)) {
-			data->set(NULL, SOCIAL_ST_ADDRESS, address);
+			data->set(NULL, KEY_ADDRESS, address);
 		}
 
-		if (state == SOCIAL_ST_ACTIVE) {
+		if (state == VAL_ACTIVE) {
 			break;
 		}
 	}
@@ -361,7 +361,7 @@ int SocialStatusCall::read()
 
 	bool ret = true;
 	Json data;
-	data.set(NULL, SOCIAL_ST_STATE, SOCIAL_ST_IDLE);
+	data.set(NULL, KEY_STATE, VAL_IDLE);
 
 	for (unsigned int i = 0; i < __handleList.count; i++) {
 		telephony_sim_state_e state;

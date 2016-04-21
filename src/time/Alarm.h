@@ -21,7 +21,7 @@
 #include <set>
 #include <TimerManager.h>
 #include <ContextProvider.h>
-#include "../shared/SystemTypes.h"
+#include "../shared/ProviderTypes.h"
 
 namespace ctx {
 

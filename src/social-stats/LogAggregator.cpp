@@ -53,7 +53,7 @@ bool ctx::ContactLogAggregator::onTimerExpired(int timerId)
 void ctx::ContactLogAggregator::aggregateContactLog()
 {
 	__dbManager.execute(0,
-			"SELECT IFNULL(MAX(" STATS_UNIV_TIME "),0) AS " STATS_LAST_TIME \
+			"SELECT IFNULL(MAX(" KEY_UNIV_TIME "),0) AS " KEY_LAST_TIME \
 			", (strftime('%s', 'now', 'localtime')) - (strftime('%s', 'now')) AS " TIME_DIFFERENCE \
 			" FROM " SOCIAL_TABLE_CONTACT_LOG, this);
 }
@@ -63,7 +63,7 @@ void ctx::ContactLogAggregator::onExecuted(unsigned int queryId, int error, std:
 	IF_FAIL_VOID_TAG(!records.empty(), _E, "Invalid query result");
 
 	int lastTime = 0;
-	records[0].get(NULL, STATS_LAST_TIME, &lastTime);
+	records[0].get(NULL, KEY_LAST_TIME, &lastTime);
 	records[0].get(NULL, TIME_DIFFERENCE, &__timeDiff);
 
 	_D("Last Time: %d / Local - UTC: %d", lastTime, __timeDiff);
@@ -149,9 +149,9 @@ void ctx::ContactLogAggregator::__insertContactLogList(contacts_list_h list)
 
 		data.set(NULL, SOCIAL_ADDRESS, address);
 		data.set(NULL, SOCIAL_PHONE_LOG_TYPE, logType);
-		data.set(NULL, STATS_DURATION, duration);
-		data.set(NULL, STATS_UNIV_TIME, accessTime);
-		data.set(NULL, STATS_LOCAL_TIME, accessTime + __timeDiff);
+		data.set(NULL, KEY_DURATION, duration);
+		data.set(NULL, KEY_UNIV_TIME, accessTime);
+		data.set(NULL, KEY_LOCAL_TIME, accessTime + __timeDiff);
 
 		__dbManager.insert(0, SOCIAL_TABLE_CONTACT_LOG, data, NULL);
 
@@ -162,6 +162,6 @@ void ctx::ContactLogAggregator::__removeExpiredLog()
 {
 	std::stringstream query;
 	query << "DELETE FROM " SOCIAL_TABLE_CONTACT_LOG " WHERE " \
-		STATS_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
+		KEY_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
 	__dbManager.execute(0, query.str().c_str(), NULL);
 }

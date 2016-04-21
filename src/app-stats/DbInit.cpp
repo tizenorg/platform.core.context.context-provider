@@ -80,7 +80,7 @@ bool ctx::AppDbInitializer::__appInfoCb(package_info_app_component_type_e compTy
 	Json data;
 	DatabaseManager dbManager;
 
-	data.set(NULL, STATS_APP_ID, appId);
+	data.set(NULL, KEY_APP_ID, appId);
 	return dbManager.insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 }
 

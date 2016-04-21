@@ -94,17 +94,17 @@ std::string MediaDbHandle::createSqlFrequency(int mediaType, Json filter)
 	std::string weekStr;
 	std::string timeOfDay;
 
-	if (filter.get(NULL, STATS_DAY_OF_WEEK, &weekStr))
-		filterCleaned.set(NULL, STATS_DAY_OF_WEEK, weekStr);
+	if (filter.get(NULL, KEY_DAY_OF_WEEK, &weekStr))
+		filterCleaned.set(NULL, KEY_DAY_OF_WEEK, weekStr);
 
-	if (filter.get(NULL, STATS_TIME_OF_DAY, &timeOfDay))
-		filterCleaned.set(NULL, STATS_TIME_OF_DAY, timeOfDay);
+	if (filter.get(NULL, KEY_TIME_OF_DAY, &timeOfDay))
+		filterCleaned.set(NULL, KEY_TIME_OF_DAY, timeOfDay);
 
 	std::string whereClause = createWhereClause(mediaType, filterCleaned);
 
 	std::stringstream query;
 	query <<
-		"SELECT IFNULL(COUNT(*),0) AS " STATS_TOTAL_COUNT \
+		"SELECT IFNULL(COUNT(*),0) AS " KEY_TOTAL_COUNT \
 		" FROM " MEDIA_TABLE_NAME \
 		" WHERE " << whereClause;
 
@@ -119,8 +119,8 @@ void MediaDbHandle::replyTriggerItem(int error, Json &jsonResult)
 	Json results;
 	int val;
 
-	jsonResult.get(NULL, STATS_TOTAL_COUNT, &val);
-	results.set(NULL, STATS_TOTAL_COUNT, val);
+	jsonResult.get(NULL, KEY_TOTAL_COUNT, &val);
+	results.set(NULL, KEY_TOTAL_COUNT, val);
 
 	reqProvider->replyToRead(reqFilter, error, results);
 }

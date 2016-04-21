@@ -19,7 +19,7 @@
 using namespace ctx;
 
 DeviceStatusPsmode::DeviceStatusPsmode() :
-	BasicProvider(DEVICE_ST_SUBJ_PSMODE)
+	BasicProvider(SUBJ_STATE_PSMODE)
 {
 }
 
@@ -52,7 +52,7 @@ void DeviceStatusPsmode::__handleUpdate(keynode_t *node)
 	status = vconf_keynode_get_int(node);
 	IF_FAIL_VOID_TAG(status >= 0, _E, "Getting state failed");
 
-	dataRead.set(NULL, DEVICE_ST_IS_ENABLED, status == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
+	dataRead.set(NULL, KEY_IS_ENABLED, status == 0 ? VAL_FALSE : VAL_TRUE);
 
 	publish(NULL, ERR_NONE, dataRead);
 }
@@ -78,7 +78,7 @@ int DeviceStatusPsmode::read()
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 
 	Json dataRead;
-	dataRead.set(NULL, DEVICE_ST_IS_ENABLED, mode == 0 ? DEVICE_ST_FALSE : DEVICE_ST_TRUE);
+	dataRead.set(NULL, KEY_IS_ENABLED, mode == 0 ? VAL_FALSE : VAL_TRUE);
 
 	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;

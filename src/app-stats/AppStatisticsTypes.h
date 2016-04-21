@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_STATS_APP_TYPES_H_
 #define _CONTEXT_STATS_APP_TYPES_H_
 
-#include "../shared/CommonTypes.h"
+#include "../shared/ProviderTypes.h"
 
 #define APP_HISTORY_PRIV			"apphistory.read"
 #define APP_SUBJ_LOGGER				"stats/app/logger"

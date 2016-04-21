@@ -19,7 +19,7 @@
 
 #include <msg.h>
 #include <msg_transport.h>
-#include "../shared/SocialTypes.h"
+#include "../shared/ProviderTypes.h"
 #include "../shared/BasicProvider.h"
 
 namespace ctx {

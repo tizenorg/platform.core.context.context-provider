@@ -20,7 +20,7 @@
 #include <string>
 #include <wifi.h>
 #include "../shared/BasicProvider.h"
-#include "../shared/SystemTypes.h"
+#include "../shared/ProviderTypes.h"
 
 namespace ctx {
 

@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_STATS_SOCIAL_TYPES_H_
 #define _CONTEXT_STATS_SOCIAL_TYPES_H_
 
-#include "../shared/CommonTypes.h"
+#include "../shared/ProviderTypes.h"
 
 #define SOCIAL_HISTORY_PRIV			"callhistory.read"
 #define SOCIAL_SUBJ_LOGGER			"stats/contact/logger"

@@ -22,7 +22,7 @@
 using namespace ctx;
 
 DeviceStatusHeadphone::DeviceStatusHeadphone() :
-	BasicProvider(DEVICE_ST_SUBJ_HEADPHONE),
+	BasicProvider(SUBJ_STATE_HEADPHONE),
 	__connected(false),
 	__audioJackState(RUNTIME_INFO_AUDIO_JACK_STATUS_UNCONNECTED),
 	__btAudioState(false),
@@ -141,18 +141,18 @@ bool DeviceStatusHeadphone::__getCurrentStatus()
 
 void DeviceStatusHeadphone::__generateDataPacket(Json* data)
 {
-	data->set(NULL, DEVICE_ST_IS_CONNECTED, __connected ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
+	data->set(NULL, KEY_IS_CONNECTED, __connected ? VAL_TRUE : VAL_FALSE);
 
 	switch (__audioJackState) {
 	case RUNTIME_INFO_AUDIO_JACK_STATUS_CONNECTED_3WIRE:
-		data->set(NULL, DEVICE_ST_TYPE, DEVICE_ST_NORMAL);
+		data->set(NULL, KEY_TYPE, VAL_NORMAL);
 		break;
 	case RUNTIME_INFO_AUDIO_JACK_STATUS_CONNECTED_4WIRE:
-		data->set(NULL, DEVICE_ST_TYPE, DEVICE_ST_HEADSET);
+		data->set(NULL, KEY_TYPE, VAL_HEADSET);
 		break;
 	default:
 		if (__btAudioState)
-			data->set(NULL, DEVICE_ST_TYPE, DEVICE_ST_BLUETOOTH);
+			data->set(NULL, KEY_TYPE, VAL_BLUETOOTH);
 		break;
 	}
 }

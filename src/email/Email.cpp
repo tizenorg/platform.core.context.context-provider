@@ -21,7 +21,7 @@
 using namespace ctx;
 
 SocialStatusEmail::SocialStatusEmail()	:
-	BasicProvider(SOCIAL_ST_SUBJ_EMAIL),
+	BasicProvider(SUBJ_STATE_EMAIL),
 	__dbusSignalId(-1),
 	__dbusWatcher(DBusType::SESSION)
 {
@@ -59,13 +59,13 @@ void SocialStatusEmail::onSignal(const char* sender, const char* path, const cha
 		//TODO: Check if this signal actually means that there are new mails
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", subType, gi1, gc, gi2, gi3);
 		Json dataUpdated;
-		dataUpdated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
+		dataUpdated.set(NULL, KEY_EVENT, VAL_RECEIVED);
 		publish(NULL, ERR_NONE, dataUpdated);
 
 	} else if (subType == NOTI_SEND_FINISH) {
 		_D("sub type: %d, gi1: %d, gc: %s, gi2: %d, gi3: %d", subType, gi1, gc, gi2, gi3);
 		Json dataUpdated;
-		dataUpdated.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_SENT);
+		dataUpdated.set(NULL, KEY_EVENT, VAL_SENT);
 		publish(NULL, ERR_NONE, dataUpdated);
 	}
 }

@@ -23,7 +23,7 @@
 using namespace ctx;
 
 SocialStatusContacts::SocialStatusContacts() :
-	BasicProvider(SOCIAL_ST_SUBJ_CONTACTS),
+	BasicProvider(SUBJ_STATE_CONTACTS),
 	__latestMyProfile(0),
 	__latestPerson(0)
 {
@@ -61,12 +61,12 @@ void SocialStatusContacts::__handleUpdate(const char* viewUri)
 		return;
 	}
 
-	std::string view = (STR_EQ(viewUri, _contacts_my_profile._uri)? SOCIAL_ST_MY_PROFILE : SOCIAL_ST_PERSON);
+	std::string view = (STR_EQ(viewUri, _contacts_my_profile._uri)? VAL_MY_PROFILE : VAL_PERSON);
 	IF_FAIL_VOID_TAG(!__isConsecutiveChange(viewUri), _D, "Ignore consecutive db change: %s", view.c_str());
 
 	Json data;
-	data.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_CHANGED);
-	data.set(NULL, SOCIAL_ST_TYPE, view);
+	data.set(NULL, KEY_EVENT, VAL_CHANGED);
+	data.set(NULL, KEY_TYPE, view);
 	publish(NULL, ERR_NONE, data);
 }
 

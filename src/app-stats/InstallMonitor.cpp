@@ -84,7 +84,7 @@ bool ctx::AppInstallMonitor::__appInfoCb(package_info_app_component_type_e compT
 
 	if (__lastEventType == PACKAGE_MANAGER_EVENT_TYPE_INSTALL) {
 		Json data;
-		data.set(NULL, STATS_APP_ID, appId);
+		data.set(NULL, KEY_APP_ID, appId);
 		dbManager.insert(0, APP_TABLE_REMOVABLE_APP, data, NULL);
 	} else if (__lastEventType == PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL) {
 		dbManager.execute(0, __createDeletionQuery(APP_TABLE_REMOVABLE_APP, appId).c_str(), NULL);
@@ -98,6 +98,6 @@ std::string ctx::AppInstallMonitor::__createDeletionQuery(const char* tableName,
 {
 	std::stringstream query;
 	query << "DELETE FROM " << tableName;
-	query << " WHERE " STATS_APP_ID " = '" << appId << "'";
+	query << " WHERE " KEY_APP_ID " = '" << appId << "'";
 	return query.str();
 }

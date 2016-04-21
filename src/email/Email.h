@@ -18,7 +18,7 @@
 #define _CONTEXT_SOCIAL_STATUS_EMAIL_H_
 
 #include <DBusSignalWatcher.h>
-#include "../shared/SocialTypes.h"
+#include "../shared/ProviderTypes.h"
 #include "../shared/BasicProvider.h"
 
 namespace ctx {

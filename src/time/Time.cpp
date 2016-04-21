@@ -20,7 +20,7 @@
 using namespace ctx;
 
 DeviceStatusTime::DeviceStatusTime() :
-	BasicProvider(DEVICE_ST_SUBJ_TIME)
+	BasicProvider(SUBJ_STATE_TIME)
 {
 }
 
@@ -68,9 +68,9 @@ int DeviceStatusTime::read()
 	std::string dayOfWeek = TimerManager::dowToStr(0x01 << timeInfo.tm_wday);
 
 	Json dataRead;
-	dataRead.set(NULL, DEVICE_ST_DAY_OF_MONTH, dayOfMonth);
-	dataRead.set(NULL, DEVICE_ST_DAY_OF_WEEK, dayOfWeek);
-	dataRead.set(NULL, DEVICE_ST_TIME_OF_DAY, minuteOfDay);
+	dataRead.set(NULL, KEY_DAY_OF_MONTH, dayOfMonth);
+	dataRead.set(NULL, KEY_DAY_OF_WEEK, dayOfWeek);
+	dataRead.set(NULL, KEY_TIME_OF_DAY, minuteOfDay);
 
 	_I("Time: %02d:%02d, Day of Week: %s, Day of Month: %d", timeInfo.tm_hour, timeInfo.tm_min, dayOfWeek.c_str(), dayOfMonth);
 

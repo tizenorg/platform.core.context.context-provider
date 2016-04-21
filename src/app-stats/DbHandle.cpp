@@ -71,11 +71,11 @@ std::string AppDbHandle::createWhereClauseWithDeviceStatus(Json filter)
 
 	whereClause << StatsDbHandleBase::createWhereClause(filter);
 
-	if (filter.get(NULL, STATS_BSSID, &bssid))
-		whereClause << " AND " STATS_BSSID " = '" << bssid << "'";
+	if (filter.get(NULL, KEY_BSSID, &bssid))
+		whereClause << " AND " KEY_BSSID " = '" << bssid << "'";
 
-	if (filter.get(NULL, STATS_AUDIO_JACK, &audioJack))
-		whereClause << " AND " STATS_AUDIO_JACK " = " << audioJack;
+	if (filter.get(NULL, KEY_AUDIO_JACK, &audioJack))
+		whereClause << " AND " KEY_AUDIO_JACK " = " << audioJack;
 
 	return whereClause.str();
 }
@@ -97,16 +97,16 @@ std::string AppDbHandle::createSqlFrequency(Json filter)
 	std::string timeOfDay;
 	std::string appId;
 
-	if (!filter.get(NULL, STATS_APP_ID, &appId)) {
+	if (!filter.get(NULL, KEY_APP_ID, &appId)) {
 		_E("Invalid parameter");
 		return "";
 	}
 
-	if (filter.get(NULL, STATS_DAY_OF_WEEK, &weekStr))
-		filterCleaned.set(NULL, STATS_DAY_OF_WEEK, weekStr);
+	if (filter.get(NULL, KEY_DAY_OF_WEEK, &weekStr))
+		filterCleaned.set(NULL, KEY_DAY_OF_WEEK, weekStr);
 
-	if (filter.get(NULL, STATS_TIME_OF_DAY, &timeOfDay))
-		filterCleaned.set(NULL, STATS_TIME_OF_DAY, timeOfDay);
+	if (filter.get(NULL, KEY_TIME_OF_DAY, &timeOfDay))
+		filterCleaned.set(NULL, KEY_TIME_OF_DAY, timeOfDay);
 
 	std::string whereClause = createWhereClause(filterCleaned);
 
@@ -117,21 +117,21 @@ std::string AppDbHandle::createSqlFrequency(Json filter)
 
 	query <<
 		"INSERT INTO " APP_TEMP_USAGE_FREQ \
-		" SELECT " STATS_APP_ID ", COUNT(*) AS " STATS_TOTAL_COUNT \
+		" SELECT " KEY_APP_ID ", COUNT(*) AS " KEY_TOTAL_COUNT \
 		" FROM " APP_TABLE_USAGE_LOG \
 		" WHERE " << whereClause <<
-		" GROUP BY " STATS_APP_ID ";";
+		" GROUP BY " KEY_APP_ID ";";
 
 	query <<
-		"INSERT OR IGNORE INTO " APP_TEMP_USAGE_FREQ " (" STATS_APP_ID ")" \
+		"INSERT OR IGNORE INTO " APP_TEMP_USAGE_FREQ " (" KEY_APP_ID ")" \
 		" VALUES ('" << appId << "');";
 
 	query <<
-		"SELECT S." STATS_APP_ID ", S." STATS_TOTAL_COUNT ", 1+COUNT(lesser." STATS_TOTAL_COUNT ") AS " STATS_RANK \
+		"SELECT S." KEY_APP_ID ", S." KEY_TOTAL_COUNT ", 1+COUNT(lesser." KEY_TOTAL_COUNT ") AS " KEY_RANK \
 		" FROM " APP_TEMP_USAGE_FREQ " AS S" \
 		" LEFT JOIN " APP_TEMP_USAGE_FREQ " AS lesser" \
-		" ON S." STATS_TOTAL_COUNT " < lesser." STATS_TOTAL_COUNT \
-		" WHERE S." STATS_APP_ID " = '" << appId << "'";
+		" ON S." KEY_TOTAL_COUNT " < lesser." KEY_TOTAL_COUNT \
+		" WHERE S." KEY_APP_ID " = '" << appId << "'";
 
 	return query.str();
 }
@@ -141,17 +141,17 @@ std::string AppDbHandle::createSqlRecentlyUsed(Json filter)
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
 
-	filter.get(NULL, STATS_RESULT_SIZE, &limit);
+	filter.get(NULL, KEY_RESULT_SIZE, &limit);
 
 	query <<
-		"SELECT " STATS_APP_ID ", " \
-			"COUNT(*) AS " STATS_TOTAL_COUNT ", " \
-			"SUM(" STATS_DURATION ") AS " STATS_TOTAL_DURATION ", " \
-			"MAX(" STATS_UNIV_TIME ") AS " STATS_LAST_TIME \
+		"SELECT " KEY_APP_ID ", " \
+			"COUNT(*) AS " KEY_TOTAL_COUNT ", " \
+			"SUM(" KEY_DURATION ") AS " KEY_TOTAL_DURATION ", " \
+			"MAX(" KEY_UNIV_TIME ") AS " KEY_LAST_TIME \
 		" FROM " APP_TABLE_USAGE_LOG \
 		" WHERE " << createWhereClauseWithDeviceStatus(filter) <<
-		" GROUP BY " STATS_APP_ID \
-		" ORDER BY MAX(" STATS_UNIV_TIME ") DESC" \
+		" GROUP BY " KEY_APP_ID \
+		" ORDER BY MAX(" KEY_UNIV_TIME ") DESC" \
 		" LIMIT " << limit;
 
 	return query.str();
@@ -162,16 +162,16 @@ std::string AppDbHandle::createSqlFrequentlyUsed(Json filter)
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
 
-	filter.get(NULL, STATS_RESULT_SIZE, &limit);
+	filter.get(NULL, KEY_RESULT_SIZE, &limit);
 
 	query <<
-		"SELECT " STATS_APP_ID ", " \
-			"COUNT(*) AS " STATS_TOTAL_COUNT ", " \
-			"SUM(" STATS_DURATION ") AS " STATS_TOTAL_DURATION ", " \
-			"MAX(" STATS_UNIV_TIME ") AS " STATS_LAST_TIME \
+		"SELECT " KEY_APP_ID ", " \
+			"COUNT(*) AS " KEY_TOTAL_COUNT ", " \
+			"SUM(" KEY_DURATION ") AS " KEY_TOTAL_DURATION ", " \
+			"MAX(" KEY_UNIV_TIME ") AS " KEY_LAST_TIME \
 		" FROM " APP_TABLE_USAGE_LOG \
 		" WHERE " << createWhereClauseWithDeviceStatus(filter) <<
-		" GROUP BY " STATS_APP_ID \
+		" GROUP BY " KEY_APP_ID \
 		" ORDER BY COUNT(*) DESC" \
 		" LIMIT " << limit;
 
@@ -183,19 +183,19 @@ std::string AppDbHandle::createSqlRarelyUsed(Json filter)
 	std::stringstream query;
 	int limit = DEFAULT_LIMIT;
 
-	filter.get(NULL, STATS_RESULT_SIZE, &limit);
+	filter.get(NULL, KEY_RESULT_SIZE, &limit);
 
 	query <<
-		"SELECT i." STATS_APP_ID ", " \
-			"COUNT(u." STATS_DURATION ") AS " STATS_TOTAL_COUNT ", " \
-			"IFNULL(SUM(u." STATS_DURATION "),0) AS " STATS_TOTAL_DURATION ", " \
-			"IFNULL(MAX(u." STATS_UNIV_TIME "),-1) AS " STATS_LAST_TIME \
+		"SELECT i." KEY_APP_ID ", " \
+			"COUNT(u." KEY_DURATION ") AS " KEY_TOTAL_COUNT ", " \
+			"IFNULL(SUM(u." KEY_DURATION "),0) AS " KEY_TOTAL_DURATION ", " \
+			"IFNULL(MAX(u." KEY_UNIV_TIME "),-1) AS " KEY_LAST_TIME \
 		" FROM " APP_TABLE_REMOVABLE_APP " i LEFT OUTER JOIN (" \
 			" SELECT * FROM " APP_TABLE_USAGE_LOG \
 			" WHERE " << createWhereClauseWithDeviceStatus(filter) << ") u" \
-			" ON i." STATS_APP_ID " = u." STATS_APP_ID \
-		" GROUP BY i." STATS_APP_ID \
-		" ORDER BY " STATS_TOTAL_COUNT " ASC" \
+			" ON i." KEY_APP_ID " = u." KEY_APP_ID \
+		" GROUP BY i." KEY_APP_ID \
+		" ORDER BY " KEY_TOTAL_COUNT " ASC" \
 		" LIMIT " << limit;
 
 	return query.str();
@@ -209,12 +209,12 @@ void AppDbHandle::replyTriggerItem(int error, Json &jsonResult)
 	std::string valStr;
 	int val;
 
-	jsonResult.get(NULL, STATS_APP_ID, &valStr);
-	results.set(NULL, STATS_APP_ID, valStr);
-	jsonResult.get(NULL, STATS_TOTAL_COUNT, &val);
-	results.set(NULL, STATS_TOTAL_COUNT, val);
-	jsonResult.get(NULL, STATS_RANK, &val);
-	results.set(NULL, STATS_RANK, val);
+	jsonResult.get(NULL, KEY_APP_ID, &valStr);
+	results.set(NULL, KEY_APP_ID, valStr);
+	jsonResult.get(NULL, KEY_TOTAL_COUNT, &val);
+	results.set(NULL, KEY_TOTAL_COUNT, val);
+	jsonResult.get(NULL, KEY_RANK, &val);
+	results.set(NULL, KEY_RANK, val);
 
 	reqProvider->replyToRead(reqFilter, error, results);
 }

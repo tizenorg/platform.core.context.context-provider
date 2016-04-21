@@ -21,7 +21,7 @@
 using namespace ctx;
 
 DeviceStatusWifi::DeviceStatusWifi() :
-	BasicProvider(DEVICE_ST_SUBJ_WIFI),
+	BasicProvider(SUBJ_STATE_WIFI),
 	__lastState(UNKNOWN),
 	__isInitialized(false),
 	__isActivated(false),
@@ -124,16 +124,16 @@ bool DeviceStatusWifi::__getResponsePacket(Json* data)
 {
 	switch (__lastState) {
 	case DISABLED:
-		data->set(NULL, DEVICE_ST_STATE, DEVICE_ST_DISABLED);
+		data->set(NULL, KEY_STATE, VAL_DISABLED);
 		break;
 
 	case UNCONNECTED:
-		data->set(NULL, DEVICE_ST_STATE, DEVICE_ST_UNCONNECTED);
+		data->set(NULL, KEY_STATE, VAL_UNCONNECTED);
 		break;
 
 	case CONNECTED:
-		data->set(NULL, DEVICE_ST_STATE, DEVICE_ST_CONNECTED);
-		data->set(NULL, DEVICE_ST_BSSID, __bssid);
+		data->set(NULL, KEY_STATE, VAL_CONNECTED);
+		data->set(NULL, KEY_BSSID, __bssid);
 		break;
 
 	default:

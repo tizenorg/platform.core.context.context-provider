@@ -22,7 +22,7 @@
 using namespace ctx;
 
 SocialStatusMessage::SocialStatusMessage() :
-	BasicProvider(SOCIAL_ST_SUBJ_MESSAGE),
+	BasicProvider(SUBJ_STATE_MESSAGE),
 	__messageHandle(NULL)
 {
 }
@@ -75,20 +75,20 @@ void SocialStatusMessage::__handleUpdate(msg_struct_t msg)
 	case MSG_TYPE_SMS_REJECT :
 	case MSG_TYPE_SMS_ETWS_PRIMARY :
 	case MSG_TYPE_SMS :
-		data.set(NULL, SOCIAL_ST_TYPE, SOCIAL_ST_SMS);
+		data.set(NULL, KEY_TYPE, VAL_SMS);
 		break;
 	case MSG_TYPE_MMS_NOTI :
 	case MSG_TYPE_MMS_JAVA :
 	case MSG_TYPE_MMS :
-		data.set(NULL, SOCIAL_ST_TYPE, SOCIAL_ST_MMS);
+		data.set(NULL, KEY_TYPE, VAL_MMS);
 		break;
 	default :
 		_W("Unknown message type");
 		return;
 	}
 
-	data.set(NULL, SOCIAL_ST_EVENT, SOCIAL_ST_RECEIVED);
-	data.set(NULL, SOCIAL_ST_ADDRESS, address);
+	data.set(NULL, KEY_EVENT, VAL_RECEIVED);
+	data.set(NULL, KEY_ADDRESS, address);
 
 	publish(NULL, ERR_NONE, data);
 }

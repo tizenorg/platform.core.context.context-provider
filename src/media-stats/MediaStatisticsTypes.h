@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_STATS_MEDIA_TYPES_H_
 #define _CONTEXT_STATS_MEDIA_TYPES_H_
 
-#include "../shared/CommonTypes.h"
+#include "../shared/ProviderTypes.h"
 
 #define MEDIA_HISTORY_PRIV					"mediahistory.read"
 #define MEDIA_SUBJ_LOGGER					"stats/media/logger"

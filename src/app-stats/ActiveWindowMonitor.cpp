@@ -85,18 +85,18 @@ void ctx::AppUseMonitor::__createRecord(std::string appId)
 	int mediaVolume;
 	std::string bssid;
 	Json data;
-	data.set(NULL, STATS_APP_ID, appId);
+	data.set(NULL, KEY_APP_ID, appId);
 
 	if (ctx::system_info::getAudioJackState(&audioJack))
-		data.set(NULL, STATS_AUDIO_JACK, audioJack);
+		data.set(NULL, KEY_AUDIO_JACK, audioJack);
 
 	if (ctx::system_info::getVolume(&systemVolume, &mediaVolume)) {
-		data.set(NULL, STATS_SYSTEM_VOLUME, systemVolume);
-		data.set(NULL, STATS_MEDIA_VOLUME, mediaVolume);
+		data.set(NULL, KEY_SYSTEM_VOLUME, systemVolume);
+		data.set(NULL, KEY_MEDIA_VOLUME, mediaVolume);
 	}
 
 	if (ctx::system_info::getWifiBssid(bssid))
-		data.set(NULL, STATS_BSSID, bssid);
+		data.set(NULL, KEY_BSSID, bssid);
 
 	__dbManager.insert(0, APP_TABLE_USAGE_LOG, data, NULL);
 }
@@ -107,11 +107,11 @@ void ctx::AppUseMonitor::__finishRecord(std::string appId)
 	std::stringstream query;
 	query <<
 		"UPDATE " APP_TABLE_USAGE_LOG \
-		" SET " STATS_DURATION " = strftime('%s', 'now') - " STATS_UNIV_TIME \
-		" WHERE " STATS_COL_ROW_ID " = (" \
-			"SELECT MAX(" STATS_COL_ROW_ID ") FROM " APP_TABLE_USAGE_LOG \
-			" WHERE " STATS_APP_ID " = '" << appId << "'" \
-			" AND " STATS_DURATION " = 0)";
+		" SET " KEY_DURATION " = strftime('%s', 'now') - " KEY_UNIV_TIME \
+		" WHERE " KEY_COL_ROW_ID " = (" \
+			"SELECT MAX(" KEY_COL_ROW_ID ") FROM " APP_TABLE_USAGE_LOG \
+			" WHERE " KEY_APP_ID " = '" << appId << "'" \
+			" AND " KEY_DURATION " = 0)";
 	__dbManager.execute(0, query.str().c_str(), NULL);
 }
 
@@ -143,6 +143,6 @@ void ctx::AppUseMonitor::__removeExpired()
 
 	std::stringstream query;
 	query << "DELETE FROM " APP_TABLE_USAGE_LOG " WHERE " \
-		STATS_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
+		KEY_UNIV_TIME " < strftime('%s', 'now') - " << LOG_RETENTION_PERIOD;
 	__dbManager.execute(0, query.str().c_str(), NULL);
 }

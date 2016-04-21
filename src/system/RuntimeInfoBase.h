@@ -18,7 +18,7 @@
 #define _DEVICE_SYSTEM_STATUS_RUNTIME_INFO_BASE_H_
 
 #include <runtime_info.h>
-#include "../shared/SystemTypes.h"
+#include "../shared/ProviderTypes.h"
 #include "../shared/BasicProvider.h"
 
 namespace ctx {

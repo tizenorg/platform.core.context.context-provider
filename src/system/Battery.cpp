@@ -19,7 +19,7 @@
 using namespace ctx;
 
 DeviceStatusBattery::DeviceStatusBattery()
-	: BasicProvider(DEVICE_ST_SUBJ_BATTERY)
+	: BasicProvider(SUBJ_STATE_BATTERY)
 {
 }
 
@@ -58,13 +58,13 @@ void DeviceStatusBattery::__handleUpdate(device_callback_e deviceType, void* val
 	IF_FAIL_VOID(levelString);
 
 	Json dataRead;
-	dataRead.set(NULL, DEVICE_ST_LEVEL, levelString);
+	dataRead.set(NULL, KEY_LEVEL, levelString);
 
 	bool chargingState = false;
 	int ret = device_battery_is_charging(&chargingState);
 	IF_FAIL_VOID_TAG(ret == DEVICE_ERROR_NONE, _E, "Getting state failed");
 
-	dataRead.set(NULL, DEVICE_ST_IS_CHARGING, chargingState ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
+	dataRead.set(NULL, KEY_IS_CHARGING, chargingState ? VAL_TRUE : VAL_FALSE);
 	publish(NULL, ERR_NONE, dataRead);
 }
 
@@ -72,16 +72,16 @@ const char* DeviceStatusBattery::__transToString(intptr_t level)
 {
 	switch (level) {
 	case DEVICE_BATTERY_LEVEL_EMPTY:
-		return DEVICE_ST_EMPTY;
+		return VAL_EMPTY;
 
 	case DEVICE_BATTERY_LEVEL_CRITICAL:
-		return DEVICE_ST_CRITICAL;
+		return VAL_CRITICAL;
 
 	case DEVICE_BATTERY_LEVEL_LOW:
-		return DEVICE_ST_LOW;
+		return VAL_LOW;
 
 	case DEVICE_BATTERY_LEVEL_HIGH:
-		return DEVICE_ST_NORMAL;
+		return VAL_NORMAL;
 
 	case DEVICE_BATTERY_LEVEL_FULL:
 	{
@@ -89,9 +89,9 @@ const char* DeviceStatusBattery::__transToString(intptr_t level)
 		device_battery_get_percent(&percent);
 
 		if (percent == 100) {
-			return DEVICE_ST_FULL;
+			return VAL_FULL;
 		} else {
-			return DEVICE_ST_HIGH;
+			return VAL_HIGH;
 		}
 		break;
 	}
@@ -127,13 +127,13 @@ int DeviceStatusBattery::read()
 	const char* levelString = __transToString(level);
 	IF_FAIL_RETURN(levelString, ERR_OPERATION_FAILED);
 
-	dataRead.set(NULL, DEVICE_ST_LEVEL, levelString);
+	dataRead.set(NULL, KEY_LEVEL, levelString);
 
 	bool chargingState = false;
 	ret = device_battery_is_charging(&chargingState);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);
 
-	dataRead.set(NULL, DEVICE_ST_IS_CHARGING, chargingState ? DEVICE_ST_TRUE : DEVICE_ST_FALSE);
+	dataRead.set(NULL, KEY_IS_CHARGING, chargingState ? VAL_TRUE : VAL_FALSE);
 
 	replyToRead(NULL, ERR_NONE, dataRead);
 	return ERR_NONE;
