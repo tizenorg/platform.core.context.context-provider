@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_BATTERY_H_
-#define _DEVICE_SYSTEM_STATUS_BATTERY_H_
+#ifndef _CONTEXT_BATTERY_STATE_PROVIDER_H_
+#define _CONTEXT_BATTERY_STATE_PROVIDER_H_
 
 #include <device/callback.h>
 #include <device/battery.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class DeviceStatusBattery : public BasicProvider {
+	class BatteryStateProvider : public BasicProvider {
 	public:
-		DeviceStatusBattery();
-		~DeviceStatusBattery();
+		BatteryStateProvider();
+		~BatteryStateProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -43,4 +43,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_BATTERY_H_
+#endif /* _CONTEXT_BATTERY_STATE_PROVIDER_H_ */

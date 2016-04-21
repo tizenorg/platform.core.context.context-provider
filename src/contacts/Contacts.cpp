@@ -22,23 +22,23 @@
 
 using namespace ctx;
 
-SocialStatusContacts::SocialStatusContacts() :
+ContactsChangeProvider::ContactsChangeProvider() :
 	BasicProvider(SUBJ_STATE_CONTACTS),
 	__latestMyProfile(0),
 	__latestPerson(0)
 {
 }
 
-SocialStatusContacts::~SocialStatusContacts()
+ContactsChangeProvider::~ContactsChangeProvider()
 {
 }
 
-bool SocialStatusContacts::isSupported()
+bool ContactsChangeProvider::isSupported()
 {
 	return true;
 }
 
-void SocialStatusContacts::submitTriggerItem()
+void ContactsChangeProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
@@ -48,13 +48,13 @@ void SocialStatusContacts::submitTriggerItem()
 			NULL);
 }
 
-void SocialStatusContacts::__updateCb(const char* viewUri, void* userData)
+void ContactsChangeProvider::__updateCb(const char* viewUri, void* userData)
 {
-	SocialStatusContacts *instance = static_cast<SocialStatusContacts*>(userData);
+	ContactsChangeProvider *instance = static_cast<ContactsChangeProvider*>(userData);
 	instance->__handleUpdate(viewUri);
 }
 
-void SocialStatusContacts::__handleUpdate(const char* viewUri)
+void ContactsChangeProvider::__handleUpdate(const char* viewUri)
 {
 	if (!STR_EQ(viewUri, _contacts_my_profile._uri) && !STR_EQ(viewUri, _contacts_person._uri)) {
 		_W("Unknown view uri");
@@ -70,7 +70,7 @@ void SocialStatusContacts::__handleUpdate(const char* viewUri)
 	publish(NULL, ERR_NONE, data);
 }
 
-bool SocialStatusContacts::__isConsecutiveChange(const char* viewUri)
+bool ContactsChangeProvider::__isConsecutiveChange(const char* viewUri)
 {
 	time_t now = time(NULL);
 	double diff = 0;
@@ -89,7 +89,7 @@ bool SocialStatusContacts::__isConsecutiveChange(const char* viewUri)
 	return false;
 }
 
-bool SocialStatusContacts::__setCallback()
+bool ContactsChangeProvider::__setCallback()
 {
 	int err;
 
@@ -109,7 +109,7 @@ CATCH:
 	return false;
 }
 
-void SocialStatusContacts::__unsetCallback()
+void ContactsChangeProvider::__unsetCallback()
 {
 	contacts_db_remove_changed_cb(MY_PROFILE_VIEW, __updateCb, this);
 	contacts_db_remove_changed_cb(PERSON_VIEW, __updateCb, this);
@@ -120,14 +120,14 @@ void SocialStatusContacts::__unsetCallback()
 	__latestPerson = 0;
 }
 
-int SocialStatusContacts::subscribe()
+int ContactsChangeProvider::subscribe()
 {
 	bool ret = __setCallback();
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int SocialStatusContacts::unsubscribe()
+int ContactsChangeProvider::unsubscribe()
 {
 	__unsetCallback();
 	return ERR_NONE;

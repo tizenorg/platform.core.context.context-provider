@@ -18,27 +18,27 @@
 
 using namespace ctx;
 
-DeviceStatusCharger::DeviceStatusCharger() :
-	DeviceStatusRuntimeInfo(SUBJ_STATE_CHARGER, RUNTIME_INFO_KEY_CHARGER_CONNECTED)
+ChargerStateProvider::ChargerStateProvider() :
+	RuntimeInfoProvider(SUBJ_STATE_CHARGER, RUNTIME_INFO_KEY_CHARGER_CONNECTED)
 {
 }
 
-DeviceStatusCharger::~DeviceStatusCharger()
+ChargerStateProvider::~ChargerStateProvider()
 {
 }
 
-bool DeviceStatusCharger::isSupported()
+bool ChargerStateProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceStatusCharger::submitTriggerItem()
+void ChargerStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsConnected") "}", NULL);
 }
 
-void DeviceStatusCharger::handleUpdate()
+void ChargerStateProvider::handleUpdate()
 {
 	bool chargerStatus = false;
 
@@ -51,7 +51,7 @@ void DeviceStatusCharger::handleUpdate()
 	publish(NULL, ERR_NONE, dataRead);
 }
 
-int DeviceStatusCharger::read()
+int ChargerStateProvider::read()
 {
 	bool chargerStatus = false;
 	Json dataRead;

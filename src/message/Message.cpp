@@ -21,22 +21,22 @@
 
 using namespace ctx;
 
-SocialStatusMessage::SocialStatusMessage() :
+MessageEventProvider::MessageEventProvider() :
 	BasicProvider(SUBJ_STATE_MESSAGE),
 	__messageHandle(NULL)
 {
 }
 
-SocialStatusMessage::~SocialStatusMessage()
+MessageEventProvider::~MessageEventProvider()
 {
 }
 
-bool SocialStatusMessage::isSupported()
+bool MessageEventProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void SocialStatusMessage::submitTriggerItem()
+void MessageEventProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
@@ -47,13 +47,13 @@ void SocialStatusMessage::submitTriggerItem()
 			NULL);
 }
 
-void SocialStatusMessage::__updateCb(msg_handle_t handle, msg_struct_t msg, void* userData)
+void MessageEventProvider::__updateCb(msg_handle_t handle, msg_struct_t msg, void* userData)
 {
-	SocialStatusMessage *instance = static_cast<SocialStatusMessage*>(userData);
+	MessageEventProvider *instance = static_cast<MessageEventProvider*>(userData);
 	instance->__handleUpdate(msg);
 }
 
-void SocialStatusMessage::__handleUpdate(msg_struct_t msg)
+void MessageEventProvider::__handleUpdate(msg_struct_t msg)
 {
 	int err;
 	int type;
@@ -93,7 +93,7 @@ void SocialStatusMessage::__handleUpdate(msg_struct_t msg)
 	publish(NULL, ERR_NONE, data);
 }
 
-bool SocialStatusMessage::__setCallback()
+bool MessageEventProvider::__setCallback()
 {
 	int err;
 
@@ -111,7 +111,7 @@ bool SocialStatusMessage::__setCallback()
 	return true;
 }
 
-void SocialStatusMessage::__unsetCallback()
+void MessageEventProvider::__unsetCallback()
 {
 	if (__messageHandle)
 		msg_close_msg_handle(&__messageHandle);
@@ -119,14 +119,14 @@ void SocialStatusMessage::__unsetCallback()
 	__messageHandle = NULL;
 }
 
-int SocialStatusMessage::subscribe()
+int MessageEventProvider::subscribe()
 {
 	bool ret = __setCallback();
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int SocialStatusMessage::unsubscribe()
+int MessageEventProvider::unsubscribe()
 {
 	__unsetCallback();
 	return ERR_NONE;

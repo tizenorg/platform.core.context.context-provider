@@ -18,21 +18,21 @@
 
 using namespace ctx;
 
-DeviceStatusBattery::DeviceStatusBattery()
+BatteryStateProvider::BatteryStateProvider()
 	: BasicProvider(SUBJ_STATE_BATTERY)
 {
 }
 
-DeviceStatusBattery::~DeviceStatusBattery()
+BatteryStateProvider::~BatteryStateProvider()
 {
 }
 
-bool DeviceStatusBattery::isSupported()
+bool BatteryStateProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceStatusBattery::submitTriggerItem()
+void BatteryStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
@@ -42,15 +42,15 @@ void DeviceStatusBattery::submitTriggerItem()
 			NULL);
 }
 
-void DeviceStatusBattery::__updateCb(device_callback_e deviceType, void* value, void* userData)
+void BatteryStateProvider::__updateCb(device_callback_e deviceType, void* value, void* userData)
 {
 	IF_FAIL_VOID(deviceType == DEVICE_CALLBACK_BATTERY_LEVEL);
 
-	DeviceStatusBattery *instance = static_cast<DeviceStatusBattery*>(userData);
+	BatteryStateProvider *instance = static_cast<BatteryStateProvider*>(userData);
 	instance->__handleUpdate(deviceType, value);
 }
 
-void DeviceStatusBattery::__handleUpdate(device_callback_e deviceType, void* value)
+void BatteryStateProvider::__handleUpdate(device_callback_e deviceType, void* value)
 {
 	intptr_t level = (intptr_t)value;
 
@@ -68,7 +68,7 @@ void DeviceStatusBattery::__handleUpdate(device_callback_e deviceType, void* val
 	publish(NULL, ERR_NONE, dataRead);
 }
 
-const char* DeviceStatusBattery::__transToString(intptr_t level)
+const char* BatteryStateProvider::__transToString(intptr_t level)
 {
 	switch (level) {
 	case DEVICE_BATTERY_LEVEL_EMPTY:
@@ -102,21 +102,21 @@ const char* DeviceStatusBattery::__transToString(intptr_t level)
 	}
 }
 
-int DeviceStatusBattery::subscribe()
+int BatteryStateProvider::subscribe()
 {
 	int ret = device_add_callback(DEVICE_CALLBACK_BATTERY_LEVEL, __updateCb, this);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int DeviceStatusBattery::unsubscribe()
+int BatteryStateProvider::unsubscribe()
 {
 	int ret = device_remove_callback(DEVICE_CALLBACK_BATTERY_LEVEL, __updateCb);
 	IF_FAIL_RETURN(ret == DEVICE_ERROR_NONE, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int DeviceStatusBattery::read()
+int BatteryStateProvider::read()
 {
 	device_battery_level_e level;
 	Json dataRead;

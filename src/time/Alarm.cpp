@@ -18,12 +18,12 @@
 
 using namespace ctx;
 
-DeviceStatusAlarm::DeviceStatusAlarm()
+AlarmProvider::AlarmProvider()
 	: ContextProvider(SUBJ_STATE_ALARM)
 {
 }
 
-DeviceStatusAlarm::~DeviceStatusAlarm()
+AlarmProvider::~AlarmProvider()
 {
 	__clear();
 
@@ -33,12 +33,12 @@ DeviceStatusAlarm::~DeviceStatusAlarm()
 	__optionSet.clear();
 }
 
-bool DeviceStatusAlarm::isSupported()
+bool AlarmProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceStatusAlarm::submitTriggerItem()
+void AlarmProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
@@ -48,7 +48,7 @@ void DeviceStatusAlarm::submitTriggerItem()
 			NULL);
 }
 
-int DeviceStatusAlarm::subscribe(Json option, Json *requestResult)
+int AlarmProvider::subscribe(Json option, Json *requestResult)
 {
 	int dow = __getArrangedDayOfWeek(option);
 
@@ -69,7 +69,7 @@ int DeviceStatusAlarm::subscribe(Json option, Json *requestResult)
 	return ERR_NONE;
 }
 
-int DeviceStatusAlarm::unsubscribe(Json option)
+int AlarmProvider::unsubscribe(Json option)
 {
 	int dow = __getArrangedDayOfWeek(option);
 
@@ -87,7 +87,7 @@ int DeviceStatusAlarm::unsubscribe(Json option)
 	return ERR_NONE;
 }
 
-int DeviceStatusAlarm::__getArrangedDayOfWeek(Json& option)
+int AlarmProvider::__getArrangedDayOfWeek(Json& option)
 {
 	int dow = 0;
 
@@ -100,12 +100,12 @@ int DeviceStatusAlarm::__getArrangedDayOfWeek(Json& option)
 	return dow;
 }
 
-DeviceStatusAlarm::RefCountArray::RefCountArray()
+AlarmProvider::RefCountArray::RefCountArray()
 {
 	memset(count, 0, sizeof(int) * DAYS_PER_WEEK);
 }
 
-int DeviceStatusAlarm::__mergeDayOfWeek(int* refCnt)
+int AlarmProvider::__mergeDayOfWeek(int* refCnt)
 {
 	int dayOfWeek = 0;
 
@@ -118,7 +118,7 @@ int DeviceStatusAlarm::__mergeDayOfWeek(int* refCnt)
 	return dayOfWeek;
 }
 
-bool DeviceStatusAlarm::__add(int minute, int dayOfWeek)
+bool AlarmProvider::__add(int minute, int dayOfWeek)
 {
 	IF_FAIL_RETURN_TAG(minute >=0 && minute < 1440 &&
 			dayOfWeek > 0 && dayOfWeek <= static_cast<int>(DayOfWeek::EVERYDAY),
@@ -135,7 +135,7 @@ bool DeviceStatusAlarm::__add(int minute, int dayOfWeek)
 	return __resetTimer(minute);
 }
 
-bool DeviceStatusAlarm::__remove(int minute, int dayOfWeek)
+bool AlarmProvider::__remove(int minute, int dayOfWeek)
 {
 	IF_FAIL_RETURN_TAG(minute >= 0 && minute < 1440 &&
 			dayOfWeek > 0 && dayOfWeek <= static_cast<int>(DayOfWeek::EVERYDAY),
@@ -152,7 +152,7 @@ bool DeviceStatusAlarm::__remove(int minute, int dayOfWeek)
 	return __resetTimer(minute);
 }
 
-bool DeviceStatusAlarm::__resetTimer(int minute)
+bool AlarmProvider::__resetTimer(int minute)
 {
 	int dayOfWeek = __mergeDayOfWeek(__refCountMap[minute].count);
 	TimerState &timer = __timerStateMap[minute];
@@ -189,7 +189,7 @@ bool DeviceStatusAlarm::__resetTimer(int minute)
 	return true;
 }
 
-void DeviceStatusAlarm::__clear()
+void AlarmProvider::__clear()
 {
 	for (auto it = __timerStateMap.begin(); it != __timerStateMap.end(); ++it) {
 		if (it->second.timerId > 0) {
@@ -201,7 +201,7 @@ void DeviceStatusAlarm::__clear()
 	__refCountMap.clear();
 }
 
-bool DeviceStatusAlarm::onTimerExpired(int timerId)
+bool AlarmProvider::onTimerExpired(int timerId)
 {
 	time_t rawTime;
 	struct tm timeInfo;
@@ -219,7 +219,7 @@ bool DeviceStatusAlarm::onTimerExpired(int timerId)
 	return true;
 }
 
-void DeviceStatusAlarm::__handleUpdate(int hour, int min, int dayOfWeek)
+void AlarmProvider::__handleUpdate(int hour, int min, int dayOfWeek)
 {
 	_I("Time: %02d:%02d, Day of Week: %#x", hour, min, dayOfWeek);
 
@@ -237,7 +237,7 @@ void DeviceStatusAlarm::__handleUpdate(int hour, int min, int dayOfWeek)
 	}
 }
 
-bool DeviceStatusAlarm::__isMatched(Json& option, int time, std::string day)
+bool AlarmProvider::__isMatched(Json& option, int time, std::string day)
 {
 	bool ret = false;
 	int optionTime;
@@ -259,7 +259,7 @@ bool DeviceStatusAlarm::__isMatched(Json& option, int time, std::string day)
 	return false;
 }
 
-DeviceStatusAlarm::OptionSet::iterator DeviceStatusAlarm::__findOption(Json& option)
+AlarmProvider::OptionSet::iterator AlarmProvider::__findOption(Json& option)
 {
 	for (auto it = __optionSet.begin(); it != __optionSet.end(); ++it) {
 		if (option == (**it))

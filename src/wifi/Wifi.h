@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_WIFI_H_
-#define _DEVICE_SYSTEM_STATUS_WIFI_H_
+#ifndef _CONTEXT_WIFI_STATE_PROVIDER_H_
+#define _CONTEXT_WIFI_STATE_PROVIDER_H_
 
 #include <string>
 #include <wifi.h>
-#include "../shared/BasicProvider.h"
-#include "../shared/ProviderTypes.h"
+#include <BasicProvider.h>
+#include <ProviderTypes.h>
 
 namespace ctx {
 
-	class DeviceStatusWifi : public BasicProvider {
+	class WifiStateProvider : public BasicProvider {
 	public:
-		DeviceStatusWifi();
-		~DeviceStatusWifi();
+		WifiStateProvider();
+		~WifiStateProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -62,4 +62,4 @@ namespace ctx {
 	};
 }
 
-#endif	// _CONTEXT_SYSTEM_STATUS_WIFI_H_
+#endif	/* _CONTEXT_SYSTEM_STATUS_WIFI_H_ */

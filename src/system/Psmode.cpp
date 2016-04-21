@@ -18,33 +18,33 @@
 
 using namespace ctx;
 
-DeviceStatusPsmode::DeviceStatusPsmode() :
+PowerSaveModeProvider::PowerSaveModeProvider() :
 	BasicProvider(SUBJ_STATE_PSMODE)
 {
 }
 
-DeviceStatusPsmode::~DeviceStatusPsmode()
+PowerSaveModeProvider::~PowerSaveModeProvider()
 {
 }
 
-bool DeviceStatusPsmode::isSupported()
+bool PowerSaveModeProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceStatusPsmode::submitTriggerItem()
+void PowerSaveModeProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsEnabled") "}", NULL);
 }
 
-void DeviceStatusPsmode::__updateCb(keynode_t *node, void* userData)
+void PowerSaveModeProvider::__updateCb(keynode_t *node, void* userData)
 {
-	DeviceStatusPsmode *instance = static_cast<DeviceStatusPsmode*>(userData);
+	PowerSaveModeProvider *instance = static_cast<PowerSaveModeProvider*>(userData);
 	instance->__handleUpdate(node);
 }
 
-void DeviceStatusPsmode::__handleUpdate(keynode_t *node)
+void PowerSaveModeProvider::__handleUpdate(keynode_t *node)
 {
 	int status;
 	Json dataRead;
@@ -57,21 +57,21 @@ void DeviceStatusPsmode::__handleUpdate(keynode_t *node)
 	publish(NULL, ERR_NONE, dataRead);
 }
 
-int DeviceStatusPsmode::subscribe()
+int PowerSaveModeProvider::subscribe()
 {
 	int ret = vconf_notify_key_changed(VCONFKEY_SETAPPL_PSMODE, __updateCb, this);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int DeviceStatusPsmode::unsubscribe()
+int PowerSaveModeProvider::unsubscribe()
 {
 	int ret = vconf_ignore_key_changed(VCONFKEY_SETAPPL_PSMODE, __updateCb);
 	IF_FAIL_RETURN(ret == VCONF_OK, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int DeviceStatusPsmode::read()
+int PowerSaveModeProvider::read()
 {
 	int mode;
 	int ret = vconf_get_int(VCONFKEY_SETAPPL_PSMODE, &mode);

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_GPS_H_
-#define _DEVICE_SYSTEM_STATUS_GPS_H_
+#ifndef _CONTEXT_GPS_STATE_PROVIDER_H_
+#define _CONTEXT_GPS_STATE_PROVIDER_H_
 
 #include "RuntimeInfoBase.h"
 
 namespace ctx {
 
-	class DeviceStatusGps : public DeviceStatusRuntimeInfo {
+	class GpsStateProvider : public RuntimeInfoProvider {
 	public:
-		DeviceStatusGps();
-		~DeviceStatusGps();
+		GpsStateProvider();
+		~GpsStateProvider();
 
 		int read();
 
@@ -36,4 +36,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_GPS_H_
+#endif /* _CONTEXT_GPS_STATE_PROVIDER_H_ */

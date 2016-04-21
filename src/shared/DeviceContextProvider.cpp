@@ -57,17 +57,17 @@ void registerProvider(const char *subject, const char *privilege)
 
 SO_EXPORT bool ctx::initDeviceContextProvider()
 {
-	registerProvider<DeviceStatusAlarm>(SUBJ_STATE_ALARM, NULL);
-	registerProvider<DeviceStatusTime>(SUBJ_STATE_TIME, NULL);
+	registerProvider<AlarmProvider>(SUBJ_STATE_ALARM, NULL);
+	registerProvider<TimeProvider>(SUBJ_STATE_TIME, NULL);
 
-	registerProvider<DeviceStatusWifi>(SUBJ_STATE_WIFI, PRIV_NETWORK);
-	registerProvider<DeviceStatusHeadphone>(SUBJ_STATE_HEADPHONE, NULL);
+	registerProvider<WifiStateProvider>(SUBJ_STATE_WIFI, PRIV_NETWORK);
+	registerProvider<HeadphoneStateProvider>(SUBJ_STATE_HEADPHONE, NULL);
 
-	registerProvider<DeviceStatusCharger>(SUBJ_STATE_CHARGER, NULL);
-	registerProvider<DeviceStatusGps>(SUBJ_STATE_GPS, NULL);
-	registerProvider<DeviceStatusUsb>(SUBJ_STATE_USB, NULL);
-	registerProvider<DeviceStatusBattery>(SUBJ_STATE_BATTERY, NULL);
-	registerProvider<DeviceStatusPsmode>(SUBJ_STATE_PSMODE, NULL);
+	registerProvider<ChargerStateProvider>(SUBJ_STATE_CHARGER, NULL);
+	registerProvider<GpsStateProvider>(SUBJ_STATE_GPS, NULL);
+	registerProvider<UsbStateProvider>(SUBJ_STATE_USB, NULL);
+	registerProvider<BatteryStateProvider>(SUBJ_STATE_BATTERY, NULL);
+	registerProvider<PowerSaveModeProvider>(SUBJ_STATE_PSMODE, NULL);
 
 	registerProvider<StationaryActivityProvider>(SUBJ_ACTIVITY_STATIONARY, NULL);
 	registerProvider<WalkingActivityProvider>(SUBJ_ACTIVITY_WALKING, NULL);
@@ -75,15 +75,15 @@ SO_EXPORT bool ctx::initDeviceContextProvider()
 	registerProvider<InVehicleActivityProvider>(SUBJ_ACTIVITY_IN_VEHICLE, NULL);
 
 #ifdef _MOBILE_
-	registerProvider<SocialStatusCall>(SUBJ_STATE_CALL, PRIV_TELEPHONY);
-	registerProvider<SocialStatusEmail>(SUBJ_STATE_EMAIL, NULL);
-	registerProvider<SocialStatusMessage>(SUBJ_STATE_MESSAGE, PRIV_MESSAGE);
-	registerProvider<SocialStatusContacts>(SUBJ_STATE_CONTACTS, PRIV_CONTACT);
+	registerProvider<CallStateProvider>(SUBJ_STATE_CALL, PRIV_TELEPHONY);
+	registerProvider<EmailEventProvider>(SUBJ_STATE_EMAIL, NULL);
+	registerProvider<MessageEventProvider>(SUBJ_STATE_MESSAGE, PRIV_MESSAGE);
+	registerProvider<ContactsChangeProvider>(SUBJ_STATE_CONTACTS, PRIV_CONTACT);
 
 	/* Create context providers, which need to be initiated before being subscribed */
 	/*
-	if (DeviceStatusWifi::isSupported())
-		DeviceStatusWifi::create(NULL);
+	if (WifiStateProvider::isSupported())
+		WifiStateProvider::create(NULL);
 	*/
 #endif
 

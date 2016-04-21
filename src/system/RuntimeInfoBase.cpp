@@ -18,32 +18,32 @@
 
 using namespace ctx;
 
-DeviceStatusRuntimeInfo::DeviceStatusRuntimeInfo(const char *subject, runtime_info_key_e key) :
+RuntimeInfoProvider::RuntimeInfoProvider(const char *subject, runtime_info_key_e key) :
 	BasicProvider(subject),
 	__infoKey(key)
 {
 }
 
-runtime_info_key_e DeviceStatusRuntimeInfo::__getInfoKey()
+runtime_info_key_e RuntimeInfoProvider::__getInfoKey()
 {
 	return __infoKey;
 }
 
-void DeviceStatusRuntimeInfo::updateCb(runtime_info_key_e runtimeKey, void* userData)
+void RuntimeInfoProvider::updateCb(runtime_info_key_e runtimeKey, void* userData)
 {
-	DeviceStatusRuntimeInfo *instance = static_cast<DeviceStatusRuntimeInfo*>(userData);
+	RuntimeInfoProvider *instance = static_cast<RuntimeInfoProvider*>(userData);
 	IF_FAIL_VOID_TAG(runtimeKey == instance->__getInfoKey(), _W, "Runtime info key mismatch");
 	instance->handleUpdate();
 }
 
-int DeviceStatusRuntimeInfo::subscribe()
+int RuntimeInfoProvider::subscribe()
 {
 	int ret = runtime_info_set_changed_cb(__infoKey, updateCb, this);
 	IF_FAIL_RETURN(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int DeviceStatusRuntimeInfo::unsubscribe()
+int RuntimeInfoProvider::unsubscribe()
 {
 	int ret = runtime_info_unset_changed_cb(__infoKey);
 	IF_FAIL_RETURN(ret == RUNTIME_INFO_ERROR_NONE, ERR_OPERATION_FAILED);

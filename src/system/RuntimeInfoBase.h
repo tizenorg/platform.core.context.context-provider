@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_RUNTIME_INFO_BASE_H_
-#define _DEVICE_SYSTEM_STATUS_RUNTIME_INFO_BASE_H_
+#ifndef _CONTEXT_RUNTIME_INFO_PROVIDER_H_
+#define _CONTEXT_RUNTIME_INFO_PROVIDER_H_
 
 #include <runtime_info.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class DeviceStatusRuntimeInfo : public BasicProvider {
+	class RuntimeInfoProvider : public BasicProvider {
 	public:
-		DeviceStatusRuntimeInfo(const char *subject, runtime_info_key_e key);
+		RuntimeInfoProvider(const char *subject, runtime_info_key_e key);
 
 		int subscribe();
 		int unsubscribe();
@@ -34,7 +34,7 @@ namespace ctx {
 	protected:
 		runtime_info_key_e __infoKey;
 
-		virtual ~DeviceStatusRuntimeInfo(){}
+		virtual ~RuntimeInfoProvider(){}
 		static void updateCb(runtime_info_key_e runtimeKey, void* userData);
 		virtual void handleUpdate() = 0;
 
@@ -43,4 +43,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_RUNTIME_INFO_BASE_H_
+#endif /* _CONTEXT_RUNTIME_INFO_PROVIDER_H_ */

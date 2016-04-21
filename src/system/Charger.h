@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_CHARGER_
-#define _DEVICE_SYSTEM_STATUS_CHARGER_
+#ifndef _CONTEXT_CHARGER_STATE_PROVIDER_H_
+#define _CONTEXT_CHARGER_STATE_PROVIDER_H_
 
 #include "RuntimeInfoBase.h"
 
 namespace ctx {
 
-	class DeviceStatusCharger : public DeviceStatusRuntimeInfo {
+	class ChargerStateProvider : public RuntimeInfoProvider {
 	public:
-		DeviceStatusCharger();
-		~DeviceStatusCharger();
+		ChargerStateProvider();
+		~ChargerStateProvider();
 
 		int read();
 
@@ -36,4 +36,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_CHARGER_H_
+#endif /* _CONTEXT_CHARGER_STATE_PROVIDER_H_ */

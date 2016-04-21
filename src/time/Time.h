@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_TIME_H_
-#define _DEVICE_SYSTEM_STATUS_TIME_H_
+#ifndef _CONTEXT_TIME_PROVIDER_H_
+#define _CONTEXT_TIME_PROVIDER_H_
 
-#include "../shared/BasicProvider.h"
-#include "../shared/ProviderTypes.h"
+#include <BasicProvider.h>
+#include <ProviderTypes.h>
 
 namespace ctx {
 
-	class DeviceStatusTime : public BasicProvider {
+	class TimeProvider : public BasicProvider {
 	public:
-		DeviceStatusTime();
-		~DeviceStatusTime();
+		TimeProvider();
+		~TimeProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -36,4 +36,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_TIME_H_
+#endif /* _CONTEXT_TIME_PROVIDER_H_ */

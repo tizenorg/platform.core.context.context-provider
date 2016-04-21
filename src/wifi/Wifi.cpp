@@ -20,7 +20,7 @@
 
 using namespace ctx;
 
-DeviceStatusWifi::DeviceStatusWifi() :
+WifiStateProvider::WifiStateProvider() :
 	BasicProvider(SUBJ_STATE_WIFI),
 	__lastState(UNKNOWN),
 	__isInitialized(false),
@@ -35,17 +35,17 @@ DeviceStatusWifi::DeviceStatusWifi() :
 	}
 }
 
-DeviceStatusWifi::~DeviceStatusWifi()
+WifiStateProvider::~WifiStateProvider()
 {
 	__stopMonitor();
 }
 
-bool DeviceStatusWifi::isSupported()
+bool WifiStateProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.wifi");
 }
 
-void DeviceStatusWifi::submitTriggerItem()
+void WifiStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
@@ -55,7 +55,7 @@ void DeviceStatusWifi::submitTriggerItem()
 			NULL);
 }
 
-bool DeviceStatusWifi::__getCurrentState()
+bool WifiStateProvider::__getCurrentState()
 {
 	int err;
 
@@ -89,7 +89,7 @@ bool DeviceStatusWifi::__getCurrentState()
 	return true;
 }
 
-bool DeviceStatusWifi::__getBssid()
+bool WifiStateProvider::__getBssid()
 {
 	int err;
 	char *strBuf = NULL;
@@ -113,14 +113,14 @@ bool DeviceStatusWifi::__getBssid()
 	return !__bssid.empty();
 }
 
-void DeviceStatusWifi::__clearBssid()
+void WifiStateProvider::__clearBssid()
 {
 	__bssid.clear();
 	SharedVars().clear(SharedVars::WIFI_BSSID);
 	_D("No WiFi connection");
 }
 
-bool DeviceStatusWifi::__getResponsePacket(Json* data)
+bool WifiStateProvider::__getResponsePacket(Json* data)
 {
 	switch (__lastState) {
 	case DISABLED:
@@ -143,7 +143,7 @@ bool DeviceStatusWifi::__getResponsePacket(Json* data)
 	return true;
 }
 
-int DeviceStatusWifi::read()
+int WifiStateProvider::read()
 {
 	IF_FAIL_RETURN(__getCurrentState(), ERR_OPERATION_FAILED);
 
@@ -156,7 +156,7 @@ int DeviceStatusWifi::read()
 	return ERR_OPERATION_FAILED;
 }
 
-bool DeviceStatusWifi::__startMonitor()
+bool WifiStateProvider::__startMonitor()
 {
 	IF_FAIL_RETURN(!__isInitialized, true);
 
@@ -178,7 +178,7 @@ CATCH:
 	return false;
 }
 
-void DeviceStatusWifi::__stopMonitor()
+void WifiStateProvider::__stopMonitor()
 {
 	IF_FAIL_VOID(__isInitialized);
 
@@ -188,7 +188,7 @@ void DeviceStatusWifi::__stopMonitor()
 	__isInitialized = false;
 }
 
-int DeviceStatusWifi::subscribe()
+int WifiStateProvider::subscribe()
 {
 #if 0
 	IF_FAIL_RETURN(__startMonitor(), ERR_OPERATION_FAILED);
@@ -201,7 +201,7 @@ int DeviceStatusWifi::subscribe()
 	return ERR_NONE;
 }
 
-int DeviceStatusWifi::unsubscribe()
+int WifiStateProvider::unsubscribe()
 {
 #if 0
 	__stopMonitor();
@@ -209,7 +209,7 @@ int DeviceStatusWifi::unsubscribe()
 	return ERR_NONE;
 }
 
-void DeviceStatusWifi::__handleUpdate()
+void WifiStateProvider::__handleUpdate()
 {
 	int prevState = __lastState;
 
@@ -236,16 +236,16 @@ void DeviceStatusWifi::__handleUpdate()
 	}
 }
 
-void DeviceStatusWifi::__deviceStateChangedCb(wifi_device_state_e state, void *userData)
+void WifiStateProvider::__deviceStateChangedCb(wifi_device_state_e state, void *userData)
 {
-	DeviceStatusWifi *instance = static_cast<DeviceStatusWifi*>(userData);
+	WifiStateProvider *instance = static_cast<WifiStateProvider*>(userData);
 	instance->__isActivated = (state == WIFI_DEVICE_STATE_ACTIVATED);
 	instance->__handleUpdate();
 }
 
-void DeviceStatusWifi::__connectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *userData)
+void WifiStateProvider::__connectionStateChangedCb(wifi_connection_state_e state, wifi_ap_h ap, void *userData)
 {
-	DeviceStatusWifi *instance = static_cast<DeviceStatusWifi*>(userData);
+	WifiStateProvider *instance = static_cast<WifiStateProvider*>(userData);
 	instance->__connState = state;
 	instance->__handleUpdate();
 }

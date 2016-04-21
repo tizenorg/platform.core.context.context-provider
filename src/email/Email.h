@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_SOCIAL_STATUS_EMAIL_H_
-#define _CONTEXT_SOCIAL_STATUS_EMAIL_H_
+#ifndef _CONTEXT_EMAIL_EVENT_PROVIDER_H_
+#define _CONTEXT_EMAIL_EVENT_PROVIDER_H_
 
 #include <DBusSignalWatcher.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class SocialStatusEmail : public BasicProvider, public IDBusSignalListener {
+	class EmailEventProvider : public BasicProvider, public IDBusSignalListener {
 	public:
-		SocialStatusEmail();
-		~SocialStatusEmail();
+		EmailEventProvider();
+		~EmailEventProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -42,4 +42,4 @@ namespace ctx {
 	};
 }
 
-#endif // _CONTEXT_SOCIAL_STATUS_EMAIL_H_
+#endif /* _CONTEXT_EMAIL_EVENT_PROVIDER_H_ */

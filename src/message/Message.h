@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_SOCIAL_STATUS_SMS_H_
-#define _CONTEXT_SOCIAL_STATUS_SMS_H_
+#ifndef _CONTEXT_MESSAGE_EVENT_PROVIDER_H_
+#define _CONTEXT_MESSAGE_EVENT_PROVIDER_H_
 
 #include <msg.h>
 #include <msg_transport.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class SocialStatusMessage : public BasicProvider {
+	class MessageEventProvider : public BasicProvider {
 	public:
-		SocialStatusMessage();
-		~SocialStatusMessage();
+		MessageEventProvider();
+		~MessageEventProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -46,4 +46,4 @@ namespace ctx {
 	};
 }
 
-#endif // _CONTEXT_SOCIAL_STATUS_SMS_H_
+#endif /* _CONTEXT_MESSAGE_EVENT_PROVIDER_H_ */

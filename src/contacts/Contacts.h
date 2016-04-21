@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_SOCIAL_STATUS_CONTACTS_H_
-#define _CONTEXT_SOCIAL_STATUS_CONTACTS_H_
+#ifndef _CONTEXT_CONTACTS_CHANGE_PROVIDER_H_
+#define _CONTEXT_CONTACTS_CHANGE_PROVIDER_H_
 
 #include <contacts.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class SocialStatusContacts : public BasicProvider {
+	class ContactsChangeProvider : public BasicProvider {
 	public:
-		SocialStatusContacts();
-		~SocialStatusContacts();
+		ContactsChangeProvider();
+		~ContactsChangeProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -46,4 +46,4 @@ namespace ctx {
 	};
 }
 
-#endif // _CONTEXT_SOCIAL_STATUS_CONTACTS_H_
+#endif /* _CONTEXT_CONTACTS_CHANGE_PROVIDER_H_ */

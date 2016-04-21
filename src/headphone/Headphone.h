@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_HEADPHONE_H_
-#define _CONTEXT_HEADPNOHE_H_
+#ifndef _CONTEXT_HEADPHONE_STATE_PROVIDER_H_
+#define _CONTEXT_HEADPHONE_STATE_PROVIDER_H_
 
-#include <glib.h>
 #include <runtime_info.h>
 #include <bluetooth.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class DeviceStatusHeadphone : public BasicProvider {
+	class HeadphoneStateProvider : public BasicProvider {
 	public:
-		DeviceStatusHeadphone();
-		~DeviceStatusHeadphone();
+		HeadphoneStateProvider();
+		~HeadphoneStateProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -61,4 +60,4 @@ namespace ctx {
 	};
 }
 
-#endif // _CONTEXT_HEADPHONE_H_
+#endif /* _CONTEXT_HEADPHONE_STATE_PROVIDER_H_ */

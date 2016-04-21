@@ -19,27 +19,27 @@
 
 using namespace ctx;
 
-DeviceStatusUsb::DeviceStatusUsb()	:
-	DeviceStatusRuntimeInfo(SUBJ_STATE_USB, RUNTIME_INFO_KEY_USB_CONNECTED)
+UsbStateProvider::UsbStateProvider()	:
+	RuntimeInfoProvider(SUBJ_STATE_USB, RUNTIME_INFO_KEY_USB_CONNECTED)
 {
 }
 
-DeviceStatusUsb::~DeviceStatusUsb()
+UsbStateProvider::~UsbStateProvider()
 {
 }
 
-bool DeviceStatusUsb::isSupported()
+bool UsbStateProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/usb.host");
 }
 
-void DeviceStatusUsb::submitTriggerItem()
+void UsbStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{" TRIG_BOOL_ITEM_DEF("IsConnected") "}", NULL);
 }
 
-void DeviceStatusUsb::handleUpdate()
+void UsbStateProvider::handleUpdate()
 {
 	bool status = false;
 
@@ -52,7 +52,7 @@ void DeviceStatusUsb::handleUpdate()
 	publish(NULL, ERR_NONE, dataRead);
 }
 
-int DeviceStatusUsb::read()
+int UsbStateProvider::read()
 {
 	bool status = false;
 	Json dataRead;

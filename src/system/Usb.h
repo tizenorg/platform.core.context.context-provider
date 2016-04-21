@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_USB_H_
-#define _DEVICE_SYSTEM_STATUS_USB_H_
+#ifndef _CONTEXT_USB_STATE_PROVIDER_H_
+#define _CONTEXT_USB_STATE_PROVIDER_H_
 
 #include "RuntimeInfoBase.h"
 
 namespace ctx {
 
-	class DeviceStatusUsb : public DeviceStatusRuntimeInfo {
+	class UsbStateProvider : public RuntimeInfoProvider {
 	public:
-		DeviceStatusUsb();
-		~DeviceStatusUsb();
+		UsbStateProvider();
+		~UsbStateProvider();
 
 		int read();
 
@@ -36,4 +36,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_USB_H_
+#endif /* _CONTEXT_USB_STATE_PROVIDER_H_ */

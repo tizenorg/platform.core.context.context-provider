@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_ALARM_H_
-#define _DEVICE_SYSTEM_STATUS_ALARM_H_
+#ifndef _CONTEXT_ALARM_PROVIDER_H_
+#define _CONTEXT_ALARM_PROVIDER_H_
 
 #include <map>
 #include <set>
 #include <TimerManager.h>
 #include <ContextProvider.h>
-#include "../shared/ProviderTypes.h"
+#include <ProviderTypes.h>
 
 namespace ctx {
 
-	class DeviceStatusAlarm : public ContextProvider, ITimerListener {
+	class AlarmProvider : public ContextProvider, ITimerListener {
 	public:
-		DeviceStatusAlarm();
-		~DeviceStatusAlarm();
+		AlarmProvider();
+		~AlarmProvider();
 
 		int subscribe(Json option, Json *requestResult);
 		int unsubscribe(Json option);
@@ -74,4 +74,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_ALARM_H_
+#endif /* _CONTEXT_ALARM_PROVIDER_H_ */

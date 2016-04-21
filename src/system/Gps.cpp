@@ -37,21 +37,21 @@ static const char* __getStatusString(int gpsStatus)
 	}
 }
 
-DeviceStatusGps::DeviceStatusGps() :
-	DeviceStatusRuntimeInfo(SUBJ_STATE_GPS, RUNTIME_INFO_KEY_GPS_STATUS)
+GpsStateProvider::GpsStateProvider() :
+	RuntimeInfoProvider(SUBJ_STATE_GPS, RUNTIME_INFO_KEY_GPS_STATUS)
 {
 }
 
-DeviceStatusGps::~DeviceStatusGps()
+GpsStateProvider::~GpsStateProvider()
 {
 }
 
-bool DeviceStatusGps::isSupported()
+bool GpsStateProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/location.gps");
 }
 
-void DeviceStatusGps::submitTriggerItem()
+void GpsStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
@@ -60,7 +60,7 @@ void DeviceStatusGps::submitTriggerItem()
 			NULL);
 }
 
-void DeviceStatusGps::handleUpdate()
+void GpsStateProvider::handleUpdate()
 {
 	int gpsStatus;
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_GPS_STATUS, &gpsStatus);
@@ -76,7 +76,7 @@ void DeviceStatusGps::handleUpdate()
 	publish(NULL, ERR_NONE, dataRead);
 }
 
-int DeviceStatusGps::read()
+int GpsStateProvider::read()
 {
 	int gpsStatus;
 	Json dataRead;

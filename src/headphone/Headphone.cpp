@@ -21,7 +21,7 @@
 
 using namespace ctx;
 
-DeviceStatusHeadphone::DeviceStatusHeadphone() :
+HeadphoneStateProvider::HeadphoneStateProvider() :
 	BasicProvider(SUBJ_STATE_HEADPHONE),
 	__connected(false),
 	__audioJackState(RUNTIME_INFO_AUDIO_JACK_STATUS_UNCONNECTED),
@@ -32,16 +32,16 @@ DeviceStatusHeadphone::DeviceStatusHeadphone() :
 {
 }
 
-DeviceStatusHeadphone::~DeviceStatusHeadphone()
+HeadphoneStateProvider::~HeadphoneStateProvider()
 {
 }
 
-bool DeviceStatusHeadphone::isSupported()
+bool HeadphoneStateProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceStatusHeadphone::submitTriggerItem()
+void HeadphoneStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
@@ -51,7 +51,7 @@ void DeviceStatusHeadphone::submitTriggerItem()
 			NULL);
 }
 
-int DeviceStatusHeadphone::subscribe()
+int HeadphoneStateProvider::subscribe()
 {
 	__connected = __getCurrentStatus();
 
@@ -65,7 +65,7 @@ int DeviceStatusHeadphone::subscribe()
 	return ERR_NONE;
 }
 
-int DeviceStatusHeadphone::unsubscribe()
+int HeadphoneStateProvider::unsubscribe()
 {
 	runtime_info_unset_changed_cb(RUNTIME_INFO_KEY_AUDIO_JACK_STATUS);
 	__unsetBtAudioCallback();
@@ -73,7 +73,7 @@ int DeviceStatusHeadphone::unsubscribe()
 	return ERR_NONE;
 }
 
-int DeviceStatusHeadphone::read()
+int HeadphoneStateProvider::read()
 {
 	if (!__beingSubscribed)
 		__connected = __getCurrentStatus();
@@ -85,7 +85,7 @@ int DeviceStatusHeadphone::read()
 	return ERR_NONE;
 }
 
-void DeviceStatusHeadphone::__setBtAudioCallback()
+void HeadphoneStateProvider::__setBtAudioCallback()
 {
 	IF_FAIL_VOID(!__btAudioCallbackOn);
 	int ret;
@@ -105,7 +105,7 @@ void DeviceStatusHeadphone::__setBtAudioCallback()
 	__btAudioCallbackOn = true;
 }
 
-void DeviceStatusHeadphone::__unsetBtAudioCallback()
+void HeadphoneStateProvider::__unsetBtAudioCallback()
 {
 	IF_FAIL_VOID(__btAudioCallbackOn);
 
@@ -115,12 +115,12 @@ void DeviceStatusHeadphone::__unsetBtAudioCallback()
 	__btAudioCallbackOn = false;
 }
 
-void DeviceStatusHeadphone::__setBtAudioState(bool state)
+void HeadphoneStateProvider::__setBtAudioState(bool state)
 {
 	__btAudioState = state;
 }
 
-bool DeviceStatusHeadphone::__getCurrentStatus()
+bool HeadphoneStateProvider::__getCurrentStatus()
 {
 	int ret;
 
@@ -139,7 +139,7 @@ bool DeviceStatusHeadphone::__getCurrentStatus()
 	return ((__audioJackState != RUNTIME_INFO_AUDIO_JACK_STATUS_UNCONNECTED) || __btAudioState);
 }
 
-void DeviceStatusHeadphone::__generateDataPacket(Json* data)
+void HeadphoneStateProvider::__generateDataPacket(Json* data)
 {
 	data->set(NULL, KEY_IS_CONNECTED, __connected ? VAL_TRUE : VAL_FALSE);
 
@@ -157,7 +157,7 @@ void DeviceStatusHeadphone::__generateDataPacket(Json* data)
 	}
 }
 
-bool DeviceStatusHeadphone::__handleUpdate()
+bool HeadphoneStateProvider::__handleUpdate()
 {
 	bool prevState = __connected;
 	__connected = ((__audioJackState != RUNTIME_INFO_AUDIO_JACK_STATUS_UNCONNECTED) || __btAudioState);
@@ -170,23 +170,23 @@ bool DeviceStatusHeadphone::__handleUpdate()
 	return true;
 }
 
-void DeviceStatusHeadphone::__handleAudioJackEvent()
+void HeadphoneStateProvider::__handleAudioJackEvent()
 {
 	int ret = runtime_info_get_value_int(RUNTIME_INFO_KEY_AUDIO_JACK_STATUS, &__audioJackState);
 	IF_FAIL_VOID_TAG(ret == ERR_NONE, _E, "Getting runtime info failed");
 	__handleUpdate();
 }
 
-void DeviceStatusHeadphone::__onAudioJackStateChanged(runtime_info_key_e runtimeKey, void* userData)
+void HeadphoneStateProvider::__onAudioJackStateChanged(runtime_info_key_e runtimeKey, void* userData)
 {
 	_D("EarJack");
-	DeviceStatusHeadphone *instance = static_cast<DeviceStatusHeadphone*>(userData);
+	HeadphoneStateProvider *instance = static_cast<HeadphoneStateProvider*>(userData);
 	instance->__handleAudioJackEvent();
 }
 
-void DeviceStatusHeadphone::__onBtConnectionChanged(bool connected, bt_device_connection_info_s *connInfo, void *userData)
+void HeadphoneStateProvider::__onBtConnectionChanged(bool connected, bt_device_connection_info_s *connInfo, void *userData)
 {
-	DeviceStatusHeadphone *instance = static_cast<DeviceStatusHeadphone*>(userData);
+	HeadphoneStateProvider *instance = static_cast<HeadphoneStateProvider*>(userData);
 	IF_FAIL_VOID(connected != instance->__btAudioState);
 	IF_FAIL_VOID(!instance->__btEventHandlerAdded);
 
@@ -200,10 +200,10 @@ void DeviceStatusHeadphone::__onBtConnectionChanged(bool connected, bt_device_co
 	}
 }
 
-gboolean DeviceStatusHeadphone::__handleBtEvent(gpointer data)
+gboolean HeadphoneStateProvider::__handleBtEvent(gpointer data)
 {
 	_D("BT state checking started");
-	DeviceStatusHeadphone *instance = static_cast<DeviceStatusHeadphone*>(data);
+	HeadphoneStateProvider *instance = static_cast<HeadphoneStateProvider*>(data);
 	instance->__btEventHandlerAdded = false;
 
 	instance->__setBtAudioState(false);
@@ -218,7 +218,7 @@ gboolean DeviceStatusHeadphone::__handleBtEvent(gpointer data)
 	return TRUE;
 }
 
-bool DeviceStatusHeadphone::__onBtBond(bt_device_info_s *deviceInfo, void* userData)
+bool HeadphoneStateProvider::__onBtBond(bt_device_info_s *deviceInfo, void* userData)
 {
 	if (deviceInfo->bt_class.major_device_class != BT_MAJOR_DEVICE_CLASS_AUDIO_VIDEO)
 		return true;
@@ -228,7 +228,7 @@ bool DeviceStatusHeadphone::__onBtBond(bt_device_info_s *deviceInfo, void* userD
 	IF_FAIL_RETURN_TAG(err == BT_ERROR_NONE, false, _E, "bt_device_is_profile_connected() failed");
 
 	if (st) {
-		DeviceStatusHeadphone *instance = static_cast<DeviceStatusHeadphone*>(userData);
+		HeadphoneStateProvider *instance = static_cast<HeadphoneStateProvider*>(userData);
 		instance->__setBtAudioState(true);
 		return false;
 	}

@@ -38,23 +38,23 @@ static telephony_noti_e __callNotiIds[] =
 };
 static Json __latest;
 
-SocialStatusCall::SocialStatusCall() :
+CallStateProvider::CallStateProvider() :
 	BasicProvider(SUBJ_STATE_CALL)
 {
 	__handleList.count = 0;
 	__handleList.handle = NULL;
 }
 
-SocialStatusCall::~SocialStatusCall()
+CallStateProvider::~CallStateProvider()
 {
 }
 
-bool SocialStatusCall::isSupported()
+bool CallStateProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void SocialStatusCall::submitTriggerItem()
+void CallStateProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
 			"{"
@@ -66,13 +66,13 @@ void SocialStatusCall::submitTriggerItem()
 	/* TODO remove Connecting, Connected */
 }
 
-void SocialStatusCall::__updateCb(telephony_h handle, telephony_noti_e notiId, void *data, void *userData)
+void CallStateProvider::__updateCb(telephony_h handle, telephony_noti_e notiId, void *data, void *userData)
 {
-	SocialStatusCall *instance = static_cast<SocialStatusCall*>(userData);
+	CallStateProvider *instance = static_cast<CallStateProvider*>(userData);
 	instance->__handleUpdate(handle, notiId, data);
 }
 
-void SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiId, void* id)
+void CallStateProvider::__handleUpdate(telephony_h handle, telephony_noti_e notiId, void* id)
 {
 	Json data;
 	unsigned int count;
@@ -158,7 +158,7 @@ void SocialStatusCall::__handleUpdate(telephony_h handle, telephony_noti_e notiI
 	telephony_call_release_call_list(count, &callList);
 }
 
-bool SocialStatusCall::__initTelephony()
+bool CallStateProvider::__initTelephony()
 {
 	IF_FAIL_RETURN(!__telephonyInitialized, true);
 
@@ -169,7 +169,7 @@ bool SocialStatusCall::__initTelephony()
 	return true;
 }
 
-void SocialStatusCall::__releaseTelephony()
+void CallStateProvider::__releaseTelephony()
 {
 	IF_FAIL_VOID(__telephonyInitialized);
 
@@ -178,7 +178,7 @@ void SocialStatusCall::__releaseTelephony()
 	__telephonyInitialized = false;
 }
 
-bool SocialStatusCall::__setCallback()
+bool CallStateProvider::__setCallback()
 {
 	/* TODO: Consider dual-sim devices */
 	IF_FAIL_RETURN_TAG(__initTelephony(), false, _E, "Initialization failed");
@@ -200,7 +200,7 @@ CATCH:
 	return false;
 }
 
-void SocialStatusCall::__unsetCallback()
+void CallStateProvider::__unsetCallback()
 {
 	for (unsigned int i = 0; i < __handleList.count; i++) {
 		for (unsigned int j = 0; j < TELEPHONY_NOTI_ID_CNT; j++) {
@@ -211,7 +211,7 @@ void SocialStatusCall::__unsetCallback()
 	__releaseTelephony();
 }
 
-bool SocialStatusCall::__getCallState(telephony_call_h& handle, std::string& state)
+bool CallStateProvider::__getCallState(telephony_call_h& handle, std::string& state)
 {
 	state.clear();
 
@@ -244,7 +244,7 @@ bool SocialStatusCall::__getCallState(telephony_call_h& handle, std::string& sta
 	return true;
 }
 
-bool SocialStatusCall::__getCallType(telephony_call_h& handle, std::string& type)
+bool CallStateProvider::__getCallType(telephony_call_h& handle, std::string& type)
 {
 	type.clear();
 
@@ -269,7 +269,7 @@ bool SocialStatusCall::__getCallType(telephony_call_h& handle, std::string& type
 	return true;
 }
 
-bool SocialStatusCall::__getCallAddress(telephony_call_h& handle, std::string& address)
+bool CallStateProvider::__getCallAddress(telephony_call_h& handle, std::string& address)
 {
 	address.clear();
 
@@ -288,7 +288,7 @@ bool SocialStatusCall::__getCallAddress(telephony_call_h& handle, std::string& a
 	return true;
 }
 
-bool SocialStatusCall::__getCallHandleId(telephony_call_h& handle, unsigned int& id)
+bool CallStateProvider::__getCallHandleId(telephony_call_h& handle, unsigned int& id)
 {
 	int err = telephony_call_get_handle_id(handle, &id);
 	IF_FAIL_RETURN_TAG(err == TELEPHONY_ERROR_NONE, false, _E, "Getting handle id failed");
@@ -296,20 +296,20 @@ bool SocialStatusCall::__getCallHandleId(telephony_call_h& handle, unsigned int&
 	return true;
 }
 
-int SocialStatusCall::subscribe()
+int CallStateProvider::subscribe()
 {
 	bool ret = __setCallback();
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	return ERR_NONE;
 }
 
-int SocialStatusCall::unsubscribe()
+int CallStateProvider::unsubscribe()
 {
 	__unsetCallback();
 	return ERR_NONE;
 }
 
-bool SocialStatusCall::__readCurrentStatus(telephony_h& handle, Json* data)
+bool CallStateProvider::__readCurrentStatus(telephony_h& handle, Json* data)
 {
 	unsigned int count = 0;
 	telephony_call_h *callList = NULL;
@@ -351,7 +351,7 @@ bool SocialStatusCall::__readCurrentStatus(telephony_h& handle, Json* data)
 	return true;
 }
 
-int SocialStatusCall::read()
+int CallStateProvider::read()
 {
 	bool temporaryHandle = false;
 	if (!__telephonyInitialized) {

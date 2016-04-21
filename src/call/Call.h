@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_SOCIAL_STATUS_CALL_H_
-#define _CONTEXT_SOCIAL_STATUS_CALL_H_
+#ifndef _CONTEXT_CALL_STATE_PROVIDER_H_
+#define _CONTEXT_CALL_STATE_PROVIDER_H_
 
 #include <telephony.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class SocialStatusCall : public BasicProvider {
+	class CallStateProvider : public BasicProvider {
 	public:
-		SocialStatusCall();
-		~SocialStatusCall();
+		CallStateProvider();
+		~CallStateProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -54,4 +54,4 @@ namespace ctx {
 	};
 }
 
-#endif // _CONTEXT_SOCIAL_STATUS_CALL_H_
+#endif /* _CONTEXT_CALL_STATE_PROVIDER_H_ */

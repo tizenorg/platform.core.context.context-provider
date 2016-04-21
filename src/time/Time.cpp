@@ -19,21 +19,21 @@
 
 using namespace ctx;
 
-DeviceStatusTime::DeviceStatusTime() :
+TimeProvider::TimeProvider() :
 	BasicProvider(SUBJ_STATE_TIME)
 {
 }
 
-DeviceStatusTime::~DeviceStatusTime()
+TimeProvider::~TimeProvider()
 {
 }
 
-bool DeviceStatusTime::isSupported()
+bool TimeProvider::isSupported()
 {
 	return true;
 }
 
-void DeviceStatusTime::submitTriggerItem()
+void TimeProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_READ,
 			"{"
@@ -44,17 +44,17 @@ void DeviceStatusTime::submitTriggerItem()
 			NULL);
 }
 
-int DeviceStatusTime::subscribe()
+int TimeProvider::subscribe()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int DeviceStatusTime::unsubscribe()
+int TimeProvider::unsubscribe()
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int DeviceStatusTime::read()
+int TimeProvider::read()
 {
 	time_t rawtime;
 	struct tm timeInfo;

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_SYSTEM_STATUS_POWER_SAVING_MODE_H_
-#define _DEVICE_SYSTEM_STATUS_POWER_SAVING_MODE_H_
+#ifndef _CONTEXT_POWER_SAVE_MODE_PROVIDER_H_
+#define _CONTEXT_POWER_SAVE_MODE_PROVIDER_H_
 
 #include <vconf.h>
-#include "../shared/ProviderTypes.h"
-#include "../shared/BasicProvider.h"
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class DeviceStatusPsmode : public BasicProvider {
+	class PowerSaveModeProvider : public BasicProvider {
 	public:
-		DeviceStatusPsmode();
-		~DeviceStatusPsmode();
+		PowerSaveModeProvider();
+		~PowerSaveModeProvider();
 
 		int subscribe();
 		int unsubscribe();
@@ -41,4 +41,4 @@ namespace ctx {
 	};
 }
 
-#endif // _DEVICE_SYSTEM_STATUS_POWER_SAVING_MODE_H_
+#endif /* _CONTEXT_POWER_SAVE_MODE_PROVIDER_H_ */

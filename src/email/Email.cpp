@@ -20,23 +20,23 @@
 
 using namespace ctx;
 
-SocialStatusEmail::SocialStatusEmail()	:
+EmailEventProvider::EmailEventProvider()	:
 	BasicProvider(SUBJ_STATE_EMAIL),
 	__dbusSignalId(-1),
 	__dbusWatcher(DBusType::SESSION)
 {
 }
 
-SocialStatusEmail::~SocialStatusEmail()
+EmailEventProvider::~EmailEventProvider()
 {
 }
 
-bool SocialStatusEmail::isSupported()
+bool EmailEventProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void SocialStatusEmail::submitTriggerItem()
+void EmailEventProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE,
 			"{"
@@ -45,7 +45,7 @@ void SocialStatusEmail::submitTriggerItem()
 			NULL);
 }
 
-void SocialStatusEmail::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
+void EmailEventProvider::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
 {
 	gint subType = 0;
 	gint gi1 = 0;
@@ -71,7 +71,7 @@ void SocialStatusEmail::onSignal(const char* sender, const char* path, const cha
 }
 
 
-int SocialStatusEmail::subscribe()
+int EmailEventProvider::subscribe()
 {
 	__dbusSignalId = __dbusWatcher.watch(NULL, NULL, "User.Email.NetworkStatus", "email", this);
 	IF_FAIL_RETURN_TAG(__dbusSignalId >= 0, ERR_OPERATION_FAILED, _E, "Email dbus signal subscription failed");
@@ -79,7 +79,7 @@ int SocialStatusEmail::subscribe()
 }
 
 
-int SocialStatusEmail::unsubscribe()
+int EmailEventProvider::unsubscribe()
 {
 	__dbusWatcher.unwatch(__dbusSignalId);
 	return ERR_NONE;
