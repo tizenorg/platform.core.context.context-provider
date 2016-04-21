@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef	_DEVICE_ACTIVITY_STATUS_TYPES_H_
-#define	_DEVICE_ACTIVITY_STATUS_TYPES_H_
+#ifndef	_CONTEXT_ACTIVITY_TYPES_H_
+#define	_CONTEXT_ACTIVITY_TYPES_H_
 
-// Subject
-#define USER_ACT_SUBJ_IN_VEHICLE	"activity/in_vehicle"
-#define USER_ACT_SUBJ_RUNNING		"activity/running"
-#define USER_ACT_SUBJ_STATIONARY	"activity/stationary"
-#define USER_ACT_SUBJ_WALKING		"activity/walking"
+/* Subject */
+#define CTX_ACTIVITY_SUBJ_IN_VEHICLE	"activity/in_vehicle"
+#define CTX_ACTIVITY_SUBJ_RUNNING		"activity/running"
+#define CTX_ACTIVITY_SUBJ_STATIONARY	"activity/stationary"
+#define CTX_ACTIVITY_SUBJ_WALKING		"activity/walking"
 
-// Data Key
-#define USER_ACT_EVENT		"Event"
-#define USER_ACT_ACCURACY	"Accuracy"
+/* Data Key */
+#define CTX_ACTIVITY_EVENT		"Event"
+#define CTX_ACTIVITY_ACCURACY	"Accuracy"
 
-// Data Value
-#define USER_ACT_DETECTED	"Detected"
-#define USER_ACT_LOW		"Low"
-#define USER_ACT_NORMAL		"Normal"
-#define USER_ACT_HIGH		"High"
+/* Data Value */
+#define CTX_ACTIVITY_DETECTED	"Detected"
+#define CTX_ACTIVITY_LOW		"Low"
+#define CTX_ACTIVITY_NORMAL		"Normal"
+#define CTX_ACTIVITY_HIGH		"High"
 
-#endif	// _DEVICE_ACTIVITY_STATUS_TYPES_H_
+#endif	/* _CONTEXT_ACTIVITY_TYPES_H_ */

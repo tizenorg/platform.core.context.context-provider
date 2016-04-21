@@ -15,30 +15,29 @@
  */
 
 #include <Util.h>
-#include "ActivityTypes.h"
-#include "ActivityBase.h"
+#include "Activity.h"
 
 using namespace ctx;
 
-UserActivityBase::UserActivityBase(const char *subject, activity_type_e type)	:
+ActivityProvider::ActivityProvider(const char *subject, activity_type_e type)	:
 	BasicProvider(subject),
 	__activityType(type),
 	__activityHandle(NULL)
 {
 }
 
-UserActivityBase::~UserActivityBase()
+ActivityProvider::~ActivityProvider()
 {
 	if (__activityHandle)
 		activity_release(__activityHandle);
 }
 
-bool UserActivityBase::isSupported()
+bool ActivityProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/sensor.activity_recognition");
 }
 
-void UserActivityBase::submitTriggerItem()
+void ActivityProvider::submitTriggerItem()
 {
 	registerTriggerItem(OPS_SUBSCRIBE,
 			"{\"Event\":{\"type\":\"string\", \"values\":[\"Detected\"]}}",
@@ -46,40 +45,40 @@ void UserActivityBase::submitTriggerItem()
 			);
 }
 
-void UserActivityBase::__updateCb(activity_type_e activity, const activity_data_h data, double timestamp, activity_error_e error, void* userData)
+void ActivityProvider::__updateCb(activity_type_e activity, const activity_data_h data, double timestamp, activity_error_e error, void* userData)
 {
 	IF_FAIL_VOID_TAG(error == ACTIVITY_ERROR_NONE, _E, "Error: %d", error);
 
-	UserActivityBase *instance = static_cast<UserActivityBase*>(userData);
+	ActivityProvider *instance = static_cast<ActivityProvider*>(userData);
 	instance->__handleUpdate(activity, data, timestamp);
 }
 
-void UserActivityBase::__handleUpdate(activity_type_e activity, const activity_data_h data, double timestamp)
+void ActivityProvider::__handleUpdate(activity_type_e activity, const activity_data_h data, double timestamp)
 {
 	IF_FAIL_VOID_TAG(activity == __activityType, _E, "Invalid activity: %d", activity);
 
 	Json dataRead;
-	dataRead.set(NULL, USER_ACT_EVENT, USER_ACT_DETECTED);
+	dataRead.set(NULL, CTX_ACTIVITY_EVENT, CTX_ACTIVITY_DETECTED);
 
 	activity_accuracy_e accuracy = ACTIVITY_ACCURACY_LOW;
 	activity_get_accuracy(data, &accuracy);
 
 	switch (accuracy) {
 	case ACTIVITY_ACCURACY_HIGH:
-		dataRead.set(NULL, USER_ACT_ACCURACY, USER_ACT_HIGH);
+		dataRead.set(NULL, CTX_ACTIVITY_ACCURACY, CTX_ACTIVITY_HIGH);
 		break;
 	case ACTIVITY_ACCURACY_MID:
-		dataRead.set(NULL, USER_ACT_ACCURACY, USER_ACT_NORMAL);
+		dataRead.set(NULL, CTX_ACTIVITY_ACCURACY, CTX_ACTIVITY_NORMAL);
 		break;
 	default:
-		dataRead.set(NULL, USER_ACT_ACCURACY, USER_ACT_LOW);
+		dataRead.set(NULL, CTX_ACTIVITY_ACCURACY, CTX_ACTIVITY_LOW);
 		break;
 	}
 
 	publish(NULL, ERR_NONE, dataRead);
 }
 
-int UserActivityBase::subscribe()
+int ActivityProvider::subscribe()
 {
 	IF_FAIL_RETURN(__activityHandle == NULL, ERR_NONE);
 
@@ -97,7 +96,7 @@ int UserActivityBase::subscribe()
 	return ERR_NONE;
 }
 
-int UserActivityBase::unsubscribe()
+int ActivityProvider::unsubscribe()
 {
 	IF_FAIL_RETURN(__activityHandle, ERR_NONE);
 

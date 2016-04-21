@@ -69,10 +69,10 @@ SO_EXPORT bool ctx::initDeviceContextProvider()
 	registerProvider<DeviceStatusBattery>(DEVICE_ST_SUBJ_BATTERY, NULL);
 	registerProvider<DeviceStatusPsmode>(DEVICE_ST_SUBJ_PSMODE, NULL);
 
-	registerProvider<UserActivityStationary>(USER_ACT_SUBJ_STATIONARY, NULL);
-	registerProvider<UserActivityWalking>(USER_ACT_SUBJ_WALKING, NULL);
-	registerProvider<UserActivityRunning>(USER_ACT_SUBJ_RUNNING, NULL);
-	registerProvider<UserActivityInVehicle>(USER_ACT_SUBJ_IN_VEHICLE, NULL);
+	registerProvider<StationaryActivityProvider>(CTX_ACTIVITY_SUBJ_STATIONARY, NULL);
+	registerProvider<WalkingActivityProvider>(CTX_ACTIVITY_SUBJ_WALKING, NULL);
+	registerProvider<RunningActivityProvider>(CTX_ACTIVITY_SUBJ_RUNNING, NULL);
+	registerProvider<InVehicleActivityProvider>(CTX_ACTIVITY_SUBJ_IN_VEHICLE, NULL);
 
 #ifdef _MOBILE_
 	registerProvider<SocialStatusCall>(SOCIAL_ST_SUBJ_CALL, PRIV_TELEPHONY);

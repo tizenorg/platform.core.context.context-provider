@@ -14,23 +14,47 @@
  * limitations under the License.
  */
 
-#ifndef _DEVICE_ACTIVITY_STATUS_H_
-#define _DEVICE_ACTIVITY_STATUS_H_
+#ifndef _CONTEXT_ACTIVITY_PROVIDER_H_
+#define _CONTEXT_ACTIVITY_PROVIDER_H_
 
-#include "ActivityBase.h"
+#include <string>
+#include <activity_recognition.h>
+#include <BasicProvider.h>
 #include "ActivityTypes.h"
 
 #define GENERATE_ACTIVITY_PROVIDER(actPrvd, actSubj, actType) \
-	class actPrvd : public UserActivityBase { \
+	class actPrvd : public ActivityProvider { \
 	public: \
-		actPrvd() : UserActivityBase(actSubj, actType) {} \
+		actPrvd() : ActivityProvider(actSubj, actType) {} \
 	}; \
 
 namespace ctx {
-	GENERATE_ACTIVITY_PROVIDER(UserActivityStationary, USER_ACT_SUBJ_STATIONARY, ACTIVITY_STATIONARY);
-	GENERATE_ACTIVITY_PROVIDER(UserActivityWalking, USER_ACT_SUBJ_WALKING, ACTIVITY_WALK);
-	GENERATE_ACTIVITY_PROVIDER(UserActivityRunning, USER_ACT_SUBJ_RUNNING, ACTIVITY_RUN);
-	GENERATE_ACTIVITY_PROVIDER(UserActivityInVehicle, USER_ACT_SUBJ_IN_VEHICLE, ACTIVITY_IN_VEHICLE);
+
+	class ActivityProvider : public BasicProvider {
+	public:
+		ActivityProvider(const char *subject, activity_type_e type);
+		virtual ~ActivityProvider();
+
+		int subscribe();
+		int unsubscribe();
+
+		bool isSupported();
+		void submitTriggerItem();
+
+	protected:
+		activity_type_e __activityType;
+		activity_h __activityHandle;
+
+	private:
+		void __handleUpdate(activity_type_e activity, const activity_data_h data, double timestamp);
+		static void __updateCb(activity_type_e activity, const activity_data_h data, double timestamp, activity_error_e error, void* userData);
+	};
+
+
+	GENERATE_ACTIVITY_PROVIDER(StationaryActivityProvider, CTX_ACTIVITY_SUBJ_STATIONARY, ACTIVITY_STATIONARY);
+	GENERATE_ACTIVITY_PROVIDER(WalkingActivityProvider, CTX_ACTIVITY_SUBJ_WALKING, ACTIVITY_WALK);
+	GENERATE_ACTIVITY_PROVIDER(RunningActivityProvider, CTX_ACTIVITY_SUBJ_RUNNING, ACTIVITY_RUN);
+	GENERATE_ACTIVITY_PROVIDER(InVehicleActivityProvider, CTX_ACTIVITY_SUBJ_IN_VEHICLE, ACTIVITY_IN_VEHICLE);
 }
 
-#endif // _DEVICE_ACTIVITY_STATUS_H_
+#endif // _CONTEXT_ACTIVITY_PROVIDER_H_
