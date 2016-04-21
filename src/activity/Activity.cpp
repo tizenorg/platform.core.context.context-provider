@@ -58,20 +58,20 @@ void ActivityProvider::__handleUpdate(activity_type_e activity, const activity_d
 	IF_FAIL_VOID_TAG(activity == __activityType, _E, "Invalid activity: %d", activity);
 
 	Json dataRead;
-	dataRead.set(NULL, CTX_ACTIVITY_EVENT, CTX_ACTIVITY_DETECTED);
+	dataRead.set(NULL, KEY_EVENT, VAL_DETECTED);
 
 	activity_accuracy_e accuracy = ACTIVITY_ACCURACY_LOW;
 	activity_get_accuracy(data, &accuracy);
 
 	switch (accuracy) {
 	case ACTIVITY_ACCURACY_HIGH:
-		dataRead.set(NULL, CTX_ACTIVITY_ACCURACY, CTX_ACTIVITY_HIGH);
+		dataRead.set(NULL, KEY_ACCURACY, VAL_HIGH);
 		break;
 	case ACTIVITY_ACCURACY_MID:
-		dataRead.set(NULL, CTX_ACTIVITY_ACCURACY, CTX_ACTIVITY_NORMAL);
+		dataRead.set(NULL, KEY_ACCURACY, VAL_NORMAL);
 		break;
 	default:
-		dataRead.set(NULL, CTX_ACTIVITY_ACCURACY, CTX_ACTIVITY_LOW);
+		dataRead.set(NULL, KEY_ACCURACY, VAL_LOW);
 		break;
 	}
 

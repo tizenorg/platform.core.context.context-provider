@@ -19,8 +19,8 @@
 
 #include <string>
 #include <activity_recognition.h>
+#include <ProviderTypes.h>
 #include <BasicProvider.h>
-#include "ActivityTypes.h"
 
 #define GENERATE_ACTIVITY_PROVIDER(actPrvd, actSubj, actType) \
 	class actPrvd : public ActivityProvider { \
@@ -51,10 +51,10 @@ namespace ctx {
 	};
 
 
-	GENERATE_ACTIVITY_PROVIDER(StationaryActivityProvider, CTX_ACTIVITY_SUBJ_STATIONARY, ACTIVITY_STATIONARY);
-	GENERATE_ACTIVITY_PROVIDER(WalkingActivityProvider, CTX_ACTIVITY_SUBJ_WALKING, ACTIVITY_WALK);
-	GENERATE_ACTIVITY_PROVIDER(RunningActivityProvider, CTX_ACTIVITY_SUBJ_RUNNING, ACTIVITY_RUN);
-	GENERATE_ACTIVITY_PROVIDER(InVehicleActivityProvider, CTX_ACTIVITY_SUBJ_IN_VEHICLE, ACTIVITY_IN_VEHICLE);
+	GENERATE_ACTIVITY_PROVIDER(StationaryActivityProvider, SUBJ_ACTIVITY_STATIONARY, ACTIVITY_STATIONARY);
+	GENERATE_ACTIVITY_PROVIDER(WalkingActivityProvider, SUBJ_ACTIVITY_WALKING, ACTIVITY_WALK);
+	GENERATE_ACTIVITY_PROVIDER(RunningActivityProvider, SUBJ_ACTIVITY_RUNNING, ACTIVITY_RUN);
+	GENERATE_ACTIVITY_PROVIDER(InVehicleActivityProvider, SUBJ_ACTIVITY_IN_VEHICLE, ACTIVITY_IN_VEHICLE);
 }
 
 #endif // _CONTEXT_ACTIVITY_PROVIDER_H_

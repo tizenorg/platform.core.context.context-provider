@@ -43,6 +43,11 @@
 #define SUBJ_STATE_MESSAGE		"social/message"
 #define SUBJ_STATE_CONTACTS		"social/contacts"
 
+#define SUBJ_ACTIVITY_IN_VEHICLE	"activity/in_vehicle"
+#define SUBJ_ACTIVITY_RUNNING		"activity/running"
+#define SUBJ_ACTIVITY_STATIONARY	"activity/stationary"
+#define SUBJ_ACTIVITY_WALKING		"activity/walking"
+
 
 /* Data & Option Keys */
 #define KEY_QUERY_RESULT	"QueryResult"
@@ -74,6 +79,7 @@
 #define KEY_STATE			"State"
 #define KEY_TYPE			"Type"
 #define KEY_LEVEL			"Level"
+#define KEY_ACCURACY		"Accuracy"
 #define KEY_BSSID			"BSSID"
 #define KEY_MEDIUM			"Medium"
 #define KEY_ADDRESS			"Address"
@@ -117,6 +123,7 @@
 #define VAL_MY_PROFILE		"MyProfile"
 #define VAL_PERSON			"Person"
 #define VAL_CHANGED			"Changed"
+#define VAL_DETECTED		"Detected"
 
 #define VAL_ACTIVE		VAL_CONNECTED
 #define VAL_ALERTING	VAL_CONNECTING
