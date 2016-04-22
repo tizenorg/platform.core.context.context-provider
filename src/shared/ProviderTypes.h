@@ -18,6 +18,15 @@
 #define _CONTEXT_PROVIDER_TYPES_H_
 
 
+/* Privileges */
+#define PRIV_ALARM		"alarm.set"
+#define PRIV_NETWORK	"network.get"
+#define PRIV_TELEPHONY	"telephony"
+#define PRIV_MESSAGE	"message.read"
+#define PRIV_CONTACT	"contact.read"
+#define PRIV_LOCATION	"location"
+
+
 /* FW-wide Data Logger Parameters */
 #define LOG_RETENTION_PERIOD	7776000		/* 90 days in secs */
 

@@ -7,7 +7,6 @@ License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 
 %define BUILD_PROFILE %{?profile}%{!?profile:%{?tizen_profile_name}}
-%define keepstatic 1
 
 %if "%{?BUILD_PROFILE}" == "tv"
 ExcludeArch: %{arm} aarch64 %ix86 x86_64
@@ -90,17 +89,5 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 %manifest packaging/%{name}.manifest
 %defattr(-,root,root,-)
 /usr/share/license/%{name}
-
-%package devel
-Summary:    Context Provider (Development)
-Group:      Service/Context
-Requires:	%{name} = %{version}-%{release}
-
-%description devel
-Context Provider (Development)
-
-%files devel
-%defattr(-,root,root,-)
-%{_includedir}/context-service/internal/*.h
-%{_libdir}/pkgconfig/%{name}.pc
-%{_libdir}/*.a
+%{_libdir}/*.so*
+%{_libdir}/context/*.so*
