@@ -169,11 +169,11 @@ void GeofenceMonitorHandle::__emitStateChange()
 	__prevState = currentState;
 
 	Json option;
-	option.set(NULL, PLACE_GEOFENCE_PLACE_ID, __placeId);
+	option.set(NULL, KEY_PLACE_ID, __placeId);
 
 	Json data;
-	data.set(NULL, PLACE_GEOFENCE_PLACE_ID, __placeId);
-	data.set(NULL, PLACE_GEOFENCE_EVENT, __getStateString(currentState));
+	data.set(NULL, KEY_PLACE_ID, __placeId);
+	data.set(NULL, KEY_EVENT, __getStateString(currentState));
 
 	__provider->publish(option, ERR_NONE, data);
 }
@@ -182,13 +182,11 @@ const char* GeofenceMonitorHandle::__getStateString(geofence_state_e state)
 {
 	switch (state) {
 	case GEOFENCE_STATE_IN:
-		return PLACE_GEOFENCE_IN;
+		return VAL_IN;
 	case GEOFENCE_STATE_OUT:
-		return PLACE_GEOFENCE_OUT;
-	case GEOFENCE_STATE_UNCERTAIN:
-		return PLACE_GEOFENCE_UNCERTAIN;
+		return VAL_OUT;
 	default:
-		return PLACE_GEOFENCE_UNCERTAIN;
+		return VAL_UNCERTAIN;
 	}
 }
 

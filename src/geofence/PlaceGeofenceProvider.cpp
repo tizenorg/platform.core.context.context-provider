@@ -21,7 +21,7 @@
 using namespace ctx;
 
 PlaceGeofenceProvider::PlaceGeofenceProvider() :
-	ContextProvider(PLACE_SUBJ_GEOFENCE)
+	ContextProvider(SUBJ_PLACE_GEOFENCE)
 {
 }
 
@@ -56,7 +56,7 @@ void PlaceGeofenceProvider::submitTriggerItem()
 int PlaceGeofenceProvider::subscribe(Json option, Json *requestResult)
 {
 	int placeId = -1;
-	option.get(NULL, PLACE_GEOFENCE_PLACE_ID, &placeId);
+	option.get(NULL, KEY_PLACE_ID, &placeId);
 	IF_FAIL_RETURN_TAG(placeId != -1, ERR_INVALID_PARAMETER, _E, "Getting PlaceID failed");
 
 	auto it = __handleMap.find(placeId);
@@ -83,7 +83,7 @@ int PlaceGeofenceProvider::subscribe(Json option, Json *requestResult)
 int PlaceGeofenceProvider::unsubscribe(Json option)
 {
 	int placeId = -1;
-	option.get(NULL, PLACE_GEOFENCE_PLACE_ID, &placeId);
+	option.get(NULL, KEY_PLACE_ID, &placeId);
 	IF_FAIL_RETURN_TAG(placeId != -1, ERR_INVALID_PARAMETER, _E, "Getting PlaceID failed");
 
 	auto it = __handleMap.find(placeId);

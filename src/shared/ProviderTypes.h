@@ -48,6 +48,7 @@
 #define SUBJ_ACTIVITY_STATIONARY	"activity/stationary"
 #define SUBJ_ACTIVITY_WALKING		"activity/walking"
 
+#define SUBJ_PLACE_GEOFENCE		"place/geofence"
 
 /* Data & Option Keys */
 #define KEY_QUERY_RESULT	"QueryResult"
@@ -90,6 +91,7 @@
 #define KEY_TIME_OF_DAY		"TimeOfDay"
 #define KEY_DAY_OF_WEEK		"DayOfWeek"
 #define KEY_DAY_OF_MONTH	"DayOfMonth"
+#define KEY_PLACE_ID		"PlaceId"
 
 
 /* Data & Option Values */
@@ -124,6 +126,9 @@
 #define VAL_PERSON			"Person"
 #define VAL_CHANGED			"Changed"
 #define VAL_DETECTED		"Detected"
+#define	VAL_UNCERTAIN		"Uncertain"
+#define	VAL_IN				"In"
+#define	VAL_OUT				"Out"
 
 #define VAL_ACTIVE		VAL_CONNECTED
 #define VAL_ALERTING	VAL_CONNECTING

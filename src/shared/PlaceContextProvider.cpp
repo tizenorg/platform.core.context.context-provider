@@ -23,6 +23,8 @@
 #include "../my-place/place_recognition.h"
 #endif	/* _MOBILE_ */
 
+#define PRIV_LOCATION	"location"
+
 template<typename Provider>
 void registerProvider(const char *subject, const char *privilege)
 {
@@ -41,7 +43,7 @@ void registerProvider(const char *subject, const char *privilege)
 SO_EXPORT bool ctx::initPlaceContextProvider()
 {
 #ifdef _MOBILE_
-	registerProvider<PlaceGeofenceProvider>(PLACE_SUBJ_GEOFENCE, PLACE_PRIV_GEOFENCE);
+	registerProvider<PlaceGeofenceProvider>(SUBJ_PLACE_GEOFENCE, PRIV_LOCATION);
 
 	/*
 	registerProvider<PlaceRecognitionProvider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);

@@ -19,7 +19,7 @@
 
 #include <map>
 #include <ContextProvider.h>
-#include "PlaceGeofenceTypes.h"
+#include <ProviderTypes.h>
 
 namespace ctx {
 
