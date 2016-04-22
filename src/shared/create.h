@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
+/* TODO: This is a temporary template implementation.
+   This will be removed soon. */
+
 #include <new>
 #include <Types.h>
-#include <PlaceContextProvider.h>
-
-#ifdef _MOBILE_
-#include "../geofence/PlaceGeofenceProvider.h"
-#include "../my-place/place_recognition.h"
-#endif	/* _MOBILE_ */
-
-#define PRIV_LOCATION	"location"
 
 template<typename Provider>
 void registerProvider(const char *subject, const char *privilege)
@@ -38,17 +33,4 @@ void registerProvider(const char *subject, const char *privilege)
 
 	provider->registerProvider(privilege, provider);
 	provider->submitTriggerItem();
-}
-
-SO_EXPORT bool ctx::initPlaceContextProvider()
-{
-#ifdef _MOBILE_
-	registerProvider<PlaceGeofenceProvider>(SUBJ_PLACE_GEOFENCE, PRIV_LOCATION);
-
-	/*
-	registerProvider<PlaceRecognitionProvider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);
-	*/
-
-#endif	/* _MOBILE_ */
-	return true;
 }

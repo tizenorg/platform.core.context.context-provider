@@ -1,0 +1,24 @@
+SET(target_shared "${target_prefix}-shared")
+SET(DEPS
+	libcontext-server
+)
+
+ADD_SUBDIRECTORY(shared)
+ADD_SUBDIRECTORY(activity)
+ADD_SUBDIRECTORY(app-stats)
+#ADD_SUBDIRECTORY(custom)
+ADD_SUBDIRECTORY(headphone)
+ADD_SUBDIRECTORY(system)
+ADD_SUBDIRECTORY(time)
+ADD_SUBDIRECTORY(wifi)
+
+IF("${PROFILE}" STREQUAL "mobile")
+ADD_SUBDIRECTORY(call)
+ADD_SUBDIRECTORY(contacts)
+ADD_SUBDIRECTORY(email)
+ADD_SUBDIRECTORY(geofence)
+ADD_SUBDIRECTORY(media-stats)
+ADD_SUBDIRECTORY(message)
+ADD_SUBDIRECTORY(my-place)
+ADD_SUBDIRECTORY(social-stats)
+ENDIF("${PROFILE}" STREQUAL "mobile")

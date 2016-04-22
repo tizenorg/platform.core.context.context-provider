@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
-#define _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
+#include <new>
+#include <create.h>
+#include "Email.h"
 
-namespace ctx {
+using namespace ctx;
 
-	bool initCustomContextProvider();
+/* TODO: This function will be changed into the following form:
+   ContextProvider* create(const char *subject) */
 
-	namespace custom_context_provider {
+SO_EXPORT bool create()
+{
+	registerProvider<EmailEventProvider>(SUBJ_STATE_EMAIL, NULL);
 
-		int addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit = false);
-		int removeItem(std::string subject);
-		int publishData(std::string subject, ctx::Json fact);
-
-		ContextProvider* create(void* data);
-		void destroy(void* data);
-
-	}	/* namespace custom_context_provider */
-
-}	/* namespace ctx */
-
-#endif	/* End of _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_ */
+	return true;
+}
