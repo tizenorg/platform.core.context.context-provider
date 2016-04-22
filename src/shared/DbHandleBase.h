@@ -22,7 +22,7 @@
 #include <DatabaseManager.h>
 
 namespace ctx {
-	class StatsDbHandleBase : public IDatabaseListener {
+	class SO_EXPORT StatsDbHandleBase : public IDatabaseListener {
 	protected:
 		bool isTriggerItem;
 		ContextProvider *reqProvider;

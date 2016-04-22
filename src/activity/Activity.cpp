@@ -19,7 +19,7 @@
 
 using namespace ctx;
 
-ActivityProvider::ActivityProvider(const char *subject, activity_type_e type)	:
+ActivityProvider::ActivityProvider(const char *subject, activity_type_e type) :
 	BasicProvider(subject),
 	__activityType(type),
 	__activityHandle(NULL)

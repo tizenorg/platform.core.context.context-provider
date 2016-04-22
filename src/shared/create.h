@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
-#define _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_
+/* TODO: This is a temporary template implementation.
+   This will be removed soon. */
 
-namespace ctx {
+#include <new>
+#include <Types.h>
 
-	bool initCustomContextProvider();
+template<typename Provider>
+void registerProvider(const char *subject, const char *privilege)
+{
+	Provider *provider = new(std::nothrow) Provider();
+	IF_FAIL_VOID_TAG(provider, _E, "Memory allocation failed");
 
-	namespace custom_context_provider {
+	if (!provider->isSupported()) {
+		delete provider;
+		return;
+	}
 
-		int addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit = false);
-		int removeItem(std::string subject);
-		int publishData(std::string subject, ctx::Json fact);
-
-		ContextProvider* create(void* data);
-		void destroy(void* data);
-
-	}	/* namespace custom_context_provider */
-
-}	/* namespace ctx */
-
-#endif	/* End of _CONTEXT_CUSTOM_CONTEXT_PROVIDER_H_ */
+	provider->registerProvider(privilege, provider);
+	provider->submitTriggerItem();
+}

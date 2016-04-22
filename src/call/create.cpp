@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_DEVICE_CONTEXT_PROVIDER_H_
-#define _CONTEXT_DEVICE_CONTEXT_PROVIDER_H_
+#include <new>
+#include <create.h>
+#include "Call.h"
 
-namespace ctx {
+using namespace ctx;
 
-	bool initDeviceContextProvider();
+/* TODO: This function will be changed into the following form:
+   ContextProvider* create(const char *subject) */
 
-}	/* namespace ctx */
+extern "C" SO_EXPORT bool create()
+{
+	registerProvider<CallStateProvider>(SUBJ_STATE_CALL, PRIV_TELEPHONY);
 
-#endif	/* End of _CONTEXT_DEVICE_CONTEXT_PROVIDER_H_ */
+	return true;
+}

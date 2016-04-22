@@ -26,7 +26,7 @@
 
 using namespace ctx;
 
-bool system_info::getAudioJackState(int* state)
+SO_EXPORT bool system_info::getAudioJackState(int* state)
 {
 	int value = NOT_CONNECTED;
 	int err = runtime_info_get_value_int(RUNTIME_INFO_KEY_AUDIO_JACK_STATUS, &value);
@@ -37,7 +37,7 @@ bool system_info::getAudioJackState(int* state)
 	return true;
 }
 
-bool system_info::getVolume(int* systemVolume, int* mediaVolume)
+SO_EXPORT bool system_info::getVolume(int* systemVolume, int* mediaVolume)
 {
 	int err;
 
@@ -50,7 +50,7 @@ bool system_info::getVolume(int* systemVolume, int* mediaVolume)
 	return true;
 }
 
-bool system_info::getWifiBssid(std::string& bssid)
+SO_EXPORT bool system_info::getWifiBssid(std::string& bssid)
 {
 #if 0
 	/* NOTE: This routine does not work, because the wifi API does not support multi-sessions in one process */

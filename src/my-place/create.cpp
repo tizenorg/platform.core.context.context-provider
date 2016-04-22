@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-#include <system_info.h>
-#include <Types.h>
-#include "Util.h"
+#include <new>
+#include <create.h>
+#include "place_recognition.h"
 
-SO_EXPORT bool ctx::util::getSystemInfoBool(const char * key)
+using namespace ctx;
+
+/* TODO: This function will be changed into the following form:
+   ContextProvider* create(const char *subject) */
+
+extern "C" SO_EXPORT bool create()
 {
-	bool supported = false;
-	int ret = system_info_get_platform_bool(key, &supported);
-	IF_FAIL_RETURN_TAG(ret == SYSTEM_INFO_ERROR_NONE, false, _E, "system_info_get_platform_bool() failed");
-	return supported;
+	/*
+	registerProvider<PlaceRecognitionProvider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);
+	*/
+
+	return true;
 }

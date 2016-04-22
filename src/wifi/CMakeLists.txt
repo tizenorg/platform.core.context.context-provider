@@ -1,0 +1,19 @@
+SET(target "${target_prefix}-wifi")
+
+SET(DEPS ${DEPS}
+	capi-network-wifi
+)
+
+FILE(GLOB SRCS *.cpp)
+
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(PKG_WIFI REQUIRED ${DEPS})
+
+FOREACH(flag ${PKG_WIFI_CFLAGS})
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+ENDFOREACH(flag)
+
+ADD_LIBRARY(${target} SHARED ${SRCS})
+TARGET_LINK_LIBRARIES(${target} ${PKG_WIFI_LDFLAGS} ${target_shared})
+
+INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/context)

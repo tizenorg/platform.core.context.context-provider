@@ -24,7 +24,7 @@ namespace ctx {
 	/* BasicProvider implements the very basic form of context providers,
 	   which has no controllable options, and does not set the requestResult
 	   parameter to reply to clients' requests immediately. */
-	class BasicProvider : public ContextProvider {
+	class SO_EXPORT BasicProvider : public ContextProvider {
 	public:
 		int subscribe(Json option, Json *requestResult);
 		int unsubscribe(Json option);
