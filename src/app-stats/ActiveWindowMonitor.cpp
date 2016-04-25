@@ -21,7 +21,7 @@
 #include <Json.h>
 #include <Types.h>
 #include "../shared/SystemInfo.h"
-#include "AppStatisticsTypes.h"
+#include "AppStatsTypesInternal.h"
 #include "ActiveWindowMonitor.h"
 
 /* Active window changes frequently.

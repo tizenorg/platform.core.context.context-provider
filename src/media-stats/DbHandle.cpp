@@ -17,7 +17,7 @@
 #include <sstream>
 #include <Types.h>
 #include "../shared/SystemInfo.h"
-#include "MediaStatisticsTypes.h"
+#include "MediaStatsTypesInternal.h"
 #include "DbHandle.h"
 
 using namespace ctx;

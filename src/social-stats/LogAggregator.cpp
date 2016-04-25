@@ -17,7 +17,7 @@
 #include <sstream>
 #include <Json.h>
 #include <Types.h>
-#include "SocialStatisticsTypes.h"
+#include "SocialStatsTypesInternal.h"
 #include "LogAggregator.h"
 
 ctx::ContactLogAggregator::ContactLogAggregator() :

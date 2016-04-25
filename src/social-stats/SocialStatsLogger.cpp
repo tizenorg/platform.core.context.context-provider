@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "SocialStatisticsTypes.h"
+#include "SocialStatsTypesInternal.h"
 #include "SocialStatsLogger.h"
 
 using namespace ctx;

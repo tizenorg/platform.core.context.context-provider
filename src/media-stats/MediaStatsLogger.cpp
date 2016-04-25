@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "MediaStatisticsTypes.h"
+#include "MediaStatsTypesInternal.h"
 #include "MediaStatsLogger.h"
 
 using namespace ctx;

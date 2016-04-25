@@ -18,7 +18,7 @@
 #define _CONTEXT_SOCIAL_STATS_PROVIDER_H_
 
 #include <ContextProvider.h>
-#include "SocialStatisticsTypes.h"
+#include "SocialStatsTypesInternal.h"
 
 namespace ctx {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "AppStatisticsTypes.h"
+#include "AppStatsTypesInternal.h"
 #include "AppStatsLogger.h"
 
 using namespace ctx;

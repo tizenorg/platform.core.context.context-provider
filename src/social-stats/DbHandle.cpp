@@ -17,7 +17,7 @@
 #include <sstream>
 #include <contacts.h>
 #include <Types.h>
-#include "SocialStatisticsTypes.h"
+#include "SocialStatsTypesInternal.h"
 #include "DbHandle.h"
 
 using namespace ctx;

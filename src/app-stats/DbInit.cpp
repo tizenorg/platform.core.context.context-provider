@@ -17,7 +17,7 @@
 #include <sstream>
 #include <Json.h>
 #include <Types.h>
-#include "AppStatisticsTypes.h"
+#include "AppStatsTypesInternal.h"
 #include "DbInit.h"
 
 #define EMPTY_CHECKER_QID 999

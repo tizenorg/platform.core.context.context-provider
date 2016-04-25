@@ -18,7 +18,7 @@
 #define _CONTEXT_APP_STATS_PROVIDER_H_
 
 #include <ContextProvider.h>
-#include "AppStatisticsTypes.h"
+#include "AppStatsTypesInternal.h"
 
 namespace ctx {
 

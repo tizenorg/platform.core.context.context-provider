@@ -18,7 +18,7 @@
 #define _CONTEXT_MEDIA_STATS_PROVIDER_H_
 
 #include <ContextProvider.h>
-#include "MediaStatisticsTypes.h"
+#include "MediaStatsTypesInternal.h"
 
 namespace ctx {
 

@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <Types.h>
-#include "AppStatisticsTypes.h"
+#include "AppStatsTypesInternal.h"
 #include "DbHandle.h"
 
 using namespace ctx;

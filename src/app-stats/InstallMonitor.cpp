@@ -19,7 +19,7 @@
 #include <Json.h>
 #include <Types.h>
 #include <DatabaseManager.h>
-#include "AppStatisticsTypes.h"
+#include "AppStatsTypesInternal.h"
 #include "InstallMonitor.h"
 
 static package_manager_event_type_e __lastEventType;
