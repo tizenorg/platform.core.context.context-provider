@@ -90,7 +90,7 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 %defattr(-,root,root,-)
 /usr/share/license/%{name}
 %{_libdir}/*.so*
-%{_libdir}/context/*.so*
+%{_libdir}/context-service/*.so*
 
 %package devel
 Summary:    Context Provider Shared Header (Development)

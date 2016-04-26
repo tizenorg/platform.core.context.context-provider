@@ -20,7 +20,7 @@
 #include <ContextProvider.h>
 #include <ProviderTypes.h>
 
-#define LIB_DIRECTORY	"/usr/lib/context/"
+#define LIB_DIRECTORY	"/usr/lib/context-service/"
 #define LIB_PREFIX		"libctx-prvd-"
 #define LIB_EXTENSION	".so"
 

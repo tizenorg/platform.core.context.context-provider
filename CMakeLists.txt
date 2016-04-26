@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(context-provider)
 INCLUDE(GNUInstallDirs)
 SET(target_prefix "ctx-prvd")
+SET(target_dir "context-service")
 
 # Common Options
 INCLUDE_DIRECTORIES(
@@ -24,7 +25,7 @@ ENDIF("${PROFILE}" STREQUAL "wearable")
 
 INSTALL(
 	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/context-service/internal
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${target_dir}/internal
 	FILES_MATCHING PATTERN "*.h"
 )
 
