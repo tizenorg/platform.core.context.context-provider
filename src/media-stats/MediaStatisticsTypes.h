@@ -17,16 +17,16 @@
 #ifndef _CONTEXT_STATS_MEDIA_TYPES_H_
 #define _CONTEXT_STATS_MEDIA_TYPES_H_
 
-#include "../shared/ProviderTypes.h"
+#include <ProviderTypes.h>
 
-#define MEDIA_HISTORY_PRIV					"mediahistory.read"
-#define MEDIA_SUBJ_LOGGER					"stats/media/logger"
-#define MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC		"stats/music/peak_time"
-#define MEDIA_SUBJ_PEAK_TIME_FOR_VIDEO		"stats/video/peak_time"
-#define MEDIA_SUBJ_COMMON_SETTING_FOR_MUSIC	"stats/music/setting"
-#define MEDIA_SUBJ_COMMON_SETTING_FOR_VIDEO	"stats/video/setting"
-#define MEDIA_SUBJ_MUSIC_FREQUENCY			"stats/music/frequency"
-#define MEDIA_SUBJ_VIDEO_FREQUENCY			"stats/video/frequency"
+#define MEDIA_HISTORY_PRIV					PRIV_MEDIA_HISTORY
+#define MEDIA_SUBJ_LOGGER					SUBJ_MEDIA_LOGGER
+#define MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC		SUBJ_MUSIC_PEAK_TIME
+#define MEDIA_SUBJ_PEAK_TIME_FOR_VIDEO		SUBJ_VIDEO_PEAK_TIME
+#define MEDIA_SUBJ_COMMON_SETTING_FOR_MUSIC	SUBJ_MUSIC_COMMON_SETTING
+#define MEDIA_SUBJ_COMMON_SETTING_FOR_VIDEO	SUBJ_VIDEO_COMMON_SETTING
+#define MEDIA_SUBJ_MUSIC_FREQUENCY			SUBJ_MUSIC_FREQUENCY
+#define MEDIA_SUBJ_VIDEO_FREQUENCY			SUBJ_VIDEO_FREQUENCY
 
 #define MEDIA_TABLE_NAME	"Log_MediaPlayback"
 #define MEDIA_TABLE_COLUMNS \

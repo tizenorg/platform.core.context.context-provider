@@ -17,16 +17,16 @@
 #ifndef _CONTEXT_STATS_APP_TYPES_H_
 #define _CONTEXT_STATS_APP_TYPES_H_
 
-#include "../shared/ProviderTypes.h"
+#include <ProviderTypes.h>
 
-#define APP_HISTORY_PRIV			"apphistory.read"
-#define APP_SUBJ_LOGGER				"stats/app/logger"
-#define APP_SUBJ_RECENTLY_USED		"stats/app/recently"
-#define APP_SUBJ_FREQUENTLY_USED	"stats/app/often"
-#define APP_SUBJ_RARELY_USED		"stats/app/rarely"
-#define APP_SUBJ_PEAK_TIME			"stats/app/peak_time"
-#define APP_SUBJ_COMMON_SETTING		"stats/app/setting"
-#define APP_SUBJ_FREQUENCY			"stats/app/frequency"
+#define APP_HISTORY_PRIV			PRIV_APP_HISTORY
+#define APP_SUBJ_LOGGER				SUBJ_APP_LOGGER
+#define APP_SUBJ_RECENTLY_USED		SUBJ_APP_RECENTLY_USED
+#define APP_SUBJ_FREQUENTLY_USED	SUBJ_APP_FREQUENTLY_USED
+#define APP_SUBJ_RARELY_USED		SUBJ_APP_RARELY_USED
+#define APP_SUBJ_PEAK_TIME			SUBJ_APP_PEAK_TIME
+#define APP_SUBJ_COMMON_SETTING		SUBJ_APP_COMMON_SETTING
+#define APP_SUBJ_FREQUENCY			SUBJ_APP_FREQUENCY
 
 #define APP_TABLE_REMOVABLE_APP	"Log_RemovableApp"
 #define APP_TABLE_REMOVABLE_APP_COLUMNS \

@@ -17,8 +17,10 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_TYPES_
 #define _CONTEXT_PLACE_RECOGNITION_TYPES_
 
+#include <ProviderTypes.h>
+
 // Context Items
-#define PLACE_SUBJ_RECOGNITION                 "place/pattern/personal_poi"
+#define PLACE_SUBJ_RECOGNITION                 SUBJ_PLACE_DETECTION
 
 #define PLACE_PRIV_RECOGNITION                 "location"
 

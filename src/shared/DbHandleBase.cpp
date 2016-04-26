@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <Types.h>
-#include "ProviderTypes.h"
+#include <ProviderTypes.h>
 #include "DbHandleBase.h"
 
 #define DAY_OF_WEEK(SECOND) "CAST(strftime('%w', " SECOND ", 'unixepoch') AS INTEGER)"

@@ -25,6 +25,9 @@
 #define PRIV_MESSAGE	"message.read"
 #define PRIV_CONTACT	"contact.read"
 #define PRIV_LOCATION	"location"
+#define PRIV_APP_HISTORY	"apphistory.read"
+#define PRIV_MEDIA_HISTORY	"mediahistory.read"
+#define PRIV_CALL_HISTORY	"callhistory.read"
 
 
 /* FW-wide Data Logger Parameters */
@@ -37,6 +40,7 @@
 
 
 /* Subjects */
+/* TODO: Cleanup the below namings */
 #define SUBJ_STATE_BATTERY		"system/battery"
 #define SUBJ_STATE_CHARGER		"system/charger"
 #define SUBJ_STATE_HEADPHONE	"system/headphone"
@@ -52,12 +56,38 @@
 #define SUBJ_STATE_MESSAGE		"social/message"
 #define SUBJ_STATE_CONTACTS		"social/contacts"
 
-#define SUBJ_ACTIVITY_IN_VEHICLE	"activity/in_vehicle"
-#define SUBJ_ACTIVITY_RUNNING		"activity/running"
-#define SUBJ_ACTIVITY_STATIONARY	"activity/stationary"
-#define SUBJ_ACTIVITY_WALKING		"activity/walking"
+#define SUBJ_ACTIVITY				"activity/"
+#define SUBJ_ACTIVITY_IN_VEHICLE	SUBJ_ACTIVITY "in_vehicle"
+#define SUBJ_ACTIVITY_RUNNING		SUBJ_ACTIVITY "running"
+#define SUBJ_ACTIVITY_STATIONARY	SUBJ_ACTIVITY "stationary"
+#define SUBJ_ACTIVITY_WALKING		SUBJ_ACTIVITY "walking"
+
+#define SUBJ_APP_STATS				"stats/app/"
+#define SUBJ_APP_LOGGER				SUBJ_APP_STATS "logger"
+#define SUBJ_APP_RECENTLY_USED		SUBJ_APP_STATS "recently"
+#define SUBJ_APP_FREQUENTLY_USED	SUBJ_APP_STATS "often"
+#define SUBJ_APP_RARELY_USED		SUBJ_APP_STATS "rarely"
+#define SUBJ_APP_PEAK_TIME			SUBJ_APP_STATS "peak_time"
+#define SUBJ_APP_COMMON_SETTING		SUBJ_APP_STATS "setting"
+#define SUBJ_APP_FREQUENCY			SUBJ_APP_STATS "frequency"
+
+#define SUBJ_MEDIA_LOGGER			"stats/media/logger"
+#define SUBJ_MUSIC_STATS			"stats/music/"
+#define SUBJ_MUSIC_PEAK_TIME		SUBJ_MUSIC_STATS "peak_time"
+#define SUBJ_MUSIC_COMMON_SETTING	SUBJ_MUSIC_STATS "setting"
+#define SUBJ_MUSIC_FREQUENCY		SUBJ_MUSIC_STATS "frequency"
+#define SUBJ_VIDEO_STATS			"stats/video/"
+#define SUBJ_VIDEO_PEAK_TIME		SUBJ_VIDEO_STATS "peak_time"
+#define SUBJ_VIDEO_COMMON_SETTING	SUBJ_VIDEO_STATS "setting"
+#define SUBJ_VIDEO_FREQUENCY		SUBJ_VIDEO_STATS "frequency"
+
+#define SUBJ_SOCIAL_STATS			"stats/contact/"
+#define SUBJ_SOCIAL_LOGGER			SUBJ_SOCIAL_STATS "logger"
+#define SUBJ_SOCIAL_FREQ_ADDRESS	SUBJ_SOCIAL_STATS "often"
+#define SUBJ_SOCIAL_FREQUENCY		SUBJ_SOCIAL_STATS "frequency"
 
 #define SUBJ_PLACE_GEOFENCE		"place/geofence"
+#define SUBJ_PLACE_DETECTION	"place/pattern/personal_poi"
 
 /* Data & Option Keys */
 #define KEY_QUERY_RESULT	"QueryResult"
