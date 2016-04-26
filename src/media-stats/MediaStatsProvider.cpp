@@ -34,10 +34,6 @@ bool MediaStatsProvider::isSupported()
 	return true;
 }
 
-void MediaStatsProvider::submitTriggerItem()
-{
-}
-
 int MediaStatsProvider::read(Json option, Json* requestResult)
 {
 	MediaDbHandle *handle = new(std::nothrow) MediaDbHandle(this);
@@ -50,18 +46,4 @@ int MediaStatsProvider::read(Json option, Json* requestResult)
 	}
 
 	return ERR_NONE;
-}
-
-void MusicFreqProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_READ,
-			"{" TRIG_DEF_TOTAL_COUNT "}",
-			"{" TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK "}");
-}
-
-void VideoFreqProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_READ,
-			"{" TRIG_DEF_TOTAL_COUNT "}",
-			"{" TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK "}");
 }

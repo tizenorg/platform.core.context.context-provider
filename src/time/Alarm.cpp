@@ -38,16 +38,6 @@ bool AlarmProvider::isSupported()
 	return true;
 }
 
-void AlarmProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE,
-			"{"
-				"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
-				"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
-			"}",
-			NULL);
-}
-
 int AlarmProvider::subscribe(Json option, Json *requestResult)
 {
 	int dow = __getArrangedDayOfWeek(option);

@@ -34,10 +34,6 @@ bool SocialStatsProvider::isSupported()
 	return true;
 }
 
-void SocialStatsProvider::submitTriggerItem()
-{
-}
-
 int SocialStatsProvider::read(Json option, Json* requestResult)
 {
 	SocialDbHandle *handle = new(std::nothrow) SocialDbHandle(this);
@@ -50,14 +46,4 @@ int SocialStatsProvider::read(Json option, Json* requestResult)
 	}
 
 	return ERR_NONE;
-}
-
-void ContactFreqProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_READ,
-			"{" TRIG_DEF_RANK "," TRIG_DEF_TOTAL_COUNT "}",
-			"{"
-				"\"Address\":{\"type\":\"string\"},"
-				TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK
-			"}");
 }

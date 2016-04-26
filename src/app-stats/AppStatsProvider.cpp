@@ -28,10 +28,6 @@ AppStatsProvider::~AppStatsProvider()
 {
 }
 
-void AppStatsProvider::submitTriggerItem()
-{
-}
-
 int AppStatsProvider::read(Json option, Json *requestResult)
 {
 	AppDbHandle *handle = new(std::nothrow) AppDbHandle(this);
@@ -44,14 +40,4 @@ int AppStatsProvider::read(Json option, Json *requestResult)
 	}
 
 	return ERR_NONE;
-}
-
-void AppFreqProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_READ,
-			"{" TRIG_DEF_RANK "," TRIG_DEF_TOTAL_COUNT "}",
-			"{"
-				"\"AppId\":{\"type\":\"string\"},"
-				TRIG_DEF_TIME_OF_DAY "," TRIG_DEF_DAY_OF_WEEK
-			"}");
 }

@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Activity.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<StationaryActivityProvider>(SUBJ_ACTIVITY_STATIONARY, NULL);
-	registerProvider<WalkingActivityProvider>(SUBJ_ACTIVITY_WALKING, NULL);
-	registerProvider<RunningActivityProvider>(SUBJ_ACTIVITY_RUNNING, NULL);
-	registerProvider<InVehicleActivityProvider>(SUBJ_ACTIVITY_IN_VEHICLE, NULL);
+	ADD_PROVIDER(SUBJ_ACTIVITY_STATIONARY, StationaryActivityProvider);
+	ADD_PROVIDER(SUBJ_ACTIVITY_WALKING, WalkingActivityProvider);
+	ADD_PROVIDER(SUBJ_ACTIVITY_RUNNING, RunningActivityProvider);
+	ADD_PROVIDER(SUBJ_ACTIVITY_IN_VEHICLE, InVehicleActivityProvider);
 
-	return true;
+	return NULL;
 }

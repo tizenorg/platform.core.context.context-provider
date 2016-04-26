@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Message.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<MessageEventProvider>(SUBJ_STATE_MESSAGE, PRIV_MESSAGE);
+	ADD_PROVIDER(SUBJ_STATE_MESSAGE, MessageEventProvider);
 
-	return true;
+	return NULL;
 }

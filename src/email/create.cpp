@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Email.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<EmailEventProvider>(SUBJ_STATE_EMAIL, NULL);
+	ADD_PROVIDER(SUBJ_STATE_EMAIL, EmailEventProvider);
 
-	return true;
+	return NULL;
 }

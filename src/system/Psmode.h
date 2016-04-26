@@ -33,7 +33,6 @@ namespace ctx {
 		int read();
 
 		bool isSupported();
-		void submitTriggerItem();
 
 	private:
 		void __handleUpdate(keynode_t *node);

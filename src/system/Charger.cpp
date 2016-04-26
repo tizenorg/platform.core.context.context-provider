@@ -32,12 +32,6 @@ bool ChargerStateProvider::isSupported()
 	return true;
 }
 
-void ChargerStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{" TRIG_BOOL_ITEM_DEF("IsConnected") "}", NULL);
-}
-
 void ChargerStateProvider::handleUpdate()
 {
 	bool chargerStatus = false;

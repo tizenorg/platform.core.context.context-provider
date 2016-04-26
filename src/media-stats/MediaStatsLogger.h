@@ -30,8 +30,6 @@ namespace ctx {
 		int subscribe(Json option, Json *requestResult);
 		int unsubscribe(Json option);
 
-		void submitTriggerItem() {}
-
 	private:
 		MediaContentMonitor __contentMon;
 	};

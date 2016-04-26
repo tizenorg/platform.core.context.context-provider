@@ -32,8 +32,6 @@ namespace ctx {
 		int subscribe(Json option, Json *requestResult);
 		int unsubscribe(Json option);
 
-		void submitTriggerItem() {}
-
 	private:
 		AppDbInitializer *__initializer;
 		AppInstallMonitor *__installMon;

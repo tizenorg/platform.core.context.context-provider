@@ -38,16 +38,6 @@ bool ContactsChangeProvider::isSupported()
 	return true;
 }
 
-void ContactsChangeProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE,
-			"{"
-				"\"Event\":{\"type\":\"string\",\"values\":[\"Changed\"]},"
-				"\"Type\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
-			"}",
-			NULL);
-}
-
 void ContactsChangeProvider::__updateCb(const char* viewUri, void* userData)
 {
 	ContactsChangeProvider *instance = static_cast<ContactsChangeProvider*>(userData);

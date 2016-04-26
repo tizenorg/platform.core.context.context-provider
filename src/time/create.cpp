@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Alarm.h"
 #include "Time.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<AlarmProvider>(SUBJ_STATE_ALARM, PRIV_ALARM);
-	registerProvider<TimeProvider>(SUBJ_STATE_TIME, NULL);
+	ADD_PROVIDER(SUBJ_STATE_ALARM, AlarmProvider);
+	ADD_PROVIDER(SUBJ_STATE_TIME, TimeProvider);
 
-	return true;
+	return NULL;
 }

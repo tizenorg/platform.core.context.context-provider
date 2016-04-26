@@ -41,16 +41,6 @@ bool HeadphoneStateProvider::isSupported()
 	return true;
 }
 
-void HeadphoneStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{"
-				TRIG_BOOL_ITEM_DEF("IsConnected") ","
-				"\"Type\":{\"type\":\"string\",\"values\":[\"Normal\",\"Headset\",\"Bluetooth\"]}"
-			"}",
-			NULL);
-}
-
 int HeadphoneStateProvider::subscribe()
 {
 	__connected = __getCurrentStatus();

@@ -51,15 +51,6 @@ bool GpsStateProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/location.gps");
 }
 
-void GpsStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{"
-				"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Searching\",\"Connected\"]}"
-			"}",
-			NULL);
-}
-
 void GpsStateProvider::handleUpdate()
 {
 	int gpsStatus;

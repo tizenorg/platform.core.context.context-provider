@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Wifi.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<WifiStateProvider>(SUBJ_STATE_WIFI, PRIV_NETWORK);
+	ADD_PROVIDER(SUBJ_STATE_WIFI, WifiStateProvider);
 
-	return true;
+	return NULL;
 }

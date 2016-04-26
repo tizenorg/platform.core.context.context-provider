@@ -37,7 +37,6 @@ namespace ctx {
 		int write(ctx::Json data, ctx::Json *requestResult);
 
 		bool isSupported();
-		void submitTriggerItem() {}
 
 	private:
 		UserPlaces __engine;

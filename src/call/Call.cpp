@@ -54,18 +54,6 @@ bool CallStateProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void CallStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{"
-				"\"Medium\":{\"type\":\"string\",\"values\":[\"Voice\",\"Video\"]},"
-				"\"State\":{\"type\":\"string\",\"values\":[\"Idle\",\"Connecting\",\"Connected\"]},"
-				"\"Address\":{\"type\":\"string\"}"
-			"}",
-			NULL);
-	/* TODO remove Connecting, Connected */
-}
-
 void CallStateProvider::__updateCb(telephony_h handle, telephony_noti_e notiId, void *data, void *userData)
 {
 	CallStateProvider *instance = static_cast<CallStateProvider*>(userData);

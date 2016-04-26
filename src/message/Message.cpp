@@ -36,17 +36,6 @@ bool MessageEventProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void MessageEventProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE,
-			"{"
-				"\"Event\":{\"type\":\"string\",\"values\":[\"Received\"]},"
-				"\"Type\":{\"type\":\"string\",\"values\":[\"SMS\",\"MMS\"]},"
-				"\"Address\":{\"type\":\"string\"}"
-			"}",
-			NULL);
-}
-
 void MessageEventProvider::__updateCb(msg_handle_t handle, msg_struct_t msg, void* userData)
 {
 	MessageEventProvider *instance = static_cast<MessageEventProvider*>(userData);

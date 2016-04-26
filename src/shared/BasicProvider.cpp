@@ -34,10 +34,6 @@ bool BasicProvider::isSupported()
 	return true;
 }
 
-void BasicProvider::submitTriggerItem()
-{
-}
-
 int BasicProvider::subscribe(Json option, Json *requestResult)
 {
 	IF_FAIL_RETURN(!__beingSubscribed, ERR_NONE);

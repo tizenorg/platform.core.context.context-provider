@@ -27,9 +27,7 @@ namespace ctx {
 		~ChargerStateProvider();
 
 		int read();
-
 		bool isSupported();
-		void submitTriggerItem();
 
 	protected:
 		void handleUpdate();

@@ -39,7 +39,6 @@ namespace ctx {
 		int unsubscribe();
 
 		bool isSupported();
-		void submitTriggerItem();
 
 	protected:
 		activity_type_e __activityType;

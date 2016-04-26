@@ -32,12 +32,6 @@ bool PowerSaveModeProvider::isSupported()
 	return true;
 }
 
-void PowerSaveModeProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{" TRIG_BOOL_ITEM_DEF("IsEnabled") "}", NULL);
-}
-
 void PowerSaveModeProvider::__updateCb(keynode_t *node, void* userData)
 {
 	PowerSaveModeProvider *instance = static_cast<PowerSaveModeProvider*>(userData);

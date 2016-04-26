@@ -36,15 +36,6 @@ bool EmailEventProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
-void EmailEventProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE,
-			"{"
-				"\"Event\":{\"type\":\"string\",\"values\":[\"Received\",\"Sent\"]}"
-			"}",
-			NULL);
-}
-
 void EmailEventProvider::onSignal(const char* sender, const char* path, const char* iface, const char* name, GVariant* param)
 {
 	gint subType = 0;

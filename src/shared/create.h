@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-/* TODO: This is a temporary template implementation.
-   This will be removed soon. */
-
 #include <new>
 #include <Types.h>
 
-template<typename Provider>
-void registerProvider(const char *subject, const char *privilege)
-{
-	Provider *provider = new(std::nothrow) Provider();
-	IF_FAIL_VOID_TAG(provider, _E, "Memory allocation failed");
-
-	if (!provider->isSupported()) {
-		delete provider;
-		return;
+#define ADD_PROVIDER(subj, prvd) \
+	if (STR_EQ((subj), subject)) { \
+		ctx::ContextProvider *instance = new(std::nothrow) prvd; \
+		if (instance == NULL) { \
+			_E("Memoroy allocation failed"); \
+			return NULL; \
+		} \
+		return instance; \
 	}
-
-	provider->registerProvider(privilege, provider);
-	provider->submitTriggerItem();
-}

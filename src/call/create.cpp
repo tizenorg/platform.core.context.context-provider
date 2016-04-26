@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Call.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<CallStateProvider>(SUBJ_STATE_CALL, PRIV_TELEPHONY);
+	ADD_PROVIDER(SUBJ_STATE_CALL, CallStateProvider);
 
-	return true;
+	return NULL;
 }

@@ -33,9 +33,6 @@ namespace ctx {
 
 		virtual bool isSupported();
 
-		/* TODO: This function will be deprecated */
-		virtual void submitTriggerItem();
-
 	protected:
 		bool __beingSubscribed;
 

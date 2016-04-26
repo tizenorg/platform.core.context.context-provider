@@ -27,9 +27,7 @@ namespace ctx {
 		~UsbStateProvider();
 
 		int read();
-
 		bool isSupported();
-		void submitTriggerItem();
 
 	protected:
 		void handleUpdate();

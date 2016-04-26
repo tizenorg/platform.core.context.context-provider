@@ -34,7 +34,6 @@ namespace ctx {
 		int unsubscribe(Json option);
 
 		bool isSupported();
-		void submitTriggerItem();
 
 	private:
 		std::map<int, GeofenceMonitorHandle*> __handleMap;
