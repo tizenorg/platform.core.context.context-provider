@@ -25,9 +25,7 @@ namespace ctx {
 	class MediaStatsProvider : public ContextProvider {
 	public:
 		int read(Json option, Json* requestResult);
-
 		bool isSupported();
-		virtual void submitTriggerItem();
 
 	protected:
 		MediaStatsProvider(const char *subject);
@@ -67,8 +65,6 @@ namespace ctx {
 	public:
 		MusicFreqProvider() :
 			MediaStatsProvider(MEDIA_SUBJ_MUSIC_FREQUENCY) {}
-
-		void submitTriggerItem();
 	};
 
 
@@ -76,8 +72,6 @@ namespace ctx {
 	public:
 		VideoFreqProvider() :
 			MediaStatsProvider(MEDIA_SUBJ_VIDEO_FREQUENCY) {}
-
-		void submitTriggerItem();
 	};
 
 }	/* namespace ctx */

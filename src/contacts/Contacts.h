@@ -32,7 +32,6 @@ namespace ctx {
 		int unsubscribe();
 
 		bool isSupported();
-		void submitTriggerItem();
 
 	private:
 		time_t __latestMyProfile;

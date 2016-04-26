@@ -37,14 +37,6 @@ bool ActivityProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/sensor.activity_recognition");
 }
 
-void ActivityProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE,
-			"{\"Event\":{\"type\":\"string\", \"values\":[\"Detected\"]}}",
-			"{\"Accuracy\":{\"type\":\"string\", \"values\":[\"Low\", \"Normal\", \"High\"]}}"
-			);
-}
-
 void ActivityProvider::__updateCb(activity_type_e activity, const activity_data_h data, double timestamp, activity_error_e error, void* userData)
 {
 	IF_FAIL_VOID_TAG(error == ACTIVITY_ERROR_NONE, _E, "Error: %d", error);

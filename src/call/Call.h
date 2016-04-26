@@ -33,7 +33,6 @@ namespace ctx {
 		int read();
 
 		bool isSupported();
-		void submitTriggerItem();
 
 	private:
 		telephony_handle_list_s __handleList;

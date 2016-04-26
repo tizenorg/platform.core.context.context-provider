@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "SocialStatsProvider.h"
 #include "SocialStatsLogger.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<SocialStatsLogger>(SOCIAL_SUBJ_LOGGER, SOCIAL_HISTORY_PRIV);
-	registerProvider<ContactFreqProvider>(SOCIAL_SUBJ_FREQUENCY, SOCIAL_HISTORY_PRIV);
-	registerProvider<TopContactsProvider>(SOCIAL_SUBJ_FREQ_ADDRESS, SOCIAL_HISTORY_PRIV);
+	ADD_PROVIDER(SUBJ_SOCIAL_LOGGER, SocialStatsLogger);
+	ADD_PROVIDER(SUBJ_SOCIAL_FREQ_ADDRESS, TopContactsProvider);
+	ADD_PROVIDER(SUBJ_SOCIAL_FREQUENCY, ContactFreqProvider);
 
-	return true;
+	return NULL;
 }

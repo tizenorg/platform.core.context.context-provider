@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Contacts.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<ContactsChangeProvider>(SUBJ_STATE_CONTACTS, PRIV_CONTACT);
+	ADD_PROVIDER(SUBJ_STATE_CONTACTS, ContactsChangeProvider);
 
-	return true;
+	return NULL;
 }

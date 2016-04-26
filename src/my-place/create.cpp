@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "place_recognition.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	/*
-	registerProvider<PlaceRecognitionProvider>(PLACE_SUBJ_RECOGNITION, PLACE_PRIV_RECOGNITION);
-	*/
+	ADD_PROVIDER(SUBJ_PLACE_DETECTION, PlaceRecognitionProvider);
 
-	return true;
+	return NULL;
 }

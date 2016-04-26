@@ -34,7 +34,6 @@ namespace ctx {
 		int read();
 
 		bool isSupported();
-		void submitTriggerItem();
 
 	private:
 		enum InternalState {

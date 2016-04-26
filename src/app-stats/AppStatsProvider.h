@@ -25,7 +25,6 @@ namespace ctx {
 	class AppStatsProvider : public ContextProvider {
 	public:
 		int read(Json option, Json *requestResult);
-		virtual void submitTriggerItem();
 
 	protected:
 		AppStatsProvider(const char *subject);
@@ -72,8 +71,6 @@ namespace ctx {
 	public:
 		AppFreqProvider() :
 			AppStatsProvider(APP_SUBJ_FREQUENCY) {}
-
-		void submitTriggerItem();
 	};
 
 }	/* namespace ctx */

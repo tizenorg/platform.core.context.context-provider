@@ -33,12 +33,6 @@ bool UsbStateProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/usb.host");
 }
 
-void UsbStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{" TRIG_BOOL_ITEM_DEF("IsConnected") "}", NULL);
-}
-
 void UsbStateProvider::handleUpdate()
 {
 	bool status = false;

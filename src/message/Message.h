@@ -31,9 +31,7 @@ namespace ctx {
 
 		int subscribe();
 		int unsubscribe();
-
 		bool isSupported();
-		void submitTriggerItem();
 
 	private:
 		msg_handle_t __messageHandle;

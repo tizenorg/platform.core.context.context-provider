@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "MediaStatsProvider.h"
 #include "MediaStatsLogger.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<MediaStatsLogger>(MEDIA_SUBJ_LOGGER, MEDIA_HISTORY_PRIV);
-	registerProvider<MusicPeakTimeProvider>(MEDIA_SUBJ_PEAK_TIME_FOR_MUSIC, MEDIA_HISTORY_PRIV);
-	registerProvider<VideoPeakTimeProvider>(MEDIA_SUBJ_PEAK_TIME_FOR_VIDEO, MEDIA_HISTORY_PRIV);
-	registerProvider<MusicSettingProvider>(MEDIA_SUBJ_COMMON_SETTING_FOR_MUSIC, MEDIA_HISTORY_PRIV);
-	registerProvider<VideoSettingProvider>(MEDIA_SUBJ_COMMON_SETTING_FOR_VIDEO, MEDIA_HISTORY_PRIV);
-	registerProvider<MusicFreqProvider>(MEDIA_SUBJ_MUSIC_FREQUENCY, MEDIA_HISTORY_PRIV);
-	registerProvider<VideoFreqProvider>(MEDIA_SUBJ_VIDEO_FREQUENCY, MEDIA_HISTORY_PRIV);
+	ADD_PROVIDER(SUBJ_MEDIA_LOGGER, MediaStatsLogger);
+	ADD_PROVIDER(SUBJ_MUSIC_PEAK_TIME, MusicPeakTimeProvider);
+	ADD_PROVIDER(SUBJ_MUSIC_COMMON_SETTING, MusicSettingProvider);
+	ADD_PROVIDER(SUBJ_MUSIC_FREQUENCY, MusicFreqProvider);
+	ADD_PROVIDER(SUBJ_VIDEO_PEAK_TIME, VideoPeakTimeProvider);
+	ADD_PROVIDER(SUBJ_VIDEO_COMMON_SETTING, VideoSettingProvider);
+	ADD_PROVIDER(SUBJ_VIDEO_FREQUENCY, VideoFreqProvider);
 
-	return true;
+	return NULL;
 }

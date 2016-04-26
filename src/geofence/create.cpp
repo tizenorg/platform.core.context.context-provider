@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "PlaceGeofenceProvider.h"
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<PlaceGeofenceProvider>(SUBJ_PLACE_GEOFENCE, PRIV_LOCATION);
+	ADD_PROVIDER(SUBJ_PLACE_GEOFENCE, PlaceGeofenceProvider);
 
-	return true;
+	return NULL;
 }

@@ -32,16 +32,6 @@ bool BatteryStateProvider::isSupported()
 	return true;
 }
 
-void BatteryStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{"
-				"\"Level\":{\"type\":\"string\",\"values\":[\"Empty\",\"Critical\",\"Low\",\"Normal\",\"High\",\"Full\"]},"
-				TRIG_BOOL_ITEM_DEF("IsCharging")
-			"}",
-			NULL);
-}
-
 void BatteryStateProvider::__updateCb(device_callback_e deviceType, void* value, void* userData)
 {
 	IF_FAIL_VOID(deviceType == DEVICE_CALLBACK_BATTERY_LEVEL);

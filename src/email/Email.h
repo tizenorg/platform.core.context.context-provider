@@ -32,7 +32,6 @@ namespace ctx {
 		int unsubscribe();
 
 		bool isSupported();
-		void submitTriggerItem();
 
 		void onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param);
 

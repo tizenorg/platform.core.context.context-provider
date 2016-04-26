@@ -25,9 +25,7 @@ namespace ctx {
 	class SocialStatsProvider : public ContextProvider {
 	public:
 		int read(Json option, Json* requestResult);
-
 		bool isSupported();
-		virtual void submitTriggerItem();
 
 	protected:
 		SocialStatsProvider(const char *subject);
@@ -39,8 +37,6 @@ namespace ctx {
 	public:
 		ContactFreqProvider() :
 			SocialStatsProvider(SOCIAL_SUBJ_FREQUENCY) {}
-
-		void submitTriggerItem();
 	};
 
 

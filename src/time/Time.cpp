@@ -33,17 +33,6 @@ bool TimeProvider::isSupported()
 	return true;
 }
 
-void TimeProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_READ,
-			"{"
-				"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
-				"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]},"
-				"\"DayOfMonth\":{\"type\":\"integer\",\"min\":1,\"max\":31}"
-			"}",
-			NULL);
-}
-
 int TimeProvider::subscribe()
 {
 	return ERR_NOT_SUPPORTED;

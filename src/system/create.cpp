@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <new>
 #include <create.h>
 #include "Battery.h"
 #include "Charger.h"
@@ -24,16 +23,13 @@
 
 using namespace ctx;
 
-/* TODO: This function will be changed into the following form:
-   ContextProvider* create(const char *subject) */
-
-extern "C" SO_EXPORT bool create()
+extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	registerProvider<BatteryStateProvider>(SUBJ_STATE_BATTERY, NULL);
-	registerProvider<ChargerStateProvider>(SUBJ_STATE_CHARGER, NULL);
-	registerProvider<GpsStateProvider>(SUBJ_STATE_GPS, NULL);
-	registerProvider<PowerSaveModeProvider>(SUBJ_STATE_PSMODE, NULL);
-	registerProvider<UsbStateProvider>(SUBJ_STATE_USB, NULL);
+	ADD_PROVIDER(SUBJ_STATE_BATTERY, BatteryStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_CHARGER, ChargerStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_GPS, GpsStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_PSMODE, PowerSaveModeProvider);
+	ADD_PROVIDER(SUBJ_STATE_USB, UsbStateProvider);
 
-	return true;
+	return NULL;
 }

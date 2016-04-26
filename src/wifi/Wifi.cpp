@@ -45,16 +45,6 @@ bool WifiStateProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/network.wifi");
 }
 
-void WifiStateProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE | OPS_READ,
-			"{"
-				"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Unconnected\",\"Connected\"]},"
-				"\"BSSID\":{\"type\":\"string\"}"
-			"}",
-			NULL);
-}
-
 bool WifiStateProvider::__getCurrentState()
 {
 	int err;

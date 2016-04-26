@@ -42,17 +42,6 @@ bool PlaceGeofenceProvider::isSupported()
 	return supported;
 }
 
-void PlaceGeofenceProvider::submitTriggerItem()
-{
-	registerTriggerItem(OPS_SUBSCRIBE,
-			"{"
-				"\"Event\":{\"type\":\"string\",\"values\":[\"In\",\"Out\"]}"
-			"}",
-			"{"
-				"\"PlaceId\":{\"type\":\"integer\",\"min\":1}"
-			"}");
-}
-
 int PlaceGeofenceProvider::subscribe(Json option, Json *requestResult)
 {
 	int placeId = -1;
