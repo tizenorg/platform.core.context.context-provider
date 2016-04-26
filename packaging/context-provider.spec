@@ -91,3 +91,15 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 /usr/share/license/%{name}
 %{_libdir}/*.so*
 %{_libdir}/context/*.so*
+
+%package devel
+Summary:    Context Provider Shared Header (Development)
+Group:      Service/Context
+Requires:	%{name} = %{version}-%{release}
+
+%description devel
+Context Provider Shared Header (DEV)
+
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/context-service/internal/*.h

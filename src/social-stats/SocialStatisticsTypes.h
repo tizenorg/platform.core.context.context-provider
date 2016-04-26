@@ -17,12 +17,12 @@
 #ifndef _CONTEXT_STATS_SOCIAL_TYPES_H_
 #define _CONTEXT_STATS_SOCIAL_TYPES_H_
 
-#include "../shared/ProviderTypes.h"
+#include <ProviderTypes.h>
 
-#define SOCIAL_HISTORY_PRIV			"callhistory.read"
-#define SOCIAL_SUBJ_LOGGER			"stats/contact/logger"
-#define SOCIAL_SUBJ_FREQ_ADDRESS	"stats/contact/often"
-#define SOCIAL_SUBJ_FREQUENCY		"stats/contact/frequency"
+#define SOCIAL_HISTORY_PRIV			PRIV_CALL_HISTORY
+#define SOCIAL_SUBJ_LOGGER			SUBJ_SOCIAL_LOGGER
+#define SOCIAL_SUBJ_FREQ_ADDRESS	SUBJ_SOCIAL_FREQ_ADDRESS
+#define SOCIAL_SUBJ_FREQUENCY		SUBJ_SOCIAL_FREQUENCY
 
 #define SOCIAL_TABLE_CONTACT_LOG	"Log_Contact"
 #define SOCIAL_TABLE_CONTACT_LOG_COLUMNS \
