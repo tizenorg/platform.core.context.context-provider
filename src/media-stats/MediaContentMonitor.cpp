@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
+#include <dlfcn.h>
 #include <time.h>
+#include <media-util-noti-common.h>
 #include <Types.h>
 #include "../shared/SystemInfo.h"
 #include "MediaStatisticsTypes.h"
 #include "DbHandle.h"
 #include "MediaContentMonitor.h"
 
+#define SO_PATH "/usr/lib/context-service/libctx-prvd-media-stats-util.so"
+
 #define PLAYCOUNT_RETENTION_PERIOD 259200	/* 1 month in secs */
 #define ONE_DAY_IN_SEC 86400
 
+typedef bool (*get_play_count_t)(int updateItem, int updateType, int mediaType, char *uuid, int *count);
+
 ctx::MediaContentMonitor::MediaContentMonitor() :
 	__started(false),
-	__lastCleanupTime(0)
+	__lastCleanupTime(0),
+	__dbusSignalId(-1),
+	__dbusWatcher(DBusType::SYSTEM)
 {
 	__dbManager.createTable(0, MEDIA_TABLE_NAME, MEDIA_TABLE_COLUMNS, NULL, NULL);
 	__dbManager.execute(0, MEDIA_PLAYCOUNT_TABLE_SCHEMA, NULL);
@@ -42,50 +50,52 @@ ctx::MediaContentMonitor::~MediaContentMonitor()
 
 bool ctx::MediaContentMonitor::__startMonitoring()
 {
-	int err;
-	err = media_content_connect();
-	IF_FAIL_RETURN_TAG(err == MEDIA_CONTENT_ERROR_NONE, false, _E, "media_content_connect() failed");
-
-	err = media_content_set_db_updated_cb(__onMediaContentDbUpdated, this);
-	if (err != MEDIA_CONTENT_ERROR_NONE) {
-		media_content_disconnect();
-		_E("media_content_set_db_updated_cb() failed");
-		return false;
-	}
-
+	__dbusSignalId = __dbusWatcher.watch(NULL, MS_MEDIA_DBUS_PATH, MS_MEDIA_DBUS_INTERFACE, "ms_db_updated", this);
+	IF_FAIL_RETURN(__dbusSignalId >= 0, false);
 	return true;
 }
 
 void ctx::MediaContentMonitor::__stopMonitoring()
 {
-	media_content_unset_db_updated_cb();
-	media_content_disconnect();
+	__dbusWatcher.unwatch(__dbusSignalId);
 }
 
-void ctx::MediaContentMonitor::__onMediaContentDbUpdated(
-		media_content_error_e error, int pid,
-		media_content_db_update_item_type_e updateItem,
-		media_content_db_update_type_e updateType,
-		media_content_type_e mediaType,
-		char *uuid, char *path, char *mimeType, void *userData)
+void ctx::MediaContentMonitor::onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param)
 {
-	IF_FAIL_VOID(error == MEDIA_CONTENT_ERROR_NONE && uuid != NULL);
-	IF_FAIL_VOID(updateItem == MEDIA_ITEM_FILE && updateType == MEDIA_CONTENT_UPDATE);
-	IF_FAIL_VOID(mediaType == MEDIA_CONTENT_TYPE_MUSIC || mediaType == MEDIA_CONTENT_TYPE_VIDEO);
+	if (g_variant_n_children(param) < 7)
+		return;
 
-	media_info_h media = NULL;
-	media_info_get_media_from_db(uuid, &media);
-	IF_FAIL_VOID_TAG(media, _E, "media_info_get_media_from_db() failed");
+	gint32 item = -1;
+	gint32 pid = 0;
+	gint32 updateType = MS_MEDIA_UNKNOWN;
+	gint32 contentType = -1;
+	char *updatePath = NULL;
+	char *uuid = NULL;
+	char *mimeType = NULL;
 
-	int cnt = -1;
-	media_info_get_played_count(media, &cnt);
-	media_info_destroy(media);
-	IF_FAIL_VOID_TAG(cnt >= 0, _E, "Invalid play count");
+	g_variant_get(param, "(iii&s&si&s)", &item, &pid, &updateType, &updatePath, &uuid, &contentType, &mimeType);
 
-	MediaContentMonitor *instance = static_cast<MediaContentMonitor*>(userData);
-	instance->__updatePlayCount(uuid,
-			(mediaType == MEDIA_CONTENT_TYPE_MUSIC) ? MEDIA_TYPE_MUSIC : MEDIA_TYPE_VIDEO,
-			cnt);
+	int playCount;
+	if (__getPlayCount(item, updateType, contentType, uuid, &playCount))
+		__updatePlayCount(uuid, (contentType == MS_MEDIA_MUSIC) ? MEDIA_TYPE_MUSIC : MEDIA_TYPE_VIDEO, playCount);
+}
+
+bool ctx::MediaContentMonitor::__getPlayCount(int updateItem, int updateType, int mediaType, char *uuid, int *count)
+{
+	void *soHandle = dlopen(SO_PATH, RTLD_LAZY | RTLD_GLOBAL);
+	IF_FAIL_RETURN_TAG(soHandle, false, _E, "%s", dlerror());
+
+	get_play_count_t getCount = reinterpret_cast<get_play_count_t>(dlsym(soHandle, "getMediaPlayCount"));
+	if (!getCount) {
+		_E("%s", dlerror());
+		dlclose(soHandle);
+		return false;
+	}
+
+	bool ret = getCount(updateItem, updateType, mediaType, uuid, count);
+	dlclose(soHandle);
+
+	return ret;
 }
 
 void ctx::MediaContentMonitor::__appendCleanupQuery(std::stringstream &query)

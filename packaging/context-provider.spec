@@ -36,6 +36,7 @@ BuildRequires: pkgconfig(tapi)
 BuildRequires: pkgconfig(capi-telephony)
 BuildRequires: pkgconfig(capi-messaging-email)
 BuildRequires: pkgconfig(capi-content-media-content)
+BuildRequires: pkgconfig(libmedia-utils)
 BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(capi-geofence-manager)
 %endif

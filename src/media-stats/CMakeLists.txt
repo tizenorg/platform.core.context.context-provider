@@ -1,7 +1,7 @@
 SET(target "${target_prefix}-media-stats")
 
 SET(DEPS ${DEPS}
-	capi-content-media-content
+	libmedia-utils
 )
 
 FILE(GLOB SRCS *.cpp)
@@ -14,6 +14,8 @@ FOREACH(flag ${PKG_MEDIA_STATS_CFLAGS})
 ENDFOREACH(flag)
 
 ADD_LIBRARY(${target} SHARED ${SRCS})
-TARGET_LINK_LIBRARIES(${target} ${PKG_MEDIA_STATS_LDFLAGS} ${target_shared})
+TARGET_LINK_LIBRARIES(${target} ${PKG_MEDIA_STATS_LDFLAGS} ${target_shared} -ldl)
 
 INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target_dir})
+
+ADD_SUBDIRECTORY(util)

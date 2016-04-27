@@ -18,16 +18,18 @@
 #define _CONTEXT_STATS_MEDIA_CONTENT_MONITOR_H_
 
 #include <sstream>
-#include <media_content.h>
+#include <DBusSignalWatcher.h>
 #include <DatabaseManager.h>
 
 namespace ctx {
 
-	class MediaContentMonitor : public IDatabaseListener {
+	class MediaContentMonitor : public IDatabaseListener, public IDBusSignalListener {
 	private:
 		bool __started;
 		int __lastCleanupTime;
 		DatabaseManager __dbManager;
+		int64_t __dbusSignalId;
+		DBusSignalWatcher __dbusWatcher;
 
 		bool __startMonitoring();
 		void __stopMonitoring();
@@ -36,15 +38,12 @@ namespace ctx {
 		void __updatePlayCount(const char *uuid, int type, int count);
 		void __insertLog(int mediaType);
 
+		bool __getPlayCount(int updateItem, int updateType, int mediaType, char *uuid, int *count);
+
 		void onTableCreated(unsigned int queryId, int error) {}
 		void onInserted(unsigned int queryId, int error, int64_t rowId) {}
 		void onExecuted(unsigned int queryId, int error, std::vector<Json>& records);
-
-		static void __onMediaContentDbUpdated(media_content_error_e error, int pid,
-				media_content_db_update_item_type_e updateItem,
-				media_content_db_update_type_e updateType,
-				media_content_type_e mediaType,
-				char *uuid, char *path, char *mimeType, void *userData);
+		void onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param);
 
 	public:
 		MediaContentMonitor();
