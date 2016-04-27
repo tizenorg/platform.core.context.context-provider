@@ -25,11 +25,15 @@ void ctx::PlaceRecognitionProvider::getPrivilege(std::vector<const char*> &privi
 
 int ctx::PlaceRecognitionProvider::subscribe(ctx::Json option, ctx::Json* requestResult)
 {
+	/* NOTE: This function needs to return ERR_NONE.
+	   Otherwise, context-service will automatically delete this object. */
 	return ERR_NOT_SUPPORTED;
 }
 
 int ctx::PlaceRecognitionProvider::unsubscribe(ctx::Json option)
 {
+	/* NOTE: As the above subscribe() returns ERR_NONE, in parallel,
+	   this function also needs to return ERR_NONE. */
 	return ERR_NOT_SUPPORTED;
 }
 
