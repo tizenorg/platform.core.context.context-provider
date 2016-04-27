@@ -37,6 +37,7 @@ namespace ctx {
 		int write(ctx::Json data, ctx::Json *requestResult);
 
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	private:
 		UserPlaces __engine;

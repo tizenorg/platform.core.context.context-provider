@@ -33,6 +33,7 @@ namespace ctx {
 		int read();
 
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	private:
 		telephony_handle_list_s __handleList;

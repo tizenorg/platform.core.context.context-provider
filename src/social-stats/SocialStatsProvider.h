@@ -26,6 +26,7 @@ namespace ctx {
 	public:
 		int read(Json option, Json* requestResult);
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	protected:
 		SocialStatsProvider(const char *subject);

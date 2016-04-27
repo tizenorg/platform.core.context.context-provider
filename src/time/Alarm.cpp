@@ -33,6 +33,11 @@ AlarmProvider::~AlarmProvider()
 	__optionSet.clear();
 }
 
+void AlarmProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_ALARM);
+}
+
 bool AlarmProvider::isSupported()
 {
 	return true;

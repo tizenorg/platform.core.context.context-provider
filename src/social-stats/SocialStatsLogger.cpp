@@ -28,6 +28,11 @@ SocialStatsLogger::~SocialStatsLogger()
 {
 }
 
+void SocialStatsLogger::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_CALL_HISTORY);
+}
+
 int SocialStatsLogger::subscribe(Json option, Json* requestResult)
 {
 	return ERR_NONE;

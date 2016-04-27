@@ -32,6 +32,7 @@ namespace ctx {
 		int unsubscribe();
 
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	private:
 		time_t __latestMyProfile;

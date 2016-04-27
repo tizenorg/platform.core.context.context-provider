@@ -33,6 +33,11 @@ ContactsChangeProvider::~ContactsChangeProvider()
 {
 }
 
+void ContactsChangeProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_CONTACT);
+}
+
 bool ContactsChangeProvider::isSupported()
 {
 	return true;

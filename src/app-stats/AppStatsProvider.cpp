@@ -28,6 +28,11 @@ AppStatsProvider::~AppStatsProvider()
 {
 }
 
+void AppStatsProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_APP_HISTORY);
+}
+
 int AppStatsProvider::read(Json option, Json *requestResult)
 {
 	AppDbHandle *handle = new(std::nothrow) AppDbHandle(this);

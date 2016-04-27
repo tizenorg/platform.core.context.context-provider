@@ -34,6 +34,11 @@ PlaceGeofenceProvider::~PlaceGeofenceProvider()
 	__handleMap.clear();
 }
 
+void PlaceGeofenceProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_LOCATION);
+}
+
 bool PlaceGeofenceProvider::isSupported()
 {
 	bool supported = false;

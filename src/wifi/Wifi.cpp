@@ -40,6 +40,11 @@ WifiStateProvider::~WifiStateProvider()
 	__stopMonitor();
 }
 
+void WifiStateProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_NETWORK);
+}
+
 bool WifiStateProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.wifi");

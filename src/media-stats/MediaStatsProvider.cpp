@@ -28,6 +28,11 @@ MediaStatsProvider::~MediaStatsProvider()
 {
 }
 
+void MediaStatsProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_MEDIA_HISTORY);
+}
+
 bool MediaStatsProvider::isSupported()
 {
 	/* TODO */

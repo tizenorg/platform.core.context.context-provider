@@ -28,6 +28,11 @@ SocialStatsProvider::~SocialStatsProvider()
 {
 }
 
+void SocialStatsProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_CALL_HISTORY);
+}
+
 bool SocialStatsProvider::isSupported()
 {
 	/* TODO */

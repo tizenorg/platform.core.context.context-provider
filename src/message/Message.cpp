@@ -31,6 +31,11 @@ MessageEventProvider::~MessageEventProvider()
 {
 }
 
+void MessageEventProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_MESSAGE);
+}
+
 bool MessageEventProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");

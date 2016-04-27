@@ -49,6 +49,11 @@ CallStateProvider::~CallStateProvider()
 {
 }
 
+void CallStateProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_TELEPHONY);
+}
+
 bool CallStateProvider::isSupported()
 {
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");

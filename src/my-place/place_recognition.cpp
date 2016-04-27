@@ -17,6 +17,12 @@
 #include "place_recognition.h"
 #include "user_places/user_places.h"
 
+void ctx::PlaceRecognitionProvider::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_LOCATION);
+	privilege.push_back(PRIV_NETWORK);
+}
+
 int ctx::PlaceRecognitionProvider::subscribe(ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;

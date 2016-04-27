@@ -34,6 +34,7 @@ namespace ctx {
 		int unsubscribe(Json option);
 
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	private:
 		std::map<int, GeofenceMonitorHandle*> __handleMap;

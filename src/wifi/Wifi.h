@@ -34,6 +34,7 @@ namespace ctx {
 		int read();
 
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	private:
 		enum InternalState {

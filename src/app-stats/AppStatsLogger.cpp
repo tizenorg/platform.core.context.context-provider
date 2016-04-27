@@ -46,6 +46,11 @@ AppStatsLogger::~AppStatsLogger()
 	delete __launchMon;
 }
 
+void AppStatsLogger::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_APP_HISTORY);
+}
+
 int AppStatsLogger::subscribe(Json option, Json* requestResult)
 {
 	return ERR_NONE;

@@ -28,6 +28,11 @@ MediaStatsLogger::~MediaStatsLogger()
 {
 }
 
+void MediaStatsLogger::getPrivilege(std::vector<const char*> &privilege)
+{
+	privilege.push_back(PRIV_MEDIA_HISTORY);
+}
+
 int MediaStatsLogger::subscribe(Json option, Json* requestResult)
 {
 	return ERR_NONE;

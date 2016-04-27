@@ -25,6 +25,7 @@ namespace ctx {
 	class AppStatsProvider : public ContextProvider {
 	public:
 		int read(Json option, Json *requestResult);
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	protected:
 		AppStatsProvider(const char *subject);

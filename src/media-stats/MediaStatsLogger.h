@@ -29,6 +29,7 @@ namespace ctx {
 
 		int subscribe(Json option, Json *requestResult);
 		int unsubscribe(Json option);
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	private:
 		MediaContentMonitor __contentMon;

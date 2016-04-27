@@ -34,6 +34,7 @@ namespace ctx {
 		int unsubscribe(Json option);
 
 		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
 
 	protected:
 		bool onTimerExpired(int timerId);
