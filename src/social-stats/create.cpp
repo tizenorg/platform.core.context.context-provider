@@ -16,13 +16,11 @@
 
 #include <create.h>
 #include "SocialStatsProvider.h"
-#include "SocialStatsLogger.h"
 
 using namespace ctx;
 
 extern "C" SO_EXPORT ContextProvider* create(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_SOCIAL_LOGGER, SocialStatsLogger);
 	ADD_PROVIDER(SUBJ_SOCIAL_FREQ_ADDRESS, TopContactsProvider);
 	ADD_PROVIDER(SUBJ_SOCIAL_FREQUENCY, ContactFreqProvider);
 

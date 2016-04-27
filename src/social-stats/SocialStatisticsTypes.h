@@ -40,6 +40,7 @@
 #define SOCIAL_ADDRESS				"Address"
 #define SOCIAL_PHONE_LOG_TYPE		"PLogType"
 #define TIME_DIFFERENCE				"TimeDIff"
+#define CURRENT_TIME				"CurrentTime"
 
 enum SocialCommType {
 	SOCIAL_COMMUNICATION_TYPE_CALL = 1,

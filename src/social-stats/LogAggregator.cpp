@@ -21,40 +21,28 @@
 #include "LogAggregator.h"
 
 ctx::ContactLogAggregator::ContactLogAggregator() :
-	__timerId(-1),
 	__timeDiff(0)
 {
 	__createTable();
-	__timerId = __timerManager.setAt(3, 0, DayOfWeek::EVERYDAY, this);
+	__aggregateContactLog();
 }
 
 ctx::ContactLogAggregator::~ContactLogAggregator()
 {
-	__timerManager.remove(__timerId);
 }
 
 void ctx::ContactLogAggregator::__createTable()
 {
-	static bool done = false;
-	IF_FAIL_VOID(!done);
-
 	__dbManager.createTable(0, SOCIAL_TABLE_CONTACT_LOG, SOCIAL_TABLE_CONTACT_LOG_COLUMNS, NULL, NULL);
 	__dbManager.execute(0, SOCIAL_TEMP_CONTACT_FREQ_SQL, NULL);
-
-	done = true;
 }
 
-bool ctx::ContactLogAggregator::onTimerExpired(int timerId)
-{
-	aggregateContactLog();
-	return true;
-}
-
-void ctx::ContactLogAggregator::aggregateContactLog()
+void ctx::ContactLogAggregator::__aggregateContactLog()
 {
 	__dbManager.execute(0,
 			"SELECT IFNULL(MAX(" KEY_UNIV_TIME "),0) AS " KEY_LAST_TIME \
 			", (strftime('%s', 'now', 'localtime')) - (strftime('%s', 'now')) AS " TIME_DIFFERENCE \
+			", (strftime('%s', 'now')) AS " CURRENT_TIME \
 			" FROM " SOCIAL_TABLE_CONTACT_LOG, this);
 }
 
@@ -63,12 +51,18 @@ void ctx::ContactLogAggregator::onExecuted(unsigned int queryId, int error, std:
 	IF_FAIL_VOID_TAG(!records.empty(), _E, "Invalid query result");
 
 	int lastTime = 0;
+	int currentTime = 0;
+
 	records[0].get(NULL, KEY_LAST_TIME, &lastTime);
 	records[0].get(NULL, TIME_DIFFERENCE, &__timeDiff);
+	records[0].get(NULL, CURRENT_TIME, &currentTime);
 
 	_D("Last Time: %d / Local - UTC: %d", lastTime, __timeDiff);
 
 	contacts_list_h list = NULL;
+
+	if (lastTime < currentTime - LOG_RETENTION_PERIOD)
+		lastTime = currentTime - LOG_RETENTION_PERIOD;
 
 	__getUpdatedContactLogList(lastTime, &list);
 	IF_FAIL_VOID(list);
@@ -76,6 +70,8 @@ void ctx::ContactLogAggregator::onExecuted(unsigned int queryId, int error, std:
 	__removeExpiredLog();
 	__insertContactLogList(list);
 	__destroyContactLogList(list);
+
+	delete this;
 }
 
 void ctx::ContactLogAggregator::__getUpdatedContactLogList(int lastTime, contacts_list_h *list)
@@ -123,6 +119,8 @@ void ctx::ContactLogAggregator::__destroyContactLogList(contacts_list_h list)
 void ctx::ContactLogAggregator::__insertContactLogList(contacts_list_h list)
 {
 	IF_FAIL_VOID(contacts_list_first(list) == CONTACTS_ERROR_NONE);
+
+	/* TODO: optimize here using transaction */
 
 	do {
 		contacts_record_h record = NULL;

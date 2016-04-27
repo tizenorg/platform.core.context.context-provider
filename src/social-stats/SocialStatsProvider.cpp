@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-#include "SocialStatsProvider.h"
 #include "DbHandle.h"
+#include "LogAggregator.h"
+#include "SocialStatsProvider.h"
 
 using namespace ctx;
 
 SocialStatsProvider::SocialStatsProvider(const char *subject) :
 	ContextProvider(subject)
 {
+	static bool done = false;
+	IF_FAIL_VOID(!done);
+
+	done = true;
+
+	ContactLogAggregator *aggr = new(std::nothrow) ContactLogAggregator();
+	if(!aggr)
+		_E("Memory allocation failed");
 }
 
 SocialStatsProvider::~SocialStatsProvider()

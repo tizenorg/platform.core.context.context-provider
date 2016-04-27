@@ -19,18 +19,16 @@
 
 #include <contacts.h>
 #include <DatabaseManager.h>
-#include <TimerManager.h>
 
 namespace ctx {
 
-	class ContactLogAggregator : public IDatabaseListener, public ITimerListener {
+	class ContactLogAggregator : public IDatabaseListener {
 	private:
-		int __timerId;
 		int __timeDiff;
-		TimerManager __timerManager;
 		DatabaseManager __dbManager;
 
 		void __createTable();
+		void __aggregateContactLog();
 		void __getUpdatedContactLogList(int last_time, contacts_list_h *list);
 		void __insertContactLogList(contacts_list_h list);
 		void __destroyContactLogList(contacts_list_h list);
@@ -40,12 +38,9 @@ namespace ctx {
 		ContactLogAggregator();
 		~ContactLogAggregator();
 
-		void aggregateContactLog();
-
 		void onTableCreated(unsigned int queryId, int error) {}
 		void onInserted(unsigned int queryId, int error, int64_t rowId) {}
 		void onExecuted(unsigned int queryId, int error, std::vector<Json>& records);
-		bool onTimerExpired(int timerId);
 
 	};	/* class ContactLogAggregator */
 
