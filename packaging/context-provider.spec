@@ -14,6 +14,7 @@ ExcludeArch: %{arm} aarch64 %ix86 x86_64
 
 BuildRequires: cmake
 
+BuildRequires: pkgconfig(gmodule-2.0)
 BuildRequires: pkgconfig(libcontext-server)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(capi-system-info)

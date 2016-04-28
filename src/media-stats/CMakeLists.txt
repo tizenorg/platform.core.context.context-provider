@@ -1,6 +1,7 @@
 SET(target "${target_prefix}-media-stats")
 
 SET(DEPS ${DEPS}
+	gmodule-2.0
 	libmedia-utils
 )
 
@@ -14,7 +15,7 @@ FOREACH(flag ${PKG_MEDIA_STATS_CFLAGS})
 ENDFOREACH(flag)
 
 ADD_LIBRARY(${target} SHARED ${SRCS})
-TARGET_LINK_LIBRARIES(${target} ${PKG_MEDIA_STATS_LDFLAGS} ${target_shared} -ldl)
+TARGET_LINK_LIBRARIES(${target} ${PKG_MEDIA_STATS_LDFLAGS} ${target_shared})
 
 INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target_dir})
 

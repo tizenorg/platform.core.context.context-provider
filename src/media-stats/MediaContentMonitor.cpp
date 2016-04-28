@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <dlfcn.h>
+#include <gmodule.h>
 #include <time.h>
 #include <media-util-noti-common.h>
 #include <Types.h>
@@ -82,18 +82,20 @@ void ctx::MediaContentMonitor::onSignal(const char *sender, const char *path, co
 
 bool ctx::MediaContentMonitor::__getPlayCount(int updateItem, int updateType, int mediaType, char *uuid, int *count)
 {
-	void *soHandle = dlopen(SO_PATH, RTLD_LAZY | RTLD_GLOBAL);
-	IF_FAIL_RETURN_TAG(soHandle, false, _E, "%s", dlerror());
+	GModule *soHandle = g_module_open(SO_PATH, G_MODULE_BIND_LAZY);
+	IF_FAIL_RETURN_TAG(soHandle, false, _E, "%s", g_module_error());
 
-	get_play_count_t getCount = reinterpret_cast<get_play_count_t>(dlsym(soHandle, "getMediaPlayCount"));
-	if (!getCount) {
-		_E("%s", dlerror());
-		dlclose(soHandle);
+	gpointer symbol;
+	if (!g_module_symbol(soHandle, "getMediaPlayCount", &symbol) || symbol == NULL) {
+		_E("%s", g_module_error());
+		g_module_close(soHandle);
 		return false;
 	}
 
+	get_play_count_t getCount = reinterpret_cast<get_play_count_t>(symbol);
+
 	bool ret = getCount(updateItem, updateType, mediaType, uuid, count);
-	dlclose(soHandle);
+	g_module_close(soHandle);
 
 	return ret;
 }
