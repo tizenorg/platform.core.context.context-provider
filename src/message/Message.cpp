@@ -41,6 +41,11 @@ bool MessageEventProvider::isSupported()
 	return util::getSystemInfoBool("tizen.org/feature/network.telephony");
 }
 
+bool MessageEventProvider::unloadable()
+{
+	return false;
+}
+
 void MessageEventProvider::__updateCb(msg_handle_t handle, msg_struct_t msg, void* userData)
 {
 	MessageEventProvider *instance = static_cast<MessageEventProvider*>(userData);

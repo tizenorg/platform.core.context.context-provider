@@ -34,6 +34,8 @@ namespace ctx {
 		bool isSupported();
 		void getPrivilege(std::vector<const char*> &privilege);
 
+		bool unloadable();
+
 	private:
 		time_t __latestMyProfile;
 		time_t __latestPerson;

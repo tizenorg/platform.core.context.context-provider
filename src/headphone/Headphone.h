@@ -35,6 +35,8 @@ namespace ctx {
 
 		bool isSupported();
 
+		bool unloadable();
+
 	private:
 		bool __connected;
 		int __audioJackState;

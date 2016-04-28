@@ -34,6 +34,8 @@ namespace ctx {
 		bool isSupported();
 		void getPrivilege(std::vector<const char*> &privilege);
 
+		bool unloadable();
+
 	private:
 		msg_handle_t __messageHandle;
 		bool __beingSubscribed;

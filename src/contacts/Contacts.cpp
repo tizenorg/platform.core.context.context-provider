@@ -43,6 +43,11 @@ bool ContactsChangeProvider::isSupported()
 	return true;
 }
 
+bool ContactsChangeProvider::unloadable()
+{
+	return false;
+}
+
 void ContactsChangeProvider::__updateCb(const char* viewUri, void* userData)
 {
 	ContactsChangeProvider *instance = static_cast<ContactsChangeProvider*>(userData);

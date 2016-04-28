@@ -41,6 +41,11 @@ bool HeadphoneStateProvider::isSupported()
 	return true;
 }
 
+bool HeadphoneStateProvider::unloadable()
+{
+	return false;
+}
+
 int HeadphoneStateProvider::subscribe()
 {
 	__connected = __getCurrentStatus();
