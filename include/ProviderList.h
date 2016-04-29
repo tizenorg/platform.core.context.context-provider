@@ -204,6 +204,15 @@ const struct {
 			"\"DayOfMonth\":{\"type\":\"integer\",\"min\":1,\"max\":31}"
 		"}",
 		NULL
+	},
+	{
+		SUBJ_STATE_WIFI,
+		OPS_SUBSCRIBE | OPS_READ,
+		"{"
+			"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Unconnected\",\"Connected\"]},"
+			"\"BSSID\":{\"type\":\"string\"}"
+		"}",
+		NULL
 	}
 };
 
