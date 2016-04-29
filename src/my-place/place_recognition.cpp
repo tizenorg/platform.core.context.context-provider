@@ -27,14 +27,14 @@ int ctx::PlaceRecognitionProvider::subscribe(ctx::Json option, ctx::Json* reques
 {
 	/* NOTE: This function needs to return ERR_NONE.
 	   Otherwise, context-service will automatically delete this object. */
-	return ERR_NOT_SUPPORTED;
+	return ERR_NONE;
 }
 
 int ctx::PlaceRecognitionProvider::unsubscribe(ctx::Json option)
 {
 	/* NOTE: As the above subscribe() returns ERR_NONE, in parallel,
 	   this function also needs to return ERR_NONE. */
-	return ERR_NOT_SUPPORTED;
+	return ERR_NONE;
 }
 
 int ctx::PlaceRecognitionProvider::read(ctx::Json option, ctx::Json* requestResult)
