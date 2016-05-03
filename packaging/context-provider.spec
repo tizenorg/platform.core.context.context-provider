@@ -1,17 +1,20 @@
 Name:       context-provider
 Summary:    Context Provider
-Version:    0.7.5
+Version:    0.8.0
 Release:    1
 Group:      Service/Context
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 
 %define BUILD_PROFILE %{?profile}%{!?profile:%{?tizen_profile_name}}
-%define keepstatic 1
+
+%if "%{?BUILD_PROFILE}" == "tv"
+ExcludeArch: %{arm} aarch64 %ix86 x86_64
+%endif
 
 BuildRequires: cmake
 
-BuildRequires: pkgconfig(libcontext-shared)
+BuildRequires: pkgconfig(gmodule-2.0)
 BuildRequires: pkgconfig(libcontext-server)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(capi-system-info)
@@ -23,34 +26,20 @@ BuildRequires: pkgconfig(capi-appfw-app-manager)
 BuildRequires: pkgconfig(pkgmgr)
 BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: pkgconfig(capi-media-sound-manager)
+BuildRequires: pkgconfig(capi-network-bluetooth)
+BuildRequires: pkgconfig(capi-network-wifi)
+BuildRequires: pkgconfig(motion)
 
 %if "%{?BUILD_PROFILE}" == "mobile"
-BuildRequires: pkgconfig(capi-network-bluetooth)
-BuildRequires: pkgconfig(capi-network-wifi)
-BuildRequires: pkgconfig(capi-telephony)
-BuildRequires: pkgconfig(tapi)
 BuildRequires: pkgconfig(msg-service)
-BuildRequires: pkgconfig(capi-messaging-email)
-BuildRequires: pkgconfig(motion)
 BuildRequires: pkgconfig(contacts-service2)
+BuildRequires: pkgconfig(tapi)
+BuildRequires: pkgconfig(capi-telephony)
+BuildRequires: pkgconfig(capi-messaging-email)
 BuildRequires: pkgconfig(capi-content-media-content)
+BuildRequires: pkgconfig(libmedia-utils)
 BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(capi-geofence-manager)
-%endif
-
-%if "%{?BUILD_PROFILE}" == "wearable"
-BuildRequires: pkgconfig(capi-network-bluetooth)
-BuildRequires: pkgconfig(capi-network-wifi)
-BuildRequires: pkgconfig(capi-telephony)
-BuildRequires: pkgconfig(tapi)
-BuildRequires: pkgconfig(msg-service)
-BuildRequires: pkgconfig(motion)
-%endif
-
-%if "%{?BUILD_PROFILE}" == "tv"
-BuildRequires: pkgconfig(capi-network-bluetooth)
-BuildRequires: pkgconfig(capi-network-wifi)
-BuildRequires: pkgconfig(capi-content-media-content)
 %endif
 
 %description
@@ -102,17 +91,17 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 %manifest packaging/%{name}.manifest
 %defattr(-,root,root,-)
 /usr/share/license/%{name}
+%{_libdir}/*.so*
+%{_libdir}/context-service/*.so*
 
 %package devel
-Summary:    Context Provider (Development)
+Summary:    Context Provider Shared Header (Development)
 Group:      Service/Context
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
-Context Provider (Development)
+Context Provider Shared Header (DEV)
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/context-service/internal/*.h
-%{_libdir}/pkgconfig/%{name}.pc
-%{_libdir}/*.a

@@ -18,12 +18,12 @@
 #define _CONTEXT_CUSTOM_BASE_H_
 
 #include <Json.h>
-#include <ContextProviderBase.h>
-#include <types_internal.h>
+#include <ContextProvider.h>
+#include <Types.h>
 
 namespace ctx {
 
-	class CustomBase : public ContextProviderBase {
+	class CustomBase : public ContextProvider {
 	public:
 		CustomBase(std::string subject, std::string name, ctx::Json tmpl, std::string owner);
 		~CustomBase();

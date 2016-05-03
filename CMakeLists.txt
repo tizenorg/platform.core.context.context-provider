@@ -1,18 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(context-provider)
 INCLUDE(GNUInstallDirs)
-SET(target "context-provider")
-SET(compile_defs "LOG_TAG=\"CONTEXT\"")
+SET(target_prefix "ctx-prvd")
+SET(target_dir "context-service")
 
 # Common Options
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/src/shared
 )
-ADD_DEFINITIONS(-O2 -Wall -fPIC -fdata-sections -ffunction-sections -fvisibility=hidden)
+ADD_DEFINITIONS(-O2 -Wall -fPIC -fdata-sections -ffunction-sections)
+ADD_DEFINITIONS(-fvisibility=hidden)
+ADD_DEFINITIONS(-DLOG_TAG="CONTEXT")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC -Wl,--as-needed -Wl,--gc-section -Wl,--print-gc-section")
-
-# Base Dependency
-SET(dependencies libcontext-shared libcontext-server)
 
 # Profiles
 IF("${PROFILE}" STREQUAL "mobile")
@@ -23,55 +23,10 @@ IF("${PROFILE}" STREQUAL "wearable")
 	ADD_DEFINITIONS("-D_WEARABLE_")
 ENDIF("${PROFILE}" STREQUAL "wearable")
 
-IF("${PROFILE}" STREQUAL "tv")
-	ADD_DEFINITIONS("-D_TV_")
-ENDIF("${PROFILE}" STREQUAL "tv")
-
-# Include Sub-modules
-ADD_SUBDIRECTORY(src)
-MESSAGE("Compile definitions: ${compile_defs}")
-
-# Build
-INCLUDE(FindPkgConfig)
-PKG_CHECK_MODULES(DEPS REQUIRED ${dependencies})
-
-FOREACH(flag ${DEPS_CFLAGS})
-	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
-ENDFOREACH(flag)
-
-ADD_LIBRARY(${target} STATIC ${sources})
-TARGET_LINK_LIBRARIES(${target} ${DEPS_LDFLAGS})
-SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_FLAGS ${EXTRA_CFLAGS})
-SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITIONS "${compile_defs}")
-SET_TARGET_PROPERTIES(${target} PROPERTIES SOVERSION ${MAJORVER})
-SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${FULLVER})
-
-# Package Config
-FOREACH(item IN LISTS dependencies)
-	SET(deps_str "${deps_str} ${item}")
-ENDFOREACH(item)
-
-SET(VERSION ${FULLVER})
-SET(PREFIX ${CMAKE_INSTALL_PREFIX})
-SET(PC_NAME ${PROJECT_NAME})
-SET(PC_DESCRIPTION "Tizen Context Framework Context Provider")
-SET(PC_INCLUDE "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/context-service")
-SET(PC_LIBDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
-SET(PC_CFLAGS "-I\${includedir}/context-service")
-SET(PC_LDFLAGS "-l${target}")
-SET(PC_REQUIRED "${deps_str}")
-
-CONFIGURE_FILE(
-	${PROJECT_NAME}.pc.in
-	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc
-	@ONLY
-)
-
-# Installing
 INSTALL(
 	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/context-service/internal
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${target_dir}/internal
 	FILES_MATCHING PATTERN "*.h"
 )
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT RuntimeLibraries)
+
+ADD_SUBDIRECTORY(src)

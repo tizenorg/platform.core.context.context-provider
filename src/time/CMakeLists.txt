@@ -1,0 +1,18 @@
+SET(target "${target_prefix}-time")
+
+#SET(DEPS ${DEPS}
+#)
+
+FILE(GLOB SRCS *.cpp)
+
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(PKG_TIME REQUIRED ${DEPS})
+
+FOREACH(flag ${PKG_TIME_CFLAGS})
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+ENDFOREACH(flag)
+
+ADD_LIBRARY(${target} SHARED ${SRCS})
+TARGET_LINK_LIBRARIES(${target} ${PKG_TIME_LDFLAGS} ${target_shared})
+
+INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target_dir})

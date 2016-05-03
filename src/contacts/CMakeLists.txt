@@ -1,0 +1,19 @@
+SET(target "${target_prefix}-contacts")
+
+SET(DEPS ${DEPS}
+	contacts-service2
+)
+
+FILE(GLOB SRCS *.cpp)
+
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(PKG_CONTACTS REQUIRED ${DEPS})
+
+FOREACH(flag ${PKG_CONTACTS_CFLAGS})
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+ENDFOREACH(flag)
+
+ADD_LIBRARY(${target} SHARED ${SRCS})
+TARGET_LINK_LIBRARIES(${target} ${PKG_CONTACTS_LDFLAGS} ${target_shared})
+
+INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target_dir})

@@ -1,0 +1,19 @@
+SET(target "${target_prefix}-message")
+
+SET(DEPS ${DEPS}
+	msg-service
+)
+
+FILE(GLOB SRCS *.cpp)
+
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(PKG_MESSAGE REQUIRED ${DEPS})
+
+FOREACH(flag ${PKG_MESSAGE_CFLAGS})
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+ENDFOREACH(flag)
+
+ADD_LIBRARY(${target} SHARED ${SRCS})
+TARGET_LINK_LIBRARIES(${target} ${PKG_MESSAGE_LDFLAGS} ${target_shared})
+
+INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target_dir})

@@ -16,14 +16,15 @@
 
 #include <map>
 #include <vector>
-#include <types_internal.h>
+#include <Types.h>
 #include <ContextManager.h>
-#include <ContextProviderBase.h>
-#include <db_mgr.h>
+#include <ContextProvider.h>
+#include <DatabaseManager.h>
 #include <CustomContextProvider.h>
 #include "CustomBase.h"
 
 static std::map<std::string, ctx::CustomBase*> __customMap;
+static ctx::DatabaseManager __dbManager;
 
 static bool __isValidFact(std::string subject, ctx::Json& fact);
 static bool __checkValueInt(ctx::Json& tmpl, std::string key, int value);
@@ -44,13 +45,13 @@ void unregisterProvider(const char* subject)
 	ctx::context_manager::unregisterProvider(subject);
 }
 
-EXTAPI ctx::ContextProviderBase* ctx::custom_context_provider::create(void *data)
+SO_EXPORT ctx::ContextProvider* ctx::custom_context_provider::create(void *data)
 {
 	// Already created in addItem() function. Return corresponding custom provider
 	return __customMap[static_cast<const char*>(data)];
 }
 
-EXTAPI void ctx::custom_context_provider::destroy(void *data)
+SO_EXPORT void ctx::custom_context_provider::destroy(void *data)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it = __customMap.find(static_cast<char*>(data));
 	if (it != __customMap.end()) {
@@ -59,7 +60,7 @@ EXTAPI void ctx::custom_context_provider::destroy(void *data)
 	}
 }
 
-EXTAPI bool ctx::initCustomContextProvider()
+SO_EXPORT bool ctx::initCustomContextProvider()
 {
 	// Create custom template db
 	std::string q = std::string("CREATE TABLE IF NOT EXISTS context_trigger_custom_template ")
@@ -67,12 +68,12 @@ EXTAPI bool ctx::initCustomContextProvider()
 			+ "attributes TEXT DEFAULT '' NOT NULL, owner TEXT DEFAULT '' NOT NULL)";
 
 	std::vector<Json> record;
-	bool ret = db_manager::execute_sync(q.c_str(), &record);
+	bool ret = __dbManager.executeSync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
 
 	// Register custom items
 	std::string qSelect = "SELECT * FROM context_trigger_custom_template";
-	ret = db_manager::execute_sync(qSelect.c_str(), &record);
+	ret = __dbManager.executeSync(qSelect.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	IF_FAIL_RETURN(record.size() > 0, true);
 
@@ -98,7 +99,7 @@ EXTAPI bool ctx::initCustomContextProvider()
 	return true;
 }
 
-EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit)
+SO_EXPORT int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it;
 	it = __customMap.find(subject);
@@ -123,14 +124,14 @@ EXTAPI int ctx::custom_context_provider::addItem(std::string subject, std::strin
 		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
 				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
 		std::vector<Json> record;
-		bool ret = db_manager::execute_sync(q.c_str(), &record);
+		bool ret = __dbManager.executeSync(q.c_str(), &record);
 		IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	}
 
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
+SO_EXPORT int ctx::custom_context_provider::removeItem(std::string subject)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it;
 	it = __customMap.find(subject);
@@ -141,13 +142,13 @@ EXTAPI int ctx::custom_context_provider::removeItem(std::string subject)
 	// Remove item from custom template db
 	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
 	std::vector<Json> record;
-	bool ret = db_manager::execute_sync(q.c_str(), &record);
+	bool ret = __dbManager.executeSync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 
 	return ERR_NONE;
 }
 
-EXTAPI int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
+SO_EXPORT int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
 {
 	std::map<std::string, ctx::CustomBase*>::iterator it;
 	it = __customMap.find(subject);
