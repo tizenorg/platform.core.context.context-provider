@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "Contacts.h"
+#include <CreateProvider.h>
+#include "Email.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_STATE_CONTACTS, ContactsChangeProvider);
+	ADD_PROVIDER(SUBJ_STATE_EMAIL, EmailEventProvider);
 
 	return NULL;
 }

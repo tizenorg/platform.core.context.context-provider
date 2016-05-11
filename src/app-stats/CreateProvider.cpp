@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "Activity.h"
+#include <CreateProvider.h>
+#include "AppStatsProvider.h"
+#include "AppStatsLogger.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_ACTIVITY_STATIONARY, StationaryActivityProvider);
-	ADD_PROVIDER(SUBJ_ACTIVITY_WALKING, WalkingActivityProvider);
-	ADD_PROVIDER(SUBJ_ACTIVITY_RUNNING, RunningActivityProvider);
-	ADD_PROVIDER(SUBJ_ACTIVITY_IN_VEHICLE, InVehicleActivityProvider);
+	ADD_PROVIDER(SUBJ_APP_LOGGER, AppStatsLogger);
+	ADD_PROVIDER(SUBJ_APP_RECENTLY_USED, RecentAppProvider);
+	ADD_PROVIDER(SUBJ_APP_FREQUENTLY_USED, FrequentAppProvider);
+	ADD_PROVIDER(SUBJ_APP_RARELY_USED, RareAppProvider);
+	ADD_PROVIDER(SUBJ_APP_PEAK_TIME, AppPeakTimeProvider);
+	ADD_PROVIDER(SUBJ_APP_COMMON_SETTING, AppSettingProvider);
+	ADD_PROVIDER(SUBJ_APP_FREQUENCY, AppFreqProvider);
 
 	return NULL;
 }

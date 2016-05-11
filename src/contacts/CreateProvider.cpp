@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "Wifi.h"
+#include <CreateProvider.h>
+#include "Contacts.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_STATE_WIFI, WifiStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_CONTACTS, ContactsChangeProvider);
 
 	return NULL;
 }

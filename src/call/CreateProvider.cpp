@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "Battery.h"
-#include "Charger.h"
-#include "Gps.h"
-#include "Psmode.h"
-#include "Usb.h"
+#include <CreateProvider.h>
+#include "Call.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_STATE_BATTERY, BatteryStateProvider);
-	ADD_PROVIDER(SUBJ_STATE_CHARGER, ChargerStateProvider);
-	ADD_PROVIDER(SUBJ_STATE_GPS, GpsStateProvider);
-	ADD_PROVIDER(SUBJ_STATE_PSMODE, PowerSaveModeProvider);
-	ADD_PROVIDER(SUBJ_STATE_USB, UsbStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_CALL, CallStateProvider);
 
 	return NULL;
 }

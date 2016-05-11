@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "SocialStatsProvider.h"
+#include <CreateProvider.h>
+#include "Alarm.h"
+#include "Time.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_SOCIAL_FREQ_ADDRESS, TopContactsProvider);
-	ADD_PROVIDER(SUBJ_SOCIAL_FREQUENCY, ContactFreqProvider);
+	ADD_PROVIDER(SUBJ_STATE_ALARM, AlarmProvider);
+	ADD_PROVIDER(SUBJ_STATE_TIME, TimeProvider);
 
 	return NULL;
 }

@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-#include <new>
-#include <Types.h>
+#include <CreateProvider.h>
+#include "Battery.h"
+#include "Charger.h"
+#include "Gps.h"
+#include "Psmode.h"
+#include "Usb.h"
 
-#define ADD_PROVIDER(subj, prvd) \
-	if (STR_EQ((subj), subject)) { \
-		ctx::ContextProvider *instance = new(std::nothrow) prvd; \
-		if (instance == NULL) { \
-			_E("Memoroy allocation failed"); \
-			return NULL; \
-		} \
-		return instance; \
-	}
+using namespace ctx;
+
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
+{
+	ADD_PROVIDER(SUBJ_STATE_BATTERY, BatteryStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_CHARGER, ChargerStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_GPS, GpsStateProvider);
+	ADD_PROVIDER(SUBJ_STATE_PSMODE, PowerSaveModeProvider);
+	ADD_PROVIDER(SUBJ_STATE_USB, UsbStateProvider);
+
+	return NULL;
+}

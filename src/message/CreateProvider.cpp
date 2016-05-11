@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "place_recognition.h"
+#include <CreateProvider.h>
+#include "Message.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_PLACE_DETECTION, PlaceRecognitionProvider);
+	ADD_PROVIDER(SUBJ_STATE_MESSAGE, MessageEventProvider);
 
 	return NULL;
 }
