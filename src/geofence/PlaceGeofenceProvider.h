@@ -36,6 +36,8 @@ namespace ctx {
 		bool isSupported();
 		void getPrivilege(std::vector<const char*> &privilege);
 
+		bool unloadable();
+
 	private:
 		std::map<int, GeofenceMonitorHandle*> __handleMap;
 	};

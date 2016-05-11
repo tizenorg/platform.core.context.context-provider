@@ -47,6 +47,11 @@ bool PlaceGeofenceProvider::isSupported()
 	return supported;
 }
 
+bool PlaceGeofenceProvider::unloadable()
+{
+	return false;
+}
+
 int PlaceGeofenceProvider::subscribe(Json option, Json *requestResult)
 {
 	int placeId = -1;
