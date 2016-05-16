@@ -2,6 +2,7 @@ SET(DEPS ${DEPS}
 	capi-system-info
 	capi-system-runtime-info
 	capi-media-sound-manager
+	capi-network-wifi
 )
 
 FILE(GLOB SRCS *.cpp)
