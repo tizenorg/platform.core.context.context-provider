@@ -19,17 +19,19 @@
 
 std::string ctx::DebugUtils::humanReadableDateTime(time_t timestamp, std::string format, size_t size, bool utc)
 {
-	struct tm * timeinfo;
+	struct tm timeinfo;
+	struct tm *result;
+	tzset();
 	if (utc) {
 		format += " UTC";
 		size += 4;
-		timeinfo = gmtime(&timestamp);
+		result = gmtime_r(&timestamp, &timeinfo);
 	} else {
-		timeinfo = localtime(&timestamp);
+		result = localtime_r(&timestamp, &timeinfo);
 	}
 	char buffer[size];
-	if (timeinfo) {
-		strftime(buffer, size, format.c_str(), timeinfo);
+	if (result) {
+		strftime(buffer, size, format.c_str(), &timeinfo);
 	} else {
 		snprintf(buffer, size, "NULL");
 	}
