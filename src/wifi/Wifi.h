@@ -18,9 +18,9 @@
 #define _CONTEXT_WIFI_STATE_PROVIDER_H_
 
 #include <string>
-#include <wifi.h>
 #include <BasicProvider.h>
 #include <ProviderTypes.h>
+#include <WifiWrapper.h>
 
 namespace ctx {
 
@@ -45,10 +45,10 @@ namespace ctx {
 		};
 
 		int __lastState;
-		bool __isInitialized;
 		bool __isActivated;
 		wifi_connection_state_e __connState;
 		std::string __bssid;
+		WifiWrapper __wrapper;
 
 		bool __getCurrentState();
 		bool __getBssid();
