@@ -23,7 +23,6 @@ using namespace ctx;
 WifiStateProvider::WifiStateProvider() :
 	BasicProvider(SUBJ_STATE_WIFI),
 	__lastState(UNKNOWN),
-	__isInitialized(false),
 	__isActivated(false),
 	__connState(WIFI_CONNECTION_STATE_FAILURE)
 {
@@ -54,16 +53,11 @@ bool WifiStateProvider::__getCurrentState()
 {
 	int err;
 
-	if (!__isInitialized) {
-		err = wifi_initialize();
-		IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "wifi_initialize() failed");
-	}
+	err = __wrapper.isActivated(&__isActivated);
+	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "isActivated() failed");
 
-	err = wifi_is_activated(&__isActivated);
-	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "wifi_is_activated() failed");
-
-	err = wifi_get_connection_state(&__connState);
-	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "wifi_get_connection_state() failed");
+	err = __wrapper.getConnectionState(&__connState);
+	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "getConnectionState() failed");
 
 	if (__isActivated) {
 		if (__connState == WIFI_CONNECTION_STATE_CONNECTED) {
@@ -78,9 +72,6 @@ bool WifiStateProvider::__getCurrentState()
 		__clearBssid();
 	}
 
-	if (!__isInitialized)
-		wifi_deinitialize();
-
 	return true;
 }
 
@@ -90,14 +81,14 @@ bool WifiStateProvider::__getBssid()
 	char *strBuf = NULL;
 	wifi_ap_h ap = NULL;
 
-	err = wifi_get_connected_ap(&ap);
-	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "wifi_get_connected_ap() failed");
+	err = __wrapper.getConnectedAP(&ap);
+	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "getConnectedAP() failed");
 
-	wifi_ap_get_bssid(ap, &strBuf);
+	__wrapper.getBssidFromAP(ap, &strBuf);
 	__bssid = (strBuf != NULL ? strBuf : "");
 	g_free(strBuf);
 
-	wifi_ap_destroy(ap);
+	__wrapper.destroyAP(ap);
 
 	if (__bssid.empty())
 		_W("Failed to get BSSID");
@@ -153,34 +144,21 @@ int WifiStateProvider::read()
 
 bool WifiStateProvider::__startMonitor()
 {
-	IF_FAIL_RETURN(!__isInitialized, true);
-
 	int err;
-	err = wifi_initialize();
-	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "wifi_initialize() failed");
 
-	err = wifi_set_device_state_changed_cb(__deviceStateChangedCb, this);
-	IF_FAIL_CATCH_TAG(err == WIFI_ERROR_NONE, _E, "wifi_set_device_state_changed_cb() failed");
+	err = __wrapper.setDeviceStateChangedCb(__deviceStateChangedCb, this);
+	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "setDeviceStateChangedCb() failed");
 
-	err = wifi_set_connection_state_changed_cb(__connectionStateChangedCb, this);
-	IF_FAIL_CATCH_TAG(err == WIFI_ERROR_NONE, _E, "wifi_set_connection_state_changed_cb() failed");
+	err = __wrapper.setConnectionStateChangedCb(__connectionStateChangedCb, this);
+	IF_FAIL_RETURN_TAG(err == WIFI_ERROR_NONE, false, _E, "setConnectionStateChangedCb() failed");
 
-	__isInitialized = true;
 	return true;
-
-CATCH:
-	wifi_deinitialize();
-	return false;
 }
 
 void WifiStateProvider::__stopMonitor()
 {
-	IF_FAIL_VOID(__isInitialized);
-
-	wifi_unset_device_state_changed_cb();
-	wifi_unset_connection_state_changed_cb();
-	wifi_deinitialize();
-	__isInitialized = false;
+	__wrapper.unsetDeviceStateChangedCb();
+	__wrapper.unsetConnectionStateChangedCb();
 }
 
 int WifiStateProvider::subscribe()
