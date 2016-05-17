@@ -65,12 +65,13 @@ void ctx::ContactLogAggregator::onExecuted(unsigned int queryId, int error, std:
 		lastTime = currentTime - LOG_RETENTION_PERIOD;
 
 	__getUpdatedContactLogList(lastTime, &list);
-	IF_FAIL_VOID(list);
+	IF_FAIL_CATCH(list);
 
 	__removeExpiredLog();
 	__insertContactLogList(list);
 	__destroyContactLogList(list);
 
+CATCH:
 	delete this;
 }
 

@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "Alarm.h"
-#include "Time.h"
+#include <CreateProvider.h>
+#include "Headphone.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_STATE_ALARM, AlarmProvider);
-	ADD_PROVIDER(SUBJ_STATE_TIME, TimeProvider);
+	ADD_PROVIDER(SUBJ_STATE_HEADPHONE, HeadphoneStateProvider);
 
 	return NULL;
 }

@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "AppStatsProvider.h"
-#include "AppStatsLogger.h"
+#include <CreateProvider.h>
+#include "SocialStatsProvider.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_APP_LOGGER, AppStatsLogger);
-	ADD_PROVIDER(SUBJ_APP_RECENTLY_USED, RecentAppProvider);
-	ADD_PROVIDER(SUBJ_APP_FREQUENTLY_USED, FrequentAppProvider);
-	ADD_PROVIDER(SUBJ_APP_RARELY_USED, RareAppProvider);
-	ADD_PROVIDER(SUBJ_APP_PEAK_TIME, AppPeakTimeProvider);
-	ADD_PROVIDER(SUBJ_APP_COMMON_SETTING, AppSettingProvider);
-	ADD_PROVIDER(SUBJ_APP_FREQUENCY, AppFreqProvider);
+	ADD_PROVIDER(SUBJ_SOCIAL_FREQ_ADDRESS, TopContactsProvider);
+	ADD_PROVIDER(SUBJ_SOCIAL_FREQUENCY, ContactFreqProvider);
 
 	return NULL;
 }

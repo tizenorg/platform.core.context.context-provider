@@ -298,12 +298,15 @@ const std::vector<ctx::num_t> ctx::VisitCateger::__featuresStd(
 
 ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
 {
-	struct tm *timeinfo = localtime(&time);
-	if (timeinfo == NULL) {
+	struct tm timeinfo;
+	struct tm *result;
+	tzset();
+	result = localtime_r(&time, &timeinfo);
+	if (result == NULL) {
 		return {0, 0, 0, false};
 	}
-	int minutesSinceMidnight = 60 * timeinfo->tm_hour + timeinfo->tm_min;
-	int weekday = (timeinfo->tm_wday + 6) % 7; // Monday is 0, Sunday is 6
+	int minutesSinceMidnight = 60 * timeinfo.tm_hour + timeinfo.tm_min;
+	int weekday = (timeinfo.tm_wday + 6) % 7; // Monday is 0, Sunday is 6
 	bool weekend = weekday > 4;
 	int minutesSinceBeginingOfTheWeek = 24 * 60 * weekday + minutesSinceMidnight;
 	return {

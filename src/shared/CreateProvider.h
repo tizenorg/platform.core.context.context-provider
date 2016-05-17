@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "PlaceGeofenceProvider.h"
+#ifndef _CONTEXT_PROVIDER_CREATE_H_
+#define _CONTEXT_PROVIDER_CREATE_H_
 
-using namespace ctx;
+#include <new>
+#include <Types.h>
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_PLACE_GEOFENCE, PlaceGeofenceProvider);
+#define ADD_PROVIDER(subj, prvd) \
+	if (STR_EQ((subj), subject)) { \
+		ctx::ContextProvider *instance = new(std::nothrow) prvd; \
+		if (instance == NULL) { \
+			_E("Memoroy allocation failed"); \
+			return NULL; \
+		} \
+		return instance; \
+	}
 
-	return NULL;
-}
+#endif	/* _CONTEXT_PROVIDER_CREATE_H_ */

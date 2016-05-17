@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-#include <create.h>
-#include "Call.h"
+#include <CreateProvider.h>
+#include "MediaStatsProvider.h"
+#include "MediaStatsLogger.h"
 
 using namespace ctx;
 
-extern "C" SO_EXPORT ContextProvider* create(const char *subject)
+extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_STATE_CALL, CallStateProvider);
+	ADD_PROVIDER(SUBJ_MEDIA_LOGGER, MediaStatsLogger);
+	ADD_PROVIDER(SUBJ_MUSIC_PEAK_TIME, MusicPeakTimeProvider);
+	ADD_PROVIDER(SUBJ_MUSIC_COMMON_SETTING, MusicSettingProvider);
+	ADD_PROVIDER(SUBJ_MUSIC_FREQUENCY, MusicFreqProvider);
+	ADD_PROVIDER(SUBJ_VIDEO_PEAK_TIME, VideoPeakTimeProvider);
+	ADD_PROVIDER(SUBJ_VIDEO_COMMON_SETTING, VideoSettingProvider);
+	ADD_PROVIDER(SUBJ_VIDEO_FREQUENCY, VideoFreqProvider);
 
 	return NULL;
 }
