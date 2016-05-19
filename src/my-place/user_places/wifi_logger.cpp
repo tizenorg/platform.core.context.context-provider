@@ -90,7 +90,6 @@ ctx::WifiLogger::WifiLogger(IWifiListener * listener, PlaceRecogMode energyMode,
 
 	__logs = std::vector<MacEvent>();
 
-	__wifiInitializeRequest();
 	__wifiSetDeviceStateChangedCbRequest();
 	if (WIFI_LOGGER_LOW_POWER_MODE) {
 		__wifiSetConnectionStateChangedCbRequest();
@@ -106,7 +105,6 @@ ctx::WifiLogger::~WifiLogger()
 {
 	_D("DESTRUCTOR");
 	stopLogging();
-	__wifiDeinitializeRequest();
 }
 
 void ctx::WifiLogger::__wifiDeviceStateChangedCb(wifi_device_state_e state, void *userData)
@@ -152,7 +150,7 @@ bool ctx::WifiLogger::__wifiFoundApCb(wifi_ap_h ap, void *userData)
 	ctx::WifiLogger* wifiLogger = (ctx::WifiLogger *)userData;
 
 	char *bssid = NULL;
-	int ret = __wifiApGetBssidRequest(ap, &bssid);
+	int ret = wifiLogger->__wifiApGetBssidRequest(ap, &bssid);
 	if (ret != WIFI_ERROR_NONE) {
 		return false;
 	}
@@ -237,7 +235,7 @@ void ctx::WifiLogger::__wifiScanFinishedCb(wifi_error_e errorCode, void *userDat
 #endif /* TIZEN_ENGINEER_MODE */
 	wifiLogger->__lastScanTime = now;
 
-	int ret = __wifiForeachFoundApsRequest(userData);
+	int ret = wifiLogger->__wifiForeachFoundApsRequest(userData);
 	if (ret != WIFI_ERROR_NONE) {
 		return;
 	}
@@ -249,7 +247,7 @@ void ctx::WifiLogger::__wifiScanFinishedCb(wifi_error_e errorCode, void *userDat
 bool ctx::WifiLogger::__checkWifiIsActivated()
 {
 	bool wifiActivated = true;
-	int ret = wifi_is_activated(&wifiActivated);
+	int ret = __wifiWrapper.isActivated(&wifiActivated);
 	__WIFI_ERROR_LOG(ret);
 	_D("Wi-Fi is %s", wifiActivated ? "ON" : "OFF");
 	return wifiActivated;
@@ -257,13 +255,13 @@ bool ctx::WifiLogger::__checkWifiIsActivated()
 
 void ctx::WifiLogger::__wifiScanRequest()
 {
-	int ret = wifi_scan(__wifiScanFinishedCb, this);
+	int ret = __wifiWrapper.scan(__wifiScanFinishedCb, this);
 	__WIFI_ERROR_LOG(ret);
 }
 
 int ctx::WifiLogger::__wifiForeachFoundApsRequest(void *userData)
 {
-	int ret = wifi_foreach_found_aps(__wifiFoundApCb, userData);
+	int ret = __wifiWrapper.foreachFoundAP(__wifiFoundApCb, userData);
 	__WIFI_ERROR_LOG(ret);
 	return ret;
 }
@@ -271,46 +269,34 @@ int ctx::WifiLogger::__wifiForeachFoundApsRequest(void *userData)
 wifi_connection_state_e ctx::WifiLogger::__wifiGetConnectionStateRequest()
 {
 	wifi_connection_state_e connectionState;
-	int ret = wifi_get_connection_state(&connectionState);
+	int ret = __wifiWrapper.getConnectionState(&connectionState);
 	__WIFI_ERROR_LOG(ret);
 	return connectionState;
 }
 
 void ctx::WifiLogger::__wifiSetBackgroundScanCbRequest()
 {
-	int ret = wifi_set_background_scan_cb(__wifiScanFinishedCb, this);
+	int ret = __wifiWrapper.setBackgroundScanCb(__wifiScanFinishedCb, this);
 	__WIFI_ERROR_LOG(ret);
 }
 
 void ctx::WifiLogger::__wifiSetDeviceStateChangedCbRequest()
 {
-	int ret = wifi_set_device_state_changed_cb(__wifiDeviceStateChangedCb, this);
+	int ret = __wifiWrapper.setDeviceStateChangedCb(__wifiDeviceStateChangedCb, this);
 	__WIFI_ERROR_LOG(ret);
 }
 
 void ctx::WifiLogger::__wifiSetConnectionStateChangedCbRequest()
 {
-	int ret = wifi_set_connection_state_changed_cb(__wifiConnectionStateChangedCb, this);
+	int ret = __wifiWrapper.setConnectionStateChangedCb(__wifiConnectionStateChangedCb, this);
 	__WIFI_ERROR_LOG(ret);
 }
 
 int ctx::WifiLogger::__wifiApGetBssidRequest(wifi_ap_h ap, char **bssid)
 {
-	int ret = wifi_ap_get_bssid(ap, bssid);
+	int ret = __wifiWrapper.getBssidFromAP(ap, bssid);
 	__WIFI_ERROR_LOG(ret);
 	return ret;
-}
-
-void ctx::WifiLogger::__wifiInitializeRequest()
-{
-	int ret = wifi_initialize();
-	__WIFI_ERROR_LOG(ret);
-}
-
-void ctx::WifiLogger::__wifiDeinitializeRequest()
-{
-	int ret = wifi_deinitialize();
-	__WIFI_ERROR_LOG(ret);
 }
 
 bool ctx::WifiLogger::__checkTimerId(int id)
@@ -420,7 +406,7 @@ void ctx::WifiLogger::__stopLogging()
 		__timerManager.remove(__timerId);
 	}
 	if (WIFI_LOGGER_PASSIVE_SCANNING) {
-		wifi_unset_background_scan_cb();
+		__wifiWrapper.unsetBackgroundScanCb();
 	}
 	__running = false;
 }

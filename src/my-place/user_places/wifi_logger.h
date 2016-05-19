@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_
 #define _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_
 
-#include <wifi.h>
+#include <WifiWrapper.h>
 #include <time.h>
 #include <vector>
 #include <set>
@@ -82,16 +82,15 @@ namespace ctx {
 		int __dbInsertLogs();
 
 		/* SYSTEM CAPI WRAPPERS */
+		WifiWrapper __wifiWrapper;
 		void __wifiSetBackgroundScanCbRequest();
 		void __wifiSetDeviceStateChangedCbRequest();
 		void __wifiSetConnectionStateChangedCbRequest();
-		static bool __checkWifiIsActivated();
+		bool __checkWifiIsActivated();
 		void __wifiScanRequest();
-		static int __wifiForeachFoundApsRequest(void *userData);
-		static wifi_connection_state_e __wifiGetConnectionStateRequest();
-		static int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
-		void __wifiInitializeRequest();
-		void __wifiDeinitializeRequest();
+		int __wifiForeachFoundApsRequest(void *userData);
+		wifi_connection_state_e __wifiGetConnectionStateRequest();
+		int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
 
 		/* SYSTEM CAPI CALLBACKS */
 		static void __wifiDeviceStateChangedCb(wifi_device_state_e state, void *userData);
