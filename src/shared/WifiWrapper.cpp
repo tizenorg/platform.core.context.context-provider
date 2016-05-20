@@ -96,6 +96,11 @@ SO_EXPORT int WifiWrapper::getConnectedAP(wifi_ap_h *ap)
 	return wifi_get_connected_ap(ap);
 }
 
+SO_EXPORT int WifiWrapper::getEssidFromAP(wifi_ap_h ap, char **essid)
+{
+	return wifi_ap_get_essid(ap, essid);
+}
+
 SO_EXPORT int WifiWrapper::getBssidFromAP(wifi_ap_h ap, char **bssid)
 {
 	return wifi_ap_get_bssid(ap, bssid);
