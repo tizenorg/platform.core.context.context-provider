@@ -23,7 +23,8 @@
 
 #define __WIFI_CREATE_TABLE_COLUMNS \
 	WIFI_COLUMN_TIMESTAMP " timestamp NOT NULL, "\
-	WIFI_COLUMN_BSSID " TEXT NOT NULL"
+	WIFI_COLUMN_BSSID " TEXT NOT NULL, "\
+	WIFI_COLUMN_ESSID " TEXT NOT NULL"
 
 #define __WIFI_ERROR_LOG(error) { \
 	if (error != WIFI_ERROR_NONE) { \
@@ -49,10 +50,10 @@ int ctx::WifiLogger::__dbInsertLogs()
 		const char* separator = " ";
 		query << "BEGIN TRANSACTION; \
 				INSERT INTO " WIFI_TABLE_NAME " \
-				( " WIFI_COLUMN_BSSID ", " WIFI_COLUMN_TIMESTAMP " ) \
+				( " WIFI_COLUMN_BSSID ", " WIFI_COLUMN_ESSID ", " WIFI_COLUMN_TIMESTAMP " ) \
 				VALUES";
 		for (MacEvent mac_event : __logs) {
-			query << separator << "( '" << mac_event.mac << "', '" << mac_event.timestamp << "' )";
+			query << separator << "( '" << mac_event.mac << "', '" << mac_event.networkName << "', '" << mac_event.timestamp << "' )";
 			separator = ", ";
 		}
 		__logs.clear();
@@ -152,6 +153,12 @@ bool ctx::WifiLogger::__wifiFoundApCb(wifi_ap_h ap, void *userData)
 		return false;
 	}
 
+	char *essid = NULL;
+	ret = wifiLogger->__wifiApGetEssidRequest(ap, &essid);
+	if (ret != WIFI_ERROR_NONE) {
+		return false;
+	}
+
 	Mac mac;
 	try {
 		mac = Mac(bssid);
@@ -160,7 +167,7 @@ bool ctx::WifiLogger::__wifiFoundApCb(wifi_ap_h ap, void *userData)
 		return false;
 	}
 
-	MacEvent log(wifiLogger->__lastScanTime, mac);
+	MacEvent log(wifiLogger->__lastScanTime, mac, std::string(essid));
 	if (wifiLogger->__listener) {
 		wifiLogger->__listener->onWifiScan(log);
 		if (WIFI_LOGGER_LOW_POWER_MODE
@@ -287,6 +294,13 @@ void ctx::WifiLogger::__wifiSetConnectionStateChangedCbRequest()
 {
 	int ret = __wifiWrapper.setConnectionStateChangedCb(__wifiConnectionStateChangedCb, this);
 	__WIFI_ERROR_LOG(ret);
+}
+
+int ctx::WifiLogger::__wifiApGetEssidRequest(wifi_ap_h ap, char **essid)
+{
+	int ret = __wifiWrapper.getEssidFromAP(ap, essid);
+	__WIFI_ERROR_LOG(ret);
+	return ret;
 }
 
 int ctx::WifiLogger::__wifiApGetBssidRequest(wifi_ap_h ap, char **bssid)

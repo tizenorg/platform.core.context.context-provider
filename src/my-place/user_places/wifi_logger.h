@@ -89,6 +89,7 @@ namespace ctx {
 		void __wifiScanRequest();
 		int __wifiForeachFoundApsRequest(void *userData);
 		wifi_connection_state_e __wifiGetConnectionStateRequest();
+		int __wifiApGetEssidRequest(wifi_ap_h ap, char **essid);
 		int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
 
 		/* SYSTEM CAPI CALLBACKS */

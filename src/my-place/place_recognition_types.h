@@ -54,6 +54,7 @@
 #define WIFI_TABLE_NAME                        "place_status_user_place_wifi"
 #define WIFI_COLUMN_TIMESTAMP                  "timestamp"
 #define WIFI_COLUMN_BSSID                      "bssid"
+#define WIFI_COLUMN_ESSID                      "essid"
 
 #define LOCATION_TABLE_NAME                    "place_status_user_place_location"
 #define LOCATION_COLUMN_LATITUDE               "geo_latitude"

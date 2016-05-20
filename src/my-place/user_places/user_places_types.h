@@ -127,8 +127,13 @@ namespace ctx {
 	struct MacEvent {
 		time_t timestamp;
 		Mac mac;
+		std::string networkName;
 
 		MacEvent(time_t timestamp_, Mac mac_) : timestamp(timestamp_), mac(mac_) {}
+		MacEvent(time_t timestamp_, Mac mac_, std::string networkName_)
+			: timestamp(timestamp_)
+			, mac(mac_)
+			, networkName(networkName_) {}
 	};
 
 	typedef std::map<int, num_t> Categs; // scores of categories

@@ -34,6 +34,7 @@ namespace ctx {
 		int getConnectionState(wifi_connection_state_e *state);
 		int getConnectedAP(wifi_ap_h *ap);
 
+		int getEssidFromAP(wifi_ap_h ap, char **essid);
 		int getBssidFromAP(wifi_ap_h ap, char **bssid);
 		int destroyAP(wifi_ap_h ap);
 
