@@ -66,10 +66,9 @@ int ctx::WifiLogger::__dbInsertLogs()
 	return 0;
 }
 
-ctx::WifiLogger::WifiLogger(IWifiListener * listener, PlaceRecogMode energyMode, bool testMode) :
+ctx::WifiLogger::WifiLogger(IWifiListener * listener, PlaceRecogMode energyMode) :
 	__timerOn(false),
 	__intervalMinutes(WIFI_LOGGER_INTERVAL_MINUTES_HIGH_ACCURACY),
-	__testMode(testMode),
 	__listener(listener),
 	__lastScanTime(time_t(0)),
 	__lasTimerCallbackTime(time_t(0)),
@@ -79,9 +78,7 @@ ctx::WifiLogger::WifiLogger(IWifiListener * listener, PlaceRecogMode energyMode,
 	__running(false)
 {
 	_D("CONSTRUCTOR");
-	if (testMode) {
-		return;
-	}
+
 	__setInterval(energyMode);
 
 	if (WIFI_LOGGER_DATABASE) {

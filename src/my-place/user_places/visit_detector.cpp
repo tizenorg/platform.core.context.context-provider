@@ -56,13 +56,14 @@
 
 ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, bool testMode) :
 	__testMode(testMode),
-	__locationLogger(this, testMode),
-	__wifiLogger(this, energyMode, testMode),
+	__locationLogger(testMode ? nullptr : new LocationLogger(this)),
+	__wifiLogger(testMode ? nullptr : new WifiLogger(this, energyMode)),
 	__currentInterval(startScan, startScan + VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
 	__stableCounter(0),
 	__tolerance(VISIT_DETECTOR_TOLERANCE_DEPTH),
 	__entranceToPlace(false),
 	__periodSeconds(VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
+	__dbManager(testMode ? nullptr : new DatabaseManager()),
 	__entranceTime(0),
 	__departureTime(0)
 {
@@ -76,10 +77,11 @@ ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, b
 		return;
 	}
 
-	__listeners.push_back(&__locationLogger);
-	__listeners.push_back(&__wifiLogger);
+	__listeners.push_back(__locationLogger);
+	__listeners.push_back(__wifiLogger);
+
 	__dbCreateTable();
-	__wifiLogger.startLogging();
+	__wifiLogger->startLogging();
 }
 
 ctx::VisitDetector::~VisitDetector()
@@ -360,7 +362,7 @@ std::shared_ptr<ctx::Visits> ctx::VisitDetector::getVisits()
 
 void ctx::VisitDetector::__dbCreateTable()
 {
-	bool ret = __dbManager.createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
+	bool ret = __dbManager->createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
 	_D("db: visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -410,7 +412,7 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	__putVisitCategsToJson(visit.categs, data);
 
 	int64_t rowId;
-	bool ret = __dbManager.insertSync(VISIT_TABLE, data, &rowId);
+	bool ret = __dbManager->insertSync(VISIT_TABLE, data, &rowId);
 	_D("db: visit table insert result: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
@@ -440,5 +442,7 @@ void ctx::VisitDetector::setMode(PlaceRecogMode energyMode)
 {
 	_D("");
 	__setPeriod(energyMode);
-	__wifiLogger.setMode(energyMode);
+	if (__wifiLogger) {
+		__wifiLogger->setMode(energyMode);
+	}
 }

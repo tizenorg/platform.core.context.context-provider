@@ -30,7 +30,7 @@ namespace ctx {
 
 	private:
 		bool __testMode;
-		DatabaseManager __dbManager;
+		DatabaseManager *__dbManager;
 
 		double __doubleValueFromJson(Json &row, const char* key);
 		Categs __visitCategsFromJson(Json &row);

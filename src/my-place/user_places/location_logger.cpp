@@ -201,9 +201,8 @@ int ctx::LocationLogger::__dbInsertLog(LocationEvent locationEvent)
 	return ret;
 }
 
-ctx::LocationLogger::LocationLogger(ILocationListener *listener, bool testMode) :
+ctx::LocationLogger::LocationLogger(ILocationListener *listener) :
 	__listener(listener),
-	__testMode(testMode),
 	__activeRequestAttempts(0),
 	__activeAttempts(0),
 	__allAttempts(0),
@@ -221,9 +220,6 @@ ctx::LocationLogger::LocationLogger(ILocationListener *listener, bool testMode) 
 
 	__locationManagerCreate();
 
-	if (__testMode) {
-		return;
-	}
 	if (LOCATION_LOGGER_DATABASE) {
 		__dbCreateTable();
 	}
@@ -601,17 +597,13 @@ void ctx::LocationLogger::__stopLogging()
 void ctx::LocationLogger::onVisitStart()
 {
 	_D("");
-	if (!__testMode) {
-		__startLogging();
-	}
+	__startLogging();
 }
 
 void ctx::LocationLogger::onVisitEnd()
 {
 	_D("");
-	if (!__testMode) {
-		__stopLogging();
-	}
+	__stopLogging();
 }
 
 #undef __LOCATION_ERROR_LOG

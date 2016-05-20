@@ -65,7 +65,7 @@ namespace ctx {
 	class LocationLogger : public ITimerListener, public IVisitListener {
 
 	public:
-		LocationLogger(ILocationListener *listener = nullptr, bool testMode = false);
+		LocationLogger(ILocationListener *listener = nullptr);
 		~LocationLogger();
 
 	private:
@@ -78,7 +78,6 @@ namespace ctx {
 		void __broadcast(LocationEvent locationEvent);
 
 		/* INTERNAL */
-		bool __testMode;
 		void __startLogging();
 		void __stopLogging();
 		void __locationRequest();
