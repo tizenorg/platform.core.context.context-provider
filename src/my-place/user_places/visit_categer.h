@@ -85,6 +85,9 @@ namespace ctx {
 		 */
 		static void categorize(ctx::Visit &visit);
 
+		friend class Test;
+		friend class UserPlacesTestUtils;
+
 	};	/* class VisitCateger */
 
 }	/* namespace ctx */

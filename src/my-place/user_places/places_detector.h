@@ -64,6 +64,9 @@ namespace ctx {
 		static void reduceOutliers(std::shared_ptr<graph::Components> &cc); // TODO: move to private
 		std::vector<std::shared_ptr<Place>> getPlaces();
 
+		friend class Test;
+		friend class UserPlacesTestUtils;
+
 	};  /* class PlacesDetector */
 
 }	/* namespace ctx */

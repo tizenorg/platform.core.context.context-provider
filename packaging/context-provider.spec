@@ -67,9 +67,9 @@ export CXXFLAGS+=" -std=c++11 -Wno-c++11-compat"
 #export   CFLAGS+=" -Wcast-qual"
 #export CXXFLAGS+=" -Wcast-qual"
 
-#export   CFLAGS+=" -DTIZEN_ENGINEER_MODE"
-#export CXXFLAGS+=" -DTIZEN_ENGINEER_MODE"
-#export   FFLAGS+=" -DTIZEN_ENGINEER_MODE"
+export   CFLAGS+=" -DTIZEN_ENGINEER_MODE"
+export CXXFLAGS+=" -DTIZEN_ENGINEER_MODE"
+export   FFLAGS+=" -DTIZEN_ENGINEER_MODE"
 
 cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DMAJORVER=${MAJORVER} -DFULLVER=%{version} -DPROFILE=%{?BUILD_PROFILE}
 make %{?jobs:-j%jobs}
@@ -105,3 +105,14 @@ Context Provider Shared Header (DEV)
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/context-service/internal/*.h
+
+%package test
+Summary:    Tizen Context Providers Tests
+Group:      Service/Context
+
+%description test
+Tizen Context Providers Tests
+
+%files test
+%manifest test/context-provider-test.manifest
+%{_bindir}/context-provider-test

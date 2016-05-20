@@ -96,6 +96,9 @@ namespace ctx {
 		std::shared_ptr<Visits> getVisits(); // only used in test mode
 		void setMode(PlaceRecogMode energyMode);
 
+		friend class Test;
+		friend class UserPlacesTestUtils;
+
 	};	/* class VisitDetector */
 
 }	/* namespace ctx */

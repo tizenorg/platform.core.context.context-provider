@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/shared
 )
 ADD_DEFINITIONS(-O2 -Wall -fPIC -fdata-sections -ffunction-sections)
-ADD_DEFINITIONS(-fvisibility=hidden)
+ADD_DEFINITIONS(-fvisibility=default)
 ADD_DEFINITIONS(-DLOG_TAG="CONTEXT")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC -Wl,--as-needed -Wl,--gc-section -Wl,--print-gc-section")
 
@@ -30,3 +30,6 @@ INSTALL(
 )
 
 ADD_SUBDIRECTORY(src)
+
+# Test executable
+ADD_SUBDIRECTORY(test)
