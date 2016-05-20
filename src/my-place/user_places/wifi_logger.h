@@ -51,8 +51,7 @@ namespace ctx {
 
 	public:
 		WifiLogger(IWifiListener * listener = nullptr,
-				PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE,
-				bool testMode = false);
+				PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);
 		~WifiLogger();
 
 		void startLogging();
@@ -98,7 +97,6 @@ namespace ctx {
 		static bool __wifiFoundApCb(wifi_ap_h ap, void *userData);
 		static void __wifiScanFinishedCb(wifi_error_e errorCode, void *userData);
 
-		bool __testMode;
 		IWifiListener * const __listener;
 		std::vector<MacEvent> __logs;
 		std::set<std::string> __lastScansPool;

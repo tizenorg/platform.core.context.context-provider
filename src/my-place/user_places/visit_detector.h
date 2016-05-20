@@ -38,8 +38,8 @@ namespace ctx {
 	private:
 		bool __testMode;
 		std::shared_ptr<Visits> __detectedVisits; // only used in test mode
-		LocationLogger __locationLogger;
-		WifiLogger __wifiLogger;
+		LocationLogger *__locationLogger;
+		WifiLogger *__wifiLogger;
 		std::vector<IVisitListener*> __listeners;
 		std::shared_ptr<MacEvents> __currentMacEvents;
 		Interval __currentInterval;
@@ -50,7 +50,7 @@ namespace ctx {
 		int __tolerance;
 		bool __entranceToPlace;
 		int __periodSeconds;
-		DatabaseManager __dbManager;
+		DatabaseManager *__dbManager;
 
 		// fields that  are used only in case of entrance detection
 		std::shared_ptr<MacSet> __representativesMacs; // macs that represent the current place
