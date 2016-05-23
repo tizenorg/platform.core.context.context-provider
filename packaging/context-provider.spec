@@ -28,7 +28,7 @@ BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: pkgconfig(capi-media-sound-manager)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-network-wifi)
-BuildRequires: pkgconfig(motion)
+BuildRequires: pkgconfig(libcore-context-manager)
 
 %if "%{?BUILD_PROFILE}" == "mobile"
 BuildRequires: pkgconfig(msg-service)
@@ -62,7 +62,7 @@ export CXXFLAGS+=" -fno-strict-aliasing -fno-unroll-loops -fsigned-char -fstrict
 
 export   CFLAGS+=" -fno-common"
 export CXXFLAGS+=" -Wnon-virtual-dtor"
-export CXXFLAGS+=" -std=c++11 -Wno-c++11-compat"
+export CXXFLAGS+=" -std=c++0x"
 
 #export   CFLAGS+=" -Wcast-qual"
 #export CXXFLAGS+=" -Wcast-qual"

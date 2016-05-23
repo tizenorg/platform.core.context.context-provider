@@ -1,7 +1,7 @@
 SET(target "${target_prefix}-activity")
 
 SET(DEPS ${DEPS}
-	motion
+	libcore-context-manager
 )
 
 FILE(GLOB SRCS *.cpp)
