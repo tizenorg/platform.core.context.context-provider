@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <MyPlaceTypes.h>
 #include "../place_recognition_types.h"
 
 namespace ctx {

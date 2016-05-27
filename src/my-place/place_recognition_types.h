@@ -76,14 +76,6 @@
 #define PLACE_WIFI_APS                         "WifiAPs"
 #define PLACE_CREATE_DATE                      "CreateDate"
 
-// Data values
-enum PlaceCategId {
-	PLACE_CATEG_ID_NONE = 0,
-	PLACE_CATEG_ID_HOME = 1,
-	PLACE_CATEG_ID_WORK = 2,
-	PLACE_CATEG_ID_OTHER = 3
-};
-
 enum PlaceRecogMode {
 	PLACE_RECOG_HIGH_ACCURACY_MODE = 0,
 	PLACE_RECOG_LOW_POWER_MODE = 1

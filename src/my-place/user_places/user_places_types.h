@@ -26,6 +26,7 @@
 #include "../place_recognition_types.h"
 #include <string>
 #include <ctime>
+#include <MyPlaceTypes.h>
 
 namespace ctx {
 
@@ -138,16 +139,6 @@ namespace ctx {
 
 	typedef std::map<int, num_t> Categs; // scores of categories
 
-	struct Location {
-		double latitude;
-		double longitude;
-		double accuracy; // [m]
-
-		Location(double latitude_ = 0.0, double longitude_ = 0.0, double accuracy_ = -1.0)
-			: latitude(latitude_), longitude(longitude_), accuracy(accuracy_) {}
-
-	};	/* struct Location */
-
 #ifdef TIZEN_ENGINEER_MODE
 	enum LocationSource {
 		LOCATION_METHOD_REQUEST = 0,
@@ -201,21 +192,6 @@ namespace ctx {
 	typedef std::vector<MacEvent> MacEvents; // used to store current interval logs
 
 	std::shared_ptr<MacSet> macSetFromMacs2Counts(const Macs2Counts &macs2Counts);
-
-	typedef float confidence_t;
-
-	class Place {
-
-	public:
-		PlaceCategId categId; // category of a place (work/home/other)
-		confidence_t categConfidence; // confidence of the above category - between [0,1]
-		std::string name; // for now: "work"/"home"/"other"
-		bool locationValid;
-		Location location; // makes sense if locationValid == true;
-		std::string wifiAps; // WiFi APs MAC addresses separated by ","
-		time_t createDate; // The last update time of this place
-
-	};	/* class Place */
 
 }	/* namespace ctx */
 

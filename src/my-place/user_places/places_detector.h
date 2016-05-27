@@ -23,6 +23,7 @@
 #include <DatabaseManager.h>
 #include "visit_detector.h"
 #include "user_places_types.h"
+#include <MyPlaceTypes.h>
 
 namespace ctx {
 

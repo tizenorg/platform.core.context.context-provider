@@ -20,7 +20,7 @@
 #include <string>
 #include <ctime>
 #include <iostream>
-#include <user_places_types.h>
+#include <MyPlaceTypes.h>
 
 namespace ctx {
 
