@@ -215,8 +215,6 @@ namespace ctx {
 		std::string wifiAps; // WiFi APs MAC addresses separated by ","
 		time_t createDate; // The last update time of this place
 
-		void print2Stream(std::ostream &out) const;
-
 	};	/* class Place */
 
 }	/* namespace ctx */

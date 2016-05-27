@@ -29,6 +29,7 @@
 #include <fstream>
 #include <algorithm>
 #include "user_places_params.h"
+#include "debug_utils.h"
 
 #define __DELETE_PLACES_QUERY "DELETE FROM " PLACE_TABLE
 
@@ -261,7 +262,7 @@ void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
 	{ // Print to file TODO: Only for debug -> remove in final solution
 		std::ofstream out(__USER_PLACES_FILE);
 		for (size_t i = 0; i < newDetectedPlaces.size(); i++) {
-			newDetectedPlaces[i]->print2Stream(out);
+			DebugUtils::printPlace2Stream(*newDetectedPlaces[i], out);
 			Visits placeVisits = placesVisits[i];
 			for (Visit visit : placeVisits) {
 				visit.printShort2Stream(out);
