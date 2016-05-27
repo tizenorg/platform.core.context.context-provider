@@ -68,13 +68,20 @@ ctx::UserPlaces::~UserPlaces()
 	}
 };
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::getPlaces()
+std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::__getPlaces()
 {
 	if (__placesDetector) {
 		return __placesDetector->getPlaces();
 	} else {
 		return std::vector<std::shared_ptr<ctx::Place>>();
 	}
+}
+
+ctx::Json ctx::UserPlaces::getPlaces()
+{
+	std::vector<std::shared_ptr<ctx::Place>> places = __getPlaces();
+	Json dataRead = UserPlaces::__composeJson(places);
+	return dataRead;
 }
 
 /*
@@ -109,21 +116,21 @@ std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::getPlaces()
  *	  ]
  * }
  */
-ctx::Json ctx::UserPlaces::composeJson(std::vector<std::shared_ptr<Place>> places)
+ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> places)
 {
 	ctx::Json data;
 	for (std::shared_ptr<ctx::Place> place : places) {
 		ctx::Json placeJson;
-		placeJson.set(NULL, PLACE_CATEG_ID, place->categId);
-		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, place->categConfidence);
+		placeJson.set(NULL, PLACE_CATEG_ID, static_cast<int>(place->categId));
+		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, static_cast<double>(place->categConfidence));
 		placeJson.set(NULL, PLACE_NAME, place->name);
 		if (place->locationValid) {
-			placeJson.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude);
-			placeJson.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude);
+			placeJson.set(NULL, PLACE_GEO_LATITUDE, static_cast<double>(place->location.latitude));
+			placeJson.set(NULL, PLACE_GEO_LONGITUDE, static_cast<double>(place->location.longitude));
 		}
 		placeJson.set(NULL, PLACE_WIFI_APS, place->wifiAps);
-		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->createDate));
-		data.append(NULL, DATA_READ, placeJson);
+		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int64_t>(place->createDate));
+		data.append(NULL, PLACE_DATA_READ, placeJson);
 	}
 	return data;
 }

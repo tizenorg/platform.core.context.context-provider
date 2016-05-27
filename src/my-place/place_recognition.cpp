@@ -42,8 +42,7 @@ int ctx::PlaceRecognitionProvider::read(ctx::Json option, ctx::Json* requestResu
 	_I(BLUE("Read"));
 	_J("Option", option);
 
-	std::vector<std::shared_ptr<ctx::Place>> places = __engine.getPlaces();
-	Json dataRead = UserPlaces::composeJson(places);
+	Json dataRead = __engine.getPlaces();
 
 	/*
 	 * The below function needs to be called once.
