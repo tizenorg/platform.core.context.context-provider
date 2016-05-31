@@ -38,6 +38,9 @@ namespace ctx {
 		Visit __visitFromJson(Json &row);
 		Visits __visitsFromJsons(std::vector<Json>& records);
 		std::shared_ptr<ctx::Place> __placeFromJson(Json &row);
+		void __placeCategoryFromJson(Json &row, ctx::Place &place);
+		void __placeLocationFromJson(Json &row, ctx::Place &place);
+		void __placeCreateDateFromJson(Json &row, ctx::Place &place);
 		std::vector<std::shared_ptr<Place>> __placesFromJsons(std::vector<Json>& records);
 
 		std::shared_ptr<graph::Graph> __graphFromVisits(const std::vector<Visit> &visits);

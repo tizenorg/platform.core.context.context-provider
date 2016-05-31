@@ -160,29 +160,38 @@ ctx::Visits ctx::PlacesDetector::__visitsFromJsons(std::vector<Json>& records)
 std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromJson(Json &row)
 {
 	std::shared_ptr<Place> place = std::make_shared<Place>();
-	{ // category
-		int categId;
-		row.get(NULL, PLACE_COLUMN_CATEG_ID, &categId);
-		// This is due to the fact the JSON module API interface doesn't handle enum
-		place->categId = static_cast<PlaceCategId>(categId);
-	}
+	__placeCategoryFromJson(row, *place);
 	row.get(NULL, PLACE_COLUMN_NAME, &(place->name));
 	row.get(NULL, PLACE_COLUMN_WIFI_APS, &(place->wifiAps));
-	{ // location
-		int locationValidInt;
-		row.get(NULL, PLACE_COLUMN_LOCATION_VALID, &locationValidInt);
-		place->locationValid = (bool) locationValidInt;
-		row.get(NULL, PLACE_COLUMN_LOCATION_LATITUDE, &(place->location.latitude));
-		row.get(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, &(place->location.longitude));
-	}
-	{ // createDate
-		int createDate;
-		row.get(NULL, PLACE_COLUMN_CREATE_DATE, &(createDate));
-		// This is due to the fact the JSON module API interface doesn't handle time_t
-		place->createDate = static_cast<time_t>(createDate);
-	}
-	_D("db_result: categId: %d; place: name: %s; wifiAps: %s; locationValid: %d; latitude: %lf, longitude: %lf, createDate: %d", place->categId, place->name.c_str(), place->wifiAps.c_str(), place->locationValid, place->location.latitude, place->location.longitude, place->createDate);
+	__placeLocationFromJson(row, *place);
+	__placeCreateDateFromJson(row, *place);
+	_D("db_result: categId: %d; place: name: %s; locationValid: %d; latitude: %lf, longitude: %lf, createDate: %d", place->categId, place->name.c_str(), place->locationValid, place->location.latitude, place->location.longitude, place->createDate);
 	return place;
+}
+
+void ctx::PlacesDetector::__placeCategoryFromJson(Json &row, ctx::Place &place)
+{
+	int categId;
+	row.get(NULL, PLACE_COLUMN_CATEG_ID, &categId);
+	// This is due to the fact the JSON module API interface doesn't handle enum
+	place.categId = static_cast<PlaceCategId>(categId);
+}
+
+void ctx::PlacesDetector::__placeLocationFromJson(Json &row, ctx::Place &place)
+{
+	int locationValidInt;
+	row.get(NULL, PLACE_COLUMN_LOCATION_VALID, &locationValidInt);
+	place.locationValid = (bool) locationValidInt;
+	row.get(NULL, PLACE_COLUMN_LOCATION_LATITUDE, &(place.location.latitude));
+	row.get(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, &(place.location.longitude));
+}
+
+void ctx::PlacesDetector::__placeCreateDateFromJson(Json &row, ctx::Place &place)
+{
+	int createDate;
+	row.get(NULL, PLACE_COLUMN_CREATE_DATE, &(createDate));
+	// This is due to the fact the JSON module API interface doesn't handle time_t
+	place.createDate = static_cast<time_t>(createDate);
 }
 
 std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::__placesFromJsons(std::vector<Json>& records)
