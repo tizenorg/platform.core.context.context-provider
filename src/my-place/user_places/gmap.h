@@ -20,7 +20,7 @@
 #include "user_places_types.h"
 #include "../place_recognition_types.h"
 
-#define GMAP_FILE "/opt/usr/media/Others/user_places_map.html"
+#define GMAP_FILE "/tmp/user_places_map.html"
 
 namespace ctx {
 

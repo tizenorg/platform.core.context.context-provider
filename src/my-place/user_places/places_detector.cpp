@@ -34,7 +34,7 @@
 #define __DELETE_PLACES_QUERY "DELETE FROM " PLACE_TABLE
 
 #ifdef TIZEN_ENGINEER_MODE
-#define __USER_PLACES_FILE "/opt/usr/media/Others/user_places.txt" // TODO: Only for debug purposes -> Remove in final solution
+#define __USER_PLACES_FILE "/tmp/user_places.txt" // TODO: Only for debug purposes -> Remove in final solution
 #endif /* TIZEN_ENGINEER_MODE */
 
 #define __GET_VISITS_QUERY "SELECT "\
