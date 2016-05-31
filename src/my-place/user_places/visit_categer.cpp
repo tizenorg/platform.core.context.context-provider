@@ -302,9 +302,8 @@ ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
 	struct tm *result;
 	tzset();
 	result = localtime_r(&time, &timeinfo);
-	if (result == NULL) {
+	if (result == NULL)
 		return {0, 0, 0, false};
-	}
 	int minutesSinceMidnight = 60 * timeinfo.tm_hour + timeinfo.tm_min;
 	int weekday = (timeinfo.tm_wday + 6) % 7; // Monday is 0, Sunday is 6
 	bool weekend = weekday > 4;
@@ -322,9 +321,8 @@ int ctx::VisitCateger::weeksScope(const TimeFeatures &startF, const Interval &in
 	int durationMinutes = (interval.end - interval.start) / 60;
 	int scopeMinutes = startF.minutesSinceBeginingOfTheWeek + durationMinutes;
 	int weeksScope = scopeMinutes / __MINUTES_IN_WEEK;
-	if (scopeMinutes % __MINUTES_IN_WEEK > 0) {
+	if (scopeMinutes % __MINUTES_IN_WEEK > 0)
 		weeksScope++;
-	}
 	return weeksScope;
 }
 
@@ -335,16 +333,12 @@ ctx::num_t ctx::VisitCateger::__sum(const std::vector<num_t> model, const size_t
 		_E("'to' exceeds model size");
 		toSecure = model.size() - 1;
 	}
-
-	if (from > to) {
+	if (from > to)
 		_E("'from' greater than 'to'");
-	}
-
 	num_t result = 0.0;
 	for (size_t i = from; i <= toSecure; i++) {
 		result += model[i];
 	}
-
 	return result;
 }
 
@@ -364,9 +358,8 @@ ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Int
 		ret += __sum(prob_features::weekModel[categ], startIndex, endIndex);
 		minutes += endIndex - startIndex + 1;
 	}
-	if (minutes > 0) {
+	if (minutes > 0)
 		return ret / minutes;
-	}
 	return ret;
 }
 

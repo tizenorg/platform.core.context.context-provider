@@ -220,9 +220,8 @@ ctx::LocationLogger::LocationLogger(ILocationListener *listener) :
 
 	__locationManagerCreate();
 
-	if (LOCATION_LOGGER_DATABASE) {
+	if (LOCATION_LOGGER_DATABASE)
 		__dbCreateTable();
-	}
 
 	__locationManagerSetServiceStateChangedCb();
 	__locationManagerSetSettingChangedCb();
@@ -479,12 +478,10 @@ void ctx::LocationLogger::__broadcast(ctx::LocationEvent locationEvent)
 {
 	_D("");
 	__locationCount++;
-	if (__listener) {
+	if (__listener)
 		__listener->onNewLocation(locationEvent);
-	}
-	if (LOCATION_LOGGER_DATABASE) {
+	if (LOCATION_LOGGER_DATABASE)
 		__dbInsertLog(locationEvent);
-	}
 }
 
 bool ctx::LocationLogger::onTimerExpired(int id)
@@ -533,9 +530,8 @@ bool ctx::LocationLogger::onTimerExpired(int id)
 void ctx::LocationLogger::__activeRequestTimerStart()
 {
 	int minutes = LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS / 60;
-	if (LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS % 60) {
+	if (LOCATION_LOGGER_ACTIVE_REQUEST_TIMEOUT_SECONDS % 60)
 		minutes++;
-	}
 	__timerPurpose = LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST;
 	_D("LOCATION_LOGGER_WAITING_FOR_ACTIVE_REQUEST (minutes=%d)", minutes);
 	__timerStart(minutes);

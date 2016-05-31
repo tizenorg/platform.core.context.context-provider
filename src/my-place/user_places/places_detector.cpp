@@ -211,9 +211,8 @@ void ctx::PlacesDetector::reduceOutliers(ctx::Visits &visits)
 					}),
 				visits.end());
 	int newSize = visits.size();
-	if (size != newSize) {
+	if (size != newSize)
 		_D("Visits number from %d to %d (to short and to long reduction)", size, newSize);
-	}
 }
 
 void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
@@ -228,22 +227,18 @@ void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
 #endif /* TIZEN_ENGINEER_MODE */
 	for (std::shared_ptr<graph::Component> component : *components) {
 		// Small places outliers reduction
-		if (!__testMode && component->size() < PLACES_DETECTOR_MIN_VISITS_PER_BIG_PLACE) {
+		if (!__testMode && component->size() < PLACES_DETECTOR_MIN_VISITS_PER_BIG_PLACE)
 			continue;
-		}
-
 		std::shared_ptr<Visits> merged = std::make_shared<Visits>();
 		for (graph::Node i : *component) {
 			merged->push_back(visits[i]);
 		}
 		std::shared_ptr<Place> place = __placeFromMergedVisits(*merged);
-		if (place->categId == PLACE_CATEG_ID_NONE) {
+		if (place->categId == PLACE_CATEG_ID_NONE)
 			continue;
-		}
 		newDetectedPlaces.push_back(place);
-		if (!__testMode) {
+		if (!__testMode)
 			__dbInsertPlace(*place);
-		}
 
 #ifdef TIZEN_ENGINEER_MODE
 		{ // TODO: Only for debug -> remove in final solution
@@ -332,9 +327,8 @@ void ctx::PlacesDetector::reduceOutliers(std::shared_ptr<ctx::graph::Components>
 							 }),
 			  cc->end());
 	int newSize = cc->size();
-	if (size != newSize) {
+	if (size != newSize)
 		_D("Connected components from %d to %d (min visit per place)", size, newSize);
-	}
 }
 
 std::shared_ptr<ctx::graph::Components> ctx::PlacesDetector::__mergeVisits(const std::vector<Visit> &visits)
@@ -392,9 +386,8 @@ ctx::PlacesDetector::PlacesDetector(bool testMode):
 	__testMode(testMode),
 	__dbManager(testMode ? nullptr : new DatabaseManager())
 {
-	if (testMode) {
+	if (testMode)
 		return;
-	}
 	__dbCreateTable();
 	std::vector<Json> records = __dbGetPlaces();
 	std::vector<std::shared_ptr<Place>> dbPlaces = __placesFromJsons(records);

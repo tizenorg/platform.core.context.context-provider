@@ -24,9 +24,9 @@ std::shared_ptr<ctx::graph::Components> ctx::graph::connectedComponents(Graph &g
 	std::set<int> fringe;
 
 	for (Node i = 0; i < static_cast<Node>(graph.size()); i++) {
-		if (!graph[i]) {
+		if (!graph[i])
 			continue;
-		}
+
 		// neighbourhood of node i exists (was not removed)
 		std::shared_ptr<Component> c = std::make_shared<Component>();
 		ccs->push_back(c);
@@ -38,9 +38,8 @@ std::shared_ptr<ctx::graph::Components> ctx::graph::connectedComponents(Graph &g
 
 			std::shared_ptr<NeighbourNodes> currNhood = graph[currNode];
 			for (Node nhoodNode : *currNhood) {
-				if (graph[nhoodNode] && fringe.find(nhoodNode) == fringe.end()) {
+				if (graph[nhoodNode] && fringe.find(nhoodNode) == fringe.end())
 					fringe.insert(nhoodNode);
-				}
 			}
 			graph[currNode].reset();  // removing current node
 		}

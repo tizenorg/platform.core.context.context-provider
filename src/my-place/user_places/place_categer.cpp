@@ -35,9 +35,8 @@ void ctx::PlaceCateger::reduceOutliers(ctx::Visits &visits)
 					}),
 				visits.end());
 	int newSize = visits.size();
-	if (size != newSize) {
+	if (size != newSize)
 		_D("Visits number from %d to %d (visits min scores checking)", size, newSize);
-	}
 }
 
 /*
@@ -73,9 +72,8 @@ void ctx::PlaceCateger::categorize(ctx::Visits &visits, ctx::Place &place)
 				place.categId = categId;
 			}
 		}
-		if (sumScore > 0) {
+		if (sumScore > 0)
 			place.categConfidence = maxScore / sumScore;
-		}
 		if (__reduceCategory(place.categId, visits)) {
 			place.categId = PLACE_CATEG_ID_OTHER;
 			place.categConfidence = 0.0;
@@ -90,9 +88,8 @@ std::vector<ctx::num_t> ctx::PlaceCateger::categVectorFromVisits(const ctx::Visi
 	std::vector<ctx::num_t> vec;
 	for (auto &visit : visits) {
 		auto search = visit.categs.find(categId);
-		if (search != visit.categs.end()) {
+		if (search != visit.categs.end())
 			vec.push_back(search->second);
-		}
 	}
 	return vec;
 }

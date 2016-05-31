@@ -143,9 +143,8 @@ void ctx::VisitDetector::__detectEntranceOrDeparture(std::shared_ptr<ctx::Frame>
 bool ctx::VisitDetector::__isDisjoint(const ctx::Macs2Counts &macs2Counts, const ctx::MacSet &macSet)
 {
 	for (auto &mac : macSet) {
-		if (macs2Counts.find(mac) != macs2Counts.end()) {
+		if (macs2Counts.find(mac) != macs2Counts.end())
 			return false;
-		}
 	}
 	return true;
 }
@@ -153,9 +152,8 @@ bool ctx::VisitDetector::__isDisjoint(const ctx::Macs2Counts &macs2Counts, const
 bool ctx::VisitDetector::__protrudesFrom(const ctx::Macs2Counts &macs2Counts, const ctx::MacSet &macSet)
 {
 	for (auto &macCount : macs2Counts) {
-		if (macSet.find(macCount.first) == macSet.end()) {
+		if (macSet.find(macCount.first) == macSet.end())
 			return true;
-		}
 	}
 	return false;
 }
@@ -256,9 +254,8 @@ void ctx::VisitDetector::__processBuffer(std::shared_ptr<ctx::Frame> frame)
 		__historyFrames.push_back(__bufferedFrames[0]);
 		for (size_t i = 1; i < __bufferedFrames.size(); i++) {
 			__detectEntrance(__bufferedFrames[i]);
-			if (__entranceToPlace) {
+			if (__entranceToPlace)
 				break;
-			}
 		}
 	}
 }
@@ -280,10 +277,8 @@ void ctx::VisitDetector::__detectEntrance(std::shared_ptr<ctx::Frame> currentFra
 	if (similarity::overlapBiggerOverSmaller(*currentBeacons, *__stayMacs) > VISIT_DETECTOR_OVERLAP) {
 		__stableCounter++;
 		__historyFrames.push_back(currentFrame);
-
-		if (__stableCounter == VISIT_DETECTOR_STABLE_DEPTH) { // entrance detected
+		if (__stableCounter == VISIT_DETECTOR_STABLE_DEPTH) // entrance detected
 			__visitStartDetected();
-		}
 	} else {
 		__resetHistory(currentFrame);
 	}
@@ -328,9 +323,8 @@ ctx::share_t ctx::VisitDetector::__calcMaxShare(const ctx::Macs2Shares &macs2Sha
 {
 	ctx::share_t maxShare = 0.0;
 	for (auto &macShare : macs2Shares) {
-		if (macShare.second > maxShare) {
+		if (macShare.second > maxShare)
 			maxShare = macShare.second;
-		}
 	}
 	return maxShare;
 }
@@ -339,9 +333,8 @@ std::shared_ptr<ctx::MacSet> ctx::VisitDetector::__macSetOfGreaterOrEqualShare(c
 {
 	std::shared_ptr<MacSet> macSet = std::make_shared<MacSet>();
 	for (auto &macShare : macs2Shares) {
-		if (macShare.second >= threshold) {
+		if (macShare.second >= threshold)
 			macSet->insert(macShare.first);
-		}
 	}
 	return macSet;
 }
@@ -442,7 +435,6 @@ void ctx::VisitDetector::setMode(PlaceRecogMode energyMode)
 {
 	_D("");
 	__setPeriod(energyMode);
-	if (__wifiLogger) {
+	if (__wifiLogger)
 		__wifiLogger->setMode(energyMode);
-	}
 }

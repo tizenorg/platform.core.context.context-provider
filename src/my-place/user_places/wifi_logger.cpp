@@ -82,16 +82,16 @@ ctx::WifiLogger::WifiLogger(IWifiListener * listener, PlaceRecogMode energyMode)
 
 	__setInterval(energyMode);
 
-	if (WIFI_LOGGER_DATABASE) {
+	if (WIFI_LOGGER_DATABASE)
 		__dbCreateTable();
-	}
 
 	__logs = std::vector<MacEvent>();
 
 	__wifiSetDeviceStateChangedCbRequest();
-	if (WIFI_LOGGER_LOW_POWER_MODE) {
+
+	if (WIFI_LOGGER_LOW_POWER_MODE)
 		__wifiSetConnectionStateChangedCbRequest();
-	}
+
 	wifi_connection_state_e state = __wifiGetConnectionStateRequest();
 	__connectedToWifiAp = (state == WIFI_CONNECTION_STATE_CONNECTED);
 	_D("__connectedToWifiAp = %d, __duringVisit = %d IN CONSTRUCTOR",
@@ -111,15 +111,13 @@ void ctx::WifiLogger::__wifiDeviceStateChangedCb(wifi_device_state_e state, void
 	switch (state) {
 	case WIFI_DEVICE_STATE_DEACTIVATED:
 		_D("WIFI setting OFF");
-		if (wifiLogger->__started) {
+		if (wifiLogger->__started)
 			wifiLogger->__stopLogging();
-		}
 		break;
 	case WIFI_DEVICE_STATE_ACTIVATED:
 		_D("WIFI setting ON");
-		if (wifiLogger->__started) {
+		if (wifiLogger->__started)
 			wifiLogger->__startLogging();
-		}
 		break;
 	default:
 		break;
@@ -149,15 +147,13 @@ bool ctx::WifiLogger::__wifiFoundApCb(wifi_ap_h ap, void *userData)
 
 	char *bssid = NULL;
 	int ret = wifiLogger->__wifiApGetBssidRequest(ap, &bssid);
-	if (ret != WIFI_ERROR_NONE) {
+	if (ret != WIFI_ERROR_NONE)
 		return false;
-	}
 
 	char *essid = NULL;
 	ret = wifiLogger->__wifiApGetEssidRequest(ap, &essid);
-	if (ret != WIFI_ERROR_NONE) {
+	if (ret != WIFI_ERROR_NONE)
 		return false;
-	}
 
 	Mac mac;
 	try {
@@ -176,9 +172,8 @@ bool ctx::WifiLogger::__wifiFoundApCb(wifi_ap_h ap, void *userData)
 			wifiLogger->__lastScansPool.insert(std::string(bssid));
 		}
 	}
-	if (WIFI_LOGGER_DATABASE) {
+	if (WIFI_LOGGER_DATABASE)
 		wifiLogger->__logs.push_back(log);
-	}
 
 	return true;
 }
@@ -240,12 +235,10 @@ void ctx::WifiLogger::__wifiScanFinishedCb(wifi_error_e errorCode, void *userDat
 	wifiLogger->__lastScanTime = now;
 
 	int ret = wifiLogger->__wifiForeachFoundApsRequest(userData);
-	if (ret != WIFI_ERROR_NONE) {
+	if (ret != WIFI_ERROR_NONE)
 		return;
-	}
-	if (WIFI_LOGGER_DATABASE) {
+	if (WIFI_LOGGER_DATABASE)
 		wifiLogger->__dbInsertLogs();
-	}
 }
 
 bool ctx::WifiLogger::__checkWifiIsActivated()
@@ -341,14 +334,10 @@ bool ctx::WifiLogger::onTimerExpired(int id)
 {
 	time_t now = time(nullptr);
 	_D("");
-	if (__checkTimerId(id) == false) {
-		// Incorrect callback call
+	if (__checkTimerId(id) == false) // Incorrect callback call
 		return false;
-	}
-	if (__checkTimerTime(now) == false) {
-		// Prevention from double callback call bug
+	if (__checkTimerTime(now) == false) // Prevention from double callback call bug
 		return __timerOn;
-	}
 	_D("__connectedToWifiAp = %d, __duringVisit = %d, __lastScansPool.size() = %d",
 			static_cast<int>(__connectedToWifiAp),
 			static_cast<int>(__duringVisit),
@@ -383,18 +372,16 @@ void ctx::WifiLogger::startLogging()
 void ctx::WifiLogger::__startLogging()
 {
 	_D("");
-	if (!__checkWifiIsActivated() || __running) {
+	if (!__checkWifiIsActivated() || __running)
 		return;
-	}
 	__running = true;
 
 	if (WIFI_LOGGER_ACTIVE_SCANNING) {
 		__timerStart(__intervalMinutes);
 		__wifiScanRequest();
 	}
-	if (WIFI_LOGGER_PASSIVE_SCANNING) {
+	if (WIFI_LOGGER_PASSIVE_SCANNING)
 		__wifiSetBackgroundScanCbRequest();
-	}
 }
 
 void ctx::WifiLogger::stopLogging()
@@ -407,18 +394,16 @@ void ctx::WifiLogger::stopLogging()
 void ctx::WifiLogger::__stopLogging()
 {
 	_D("");
-	if (!__running) {
+	if (!__running)
 		return;
-	}
 	if (WIFI_LOGGER_ACTIVE_SCANNING) {
 		// Unset timer
 		__timerOn = false;
 		// Remove timer
 		__timerManager.remove(__timerId);
 	}
-	if (WIFI_LOGGER_PASSIVE_SCANNING) {
+	if (WIFI_LOGGER_PASSIVE_SCANNING)
 		__wifiWrapper.unsetBackgroundScanCb();
-	}
 	__running = false;
 }
 
@@ -466,7 +451,6 @@ void ctx::WifiLogger::setMode(PlaceRecogMode energyMode)
 {
 	_D("");
 	__setInterval(energyMode);
-	if (WIFI_LOGGER_ACTIVE_SCANNING && __timerOn) {
+	if (WIFI_LOGGER_ACTIVE_SCANNING && __timerOn)
 		__timerRestart();
-	}
 }

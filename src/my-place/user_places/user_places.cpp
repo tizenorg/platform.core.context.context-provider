@@ -59,13 +59,10 @@ ctx::UserPlaces::~UserPlaces()
 		_D("PlacesDetector timer removed");
 	}
 
-	if (__visitDetector) {
+	if (__visitDetector)
 		delete __visitDetector;
-	}
-
-	if (__placesDetector) {
+	if (__placesDetector)
 		delete __placesDetector;
-	}
 };
 
 std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::__getPlaces()
@@ -137,7 +134,6 @@ ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> pla
 
 void ctx::UserPlaces::setMode(PlaceRecogMode energyMode)
 {
-	if (__visitDetector) {
+	if (__visitDetector)
 		__visitDetector->setMode(energyMode);
-	}
 }
