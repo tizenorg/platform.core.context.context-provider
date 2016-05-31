@@ -54,6 +54,11 @@
 	VISIT_COLUMN_CATEG_OTHER " REAL"
 #endif /* TIZEN_ENGINEER_MODE */
 
+#define __WIFI_APS_MAP_TABLE_COLUMNS \
+	WIFI_APS_MAP_COLUMN_MAC " TEXT NOT NULL UNIQUE, "\
+	WIFI_APS_MAP_COLUMN_NETWORK_NAME " TEXT NOT NULL, "\
+	WIFI_APS_MAP_COLUMN_INSERT_TIME " timestamp"
+
 ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, bool testMode) :
 	__testMode(testMode),
 	__locationLogger(testMode ? nullptr : new LocationLogger(this)),
@@ -80,7 +85,7 @@ ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, b
 	__listeners.push_back(__locationLogger);
 	__listeners.push_back(__wifiLogger);
 
-	__dbCreateTable();
+	__dbCreateTables();
 	__wifiLogger->startLogging();
 }
 
@@ -142,6 +147,11 @@ void ctx::VisitDetector::__shiftCurrentInterval()
 void ctx::VisitDetector::__detectEntranceOrDeparture(std::shared_ptr<ctx::Frame> frame)
 {
 	__entranceToPlace ? __detectDeparture(frame) : __detectEntrance(frame);
+	if (__entranceToPlace) {
+		for (MacEvent e : *__currentMacEvents) {
+			__wifiAPsMap.insert(std::pair<std::string, std::string>(e.mac, e.networkName));
+		}
+	}
 }
 
 bool ctx::VisitDetector::__isDisjoint(const ctx::Macs2Counts &macs2Counts, const ctx::MacSet &macSet)
@@ -220,6 +230,7 @@ void ctx::VisitDetector::__visitEndDetected()
 		__detectedVisits->push_back(visit);
 	} else {
 		__dbInsertVisit(visit);
+		__dbInsertWifiAPsMap(visit);
 	}
 
 	// cleaning
@@ -357,10 +368,13 @@ std::shared_ptr<ctx::Visits> ctx::VisitDetector::getVisits()
 	return __detectedVisits;
 }
 
-void ctx::VisitDetector::__dbCreateTable()
+void ctx::VisitDetector::__dbCreateTables()
 {
 	bool ret = __dbManager->createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
-	_D("db: visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
+	_D("db: Visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
+
+	ret = __dbManager->createTable(0, WIFI_APS_MAP_TABLE, __WIFI_APS_MAP_TABLE_COLUMNS);
+	_D("db: Wifi AP Map Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
 void ctx::VisitDetector::__putVisitCategToJson(const char* key, const Categs &categs, int categType, Json &data)
@@ -411,6 +425,28 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	int64_t rowId;
 	bool ret = __dbManager->insertSync(VISIT_TABLE, data, &rowId);
 	_D("db: visit table insert result: %s", ret ? "SUCCESS" : "FAIL");
+	return ret;
+}
+
+int ctx::VisitDetector::__dbInsertWifiAPsMap(Visit visit)
+{
+	std::stringstream query;
+	time_t now = time(nullptr);
+	const char* separator = " ";
+	query << "BEGIN TRANSACTION; \
+			REPLACE INTO " WIFI_APS_MAP_TABLE " \
+			( " WIFI_APS_MAP_COLUMN_MAC ", " WIFI_APS_MAP_COLUMN_NETWORK_NAME ", " WIFI_APS_MAP_COLUMN_INSERT_TIME " ) \
+			VALUES";
+	for (Mac mac : *visit.macSet) {
+		// TODO: Add protection from SQL injection in network name!!
+		query << separator << "( '" << mac << "', '" << __wifiAPsMap.find(mac)->second << "', '" << now << "' )";
+		separator = ", ";
+	}
+	__wifiAPsMap.clear();
+	query << "; \
+			END TRANSACTION;";
+	bool ret = __dbManager->execute(0, query.str().c_str(), NULL);
+	_D("DB Wifi APs map insert request: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
 
