@@ -40,6 +40,7 @@ namespace ctx {
 		std::shared_ptr<ctx::Place> __placeFromJson(Json &row);
 		void __placeCategoryFromJson(Json &row, ctx::Place &place);
 		void __placeLocationFromJson(Json &row, ctx::Place &place);
+		void __placeWifiAPsFromJson(Json &row, ctx::Place &place);
 		void __placeCreateDateFromJson(Json &row, ctx::Place &place);
 		std::vector<std::shared_ptr<Place>> __placesFromJsons(std::vector<Json>& records);
 
@@ -47,13 +48,16 @@ namespace ctx {
 
 		void __dbCreateTable();
 		void __dbDeletePlaces();
-		void __dbDeleteOldVisits();
+		void __dbDeleteOldEntries();
 		void __dbDeleteOlderVisitsThan(time_t threshold);
+		void __dbDeleteOlderWifiAPsThan(time_t threshold);
 		std::vector<Json> __dbGetVisits();
 		std::vector<Json> __dbGetPlaces();
+		void __dbGetWifiAPsMap();
 		void __dbInsertPlace(const Place &place);
 
 		std::shared_ptr<Place> __placeFromMergedVisits(Visits &mergedVisits);
+		std::map<std::string, std::string> __wifiAPsMap;
 		std::vector<std::shared_ptr<Place>> __detectedPlaces;
 		void __detectedPlacesUpdate(std::vector<std::shared_ptr<Place>> &newPlaces);
 		void __processVisits(Visits &visits);

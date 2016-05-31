@@ -125,7 +125,14 @@ ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> pla
 			placeJson.set(NULL, PLACE_LOCATION_LATITUDE, static_cast<double>(place->location.latitude));
 			placeJson.set(NULL, PLACE_LOCATION_LONGITUDE, static_cast<double>(place->location.longitude));
 		}
-		placeJson.set(NULL, PLACE_WIFI_APS, place->wifiAps);
+		ctx::Json wifiApsListJson;
+		for (std::pair<std::string, std::string> ap : place->wifiAps) {
+			ctx::Json wifiApJson;
+			wifiApJson.set(NULL, PLACE_WIFI_AP_MAC, ap.first);
+			wifiApJson.set(NULL, PLACE_WIFI_AP_NETWORK_NAME, ap.second);
+			wifiApsListJson.append(NULL, PLACE_WIFI_APS, wifiApJson);
+		}
+		placeJson.set(NULL, PLACE_WIFI_APS, wifiApsListJson);
 		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int64_t>(place->createDate));
 		data.append(NULL, PLACE_DATA_READ, placeJson);
 	}

@@ -52,6 +52,9 @@ void ctx::DebugUtils::printPlace2Stream(const Place &place, std::ostream &out)
 		out << "__LOCATION: lat=" << std::setprecision(GEO_LOCATION_PRECISION + 2) << place.location.latitude;
 		out << ", lon=" << place.location.longitude << std::setprecision(5) << std::endl;
 	}
-	out << "__WIFI:" << place.wifiAps << std::endl;
+	out << "__WIFI:" << std::endl;
+	for (std::pair<std::string, std::string> ap : place.wifiAps) {
+		out << "____ " << ap.first << " : " << ap.second << std::endl;
+	}
 	out << "__CREATE_DATE: " << humanReadableDateTime(place.createDate, "%F %T", 80) << std::endl;
 }

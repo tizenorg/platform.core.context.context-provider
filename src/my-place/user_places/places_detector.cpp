@@ -60,6 +60,11 @@
 	PLACE_COLUMN_CREATE_DATE \
 	" FROM " PLACE_TABLE
 
+#define __GET_WIFI_APS_MAP_QUERY "SELECT "\
+	WIFI_APS_MAP_COLUMN_MAC ", "\
+	WIFI_APS_MAP_COLUMN_NETWORK_NAME \
+	" FROM " WIFI_APS_MAP_TABLE
+
 #define __PLACE_TABLE_COLUMNS \
 	PLACE_COLUMN_CATEG_ID " INTEGER, "\
 	PLACE_COLUMN_CATEG_CONFIDENCE " REAL, "\
@@ -74,10 +79,12 @@ bool ctx::PlacesDetector::onTimerExpired(int timerId)
 {
 	_D("");
 	__dbDeletePlaces();
-	__dbDeleteOldVisits();
+	__dbDeleteOldEntries();
 	std::vector<Json> records = __dbGetVisits();
 	Visits visits = __visitsFromJsons(records);
+	__dbGetWifiAPsMap();
 	__processVisits(visits);
+	__wifiAPsMap.clear();
 	return true;
 }
 
@@ -95,6 +102,20 @@ std::vector<ctx::Json> ctx::PlacesDetector::__dbGetPlaces()
 	bool ret = __dbManager->executeSync(__GET_PLACES_QUERY, &records);
 	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 	return records;
+}
+
+void ctx::PlacesDetector::__dbGetWifiAPsMap()
+{
+	std::vector<Json> records;
+	bool ret = __dbManager->executeSync(__GET_WIFI_APS_MAP_QUERY, &records);
+	_D("load Wifi APs map (size = %d), result: %s", records.size(), ret ? "SUCCESS" : "FAIL");
+	std::string mac = "";
+	std::string networkName = "";
+	for (Json record : records) {
+		record.get(NULL, WIFI_APS_MAP_COLUMN_MAC, &mac);
+		record.get(NULL, WIFI_APS_MAP_COLUMN_NETWORK_NAME, &networkName);
+		__wifiAPsMap.insert(std::pair<std::string, std::string>(mac, networkName));
+	}
 }
 
 double ctx::PlacesDetector::__doubleValueFromJson(Json &row, const char* key)
@@ -162,8 +183,8 @@ std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromJson(Json &row)
 	std::shared_ptr<Place> place = std::make_shared<Place>();
 	__placeCategoryFromJson(row, *place);
 	row.get(NULL, PLACE_COLUMN_NAME, &(place->name));
-	row.get(NULL, PLACE_COLUMN_WIFI_APS, &(place->wifiAps));
 	__placeLocationFromJson(row, *place);
+	__placeWifiAPsFromJson(row, *place);
 	__placeCreateDateFromJson(row, *place);
 	_D("db_result: categId: %d; place: name: %s; locationValid: %d; latitude: %lf, longitude: %lf, createDate: %d", place->categId, place->name.c_str(), place->locationValid, place->location.latitude, place->location.longitude, place->createDate);
 	return place;
@@ -184,6 +205,19 @@ void ctx::PlacesDetector::__placeLocationFromJson(Json &row, ctx::Place &place)
 	place.locationValid = (bool) locationValidInt;
 	row.get(NULL, PLACE_COLUMN_LOCATION_LATITUDE, &(place.location.latitude));
 	row.get(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, &(place.location.longitude));
+}
+
+void ctx::PlacesDetector::__placeWifiAPsFromJson(Json &row, ctx::Place &place)
+{
+	std::string wifiAps;
+	row.get(NULL, PLACE_COLUMN_WIFI_APS, &wifiAps);
+	std::stringstream ss;
+	ss << wifiAps;
+	std::shared_ptr<MacSet> macSet = std::make_shared<MacSet>();
+	ss >> *macSet;
+	for (ctx::Mac mac : *macSet) {
+		place.wifiAps.insert(std::pair<std::string, std::string>(mac, __wifiAPsMap[mac]));
+	}
 }
 
 void ctx::PlacesDetector::__placeCreateDateFromJson(Json &row, ctx::Place &place)
@@ -315,10 +349,9 @@ std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromMergedVisits(Visits 
 		macSets.push_back(visit.macSet);
 	}
 	std::shared_ptr<MacSet> allMacs = macSetsUnion(macSets);
-	std::stringstream ss;
-	ss << *allMacs;
-	place->wifiAps = ss.str();
-
+	for (ctx::Mac mac : *allMacs) {
+		place->wifiAps.insert(std::pair<std::string, std::string>(mac, __wifiAPsMap[mac]));
+	}
 	__mergeLocation(mergedVisits, *place);
 
 	PlaceCateger::categorize(mergedVisits, *place);
@@ -371,24 +404,34 @@ void ctx::PlacesDetector::__dbDeletePlaces()
 	_D("delete places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-void ctx::PlacesDetector::__dbDeleteOldVisits()
+void ctx::PlacesDetector::__dbDeleteOldEntries()
 {
 	time_t currentTime;
 	time(&currentTime);
 	time_t thresholdTime = currentTime - PLACES_DETECTOR_RETENTION_SECONDS;
 	__dbDeleteOlderVisitsThan(thresholdTime);
+	__dbDeleteOlderWifiAPsThan(thresholdTime);
 }
 
 void ctx::PlacesDetector::__dbDeleteOlderVisitsThan(time_t threshold)
 {
-	_D("deleting vistits older than: %d", threshold);
 	std::stringstream query;
 	query << "DELETE FROM " << VISIT_TABLE;
 	query << " WHERE " << VISIT_COLUMN_END_TIME << " < " << threshold;
 	// query << " AND 0"; // XXX: Always false condition. Uncomment it for not deleting any visit during development.
 	std::vector<Json> records;
 	bool ret = __dbManager->executeSync(query.str().c_str(), &records);
-	_D("delete old visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
+	_D("deleting visits older than: %d, result: %s", threshold, ret ? "SUCCESS" : "FAIL");
+}
+
+void ctx::PlacesDetector::__dbDeleteOlderWifiAPsThan(time_t threshold)
+{
+	std::stringstream query;
+	query << "DELETE FROM " << WIFI_APS_MAP_TABLE;
+	query << " WHERE " << WIFI_APS_MAP_COLUMN_INSERT_TIME << " < " << threshold;
+	std::vector<Json> records;
+	bool ret = __dbManager->executeSync(query.str().c_str(), &records);
+	_D("deleting Wifi APs older than: %d, result: %s", threshold, ret ? "SUCCESS" : "FAIL");
 }
 
 ctx::PlacesDetector::PlacesDetector(bool testMode):
@@ -399,7 +442,9 @@ ctx::PlacesDetector::PlacesDetector(bool testMode):
 		return;
 	__dbCreateTable();
 	std::vector<Json> records = __dbGetPlaces();
+	__dbGetWifiAPsMap();
 	std::vector<std::shared_ptr<Place>> dbPlaces = __placesFromJsons(records);
+	__wifiAPsMap.clear();
 	__detectedPlacesUpdate(dbPlaces);
 }
 
@@ -419,8 +464,13 @@ void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 	data.set(NULL, PLACE_COLUMN_LOCATION_VALID, place.locationValid);
 	data.set(NULL, PLACE_COLUMN_LOCATION_LATITUDE, place.location.latitude);
 	data.set(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, place.location.longitude);
-
-	data.set(NULL, PLACE_COLUMN_WIFI_APS, place.wifiAps);
+	std::string wifiAps;
+	for (std::pair<std::string, std::string> ap : place.wifiAps) {
+		wifiAps.append(ap.first);
+		wifiAps.append(",");
+	}
+	wifiAps = wifiAps.substr(0, wifiAps.size()-1);
+	data.set(NULL, PLACE_COLUMN_WIFI_APS, wifiAps);
 	data.set(NULL, PLACE_COLUMN_CREATE_DATE, static_cast<int>(place.createDate));
 
 	int64_t rowId;
