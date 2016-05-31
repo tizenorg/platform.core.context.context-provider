@@ -20,8 +20,6 @@
 #include <ProviderTypes.h>
 
 // Context Items
-#define PLACE_SUBJ_RECOGNITION                 SUBJ_PLACE_DETECTION
-
 #define PLACE_PRIV_RECOGNITION                 "location"
 
 // Database
@@ -65,16 +63,6 @@
 #define LOCATION_COLUMN_TIMESTAMP_HUMAN        "time_human" // only for debug: human readable time data:
 #define LOCATION_COLUMN_METHOD                 "method"
 #endif /* TIZEN_ENGINEER_MODE */
-
-// Data Key
-#define DATA_READ                              "PlacesList"
-#define PLACE_CATEG_ID                         "TypeId" // Name inconsistency: "cated_id" vs "type_id" TODO make it consistent
-#define PLACE_CATEG_CONFIDENCE                 "TypeConfidence"
-#define PLACE_NAME                             "Name"
-#define PLACE_GEO_LATITUDE                     "GeoLatitude"
-#define PLACE_GEO_LONGITUDE                    "GeoLongitude"
-#define PLACE_WIFI_APS                         "WifiAPs"
-#define PLACE_CREATE_DATE                      "CreateDate"
 
 enum PlaceRecogMode {
 	PLACE_RECOG_HIGH_ACCURACY_MODE = 0,

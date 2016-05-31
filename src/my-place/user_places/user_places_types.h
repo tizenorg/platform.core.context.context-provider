@@ -130,8 +130,7 @@ namespace ctx {
 		Mac mac;
 		std::string networkName;
 
-		MacEvent(time_t timestamp_, Mac mac_) : timestamp(timestamp_), mac(mac_) {}
-		MacEvent(time_t timestamp_, Mac mac_, std::string networkName_)
+		MacEvent(time_t timestamp_, Mac mac_, std::string networkName_ = "")
 			: timestamp(timestamp_)
 			, mac(mac_)
 			, networkName(networkName_) {}

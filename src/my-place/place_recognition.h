@@ -18,15 +18,16 @@
 #define _CONTEXT_PLACE_RECOGNITION_H_
 
 #include <ContextProvider.h>
-#include "place_recognition_types.h"
+#include "MyPlaceTypes.h"
 #include "user_places/user_places.h"
 
 namespace ctx {
 
 	class PlaceRecognitionProvider : public ContextProvider {
+
 	public:
 		PlaceRecognitionProvider() :
-			ContextProvider(PLACE_SUBJ_RECOGNITION),
+			ContextProvider(SUBJ_PLACE_DETECTION),
 			__engine(PLACE_RECOG_HIGH_ACCURACY_MODE) {}
 
 		~PlaceRecognitionProvider() {}
@@ -41,6 +42,7 @@ namespace ctx {
 
 	private:
 		UserPlaces __engine;
+
 	};	/* class PlaceRecognitionProvider */
 
 }	/* namespace ctx */

@@ -17,6 +17,7 @@
 #ifndef _CONTEXT_PROVIDER_TYPES_H_
 #define _CONTEXT_PROVIDER_TYPES_H_
 
+#include "MyPlaceTypes.h"
 
 /* Privileges */
 #define PRIV_ALARM		"alarm.set"
@@ -86,7 +87,7 @@
 #define SUBJ_SOCIAL_FREQUENCY		SUBJ_SOCIAL_STATS "frequency"
 
 #define SUBJ_PLACE_GEOFENCE		"place/geofence"
-#define SUBJ_PLACE_DETECTION	"place/pattern/personal_poi"
+#define SUBJ_PLACE_DETECTION	PLACE_DETECTION_SUBJECT
 
 /* Data & Option Keys */
 #define KEY_QUERY_RESULT	"QueryResult"

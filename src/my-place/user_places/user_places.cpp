@@ -19,7 +19,7 @@
 #include <Types.h>
 #include "user_places.h"
 #include "places_detector.h"
-#include "../place_recognition_types.h"
+#include <MyPlaceTypes.h>
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 	__visitDetector(nullptr),
@@ -125,8 +125,8 @@ ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> pla
 		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, static_cast<double>(place->categConfidence));
 		placeJson.set(NULL, PLACE_NAME, place->name);
 		if (place->locationValid) {
-			placeJson.set(NULL, PLACE_GEO_LATITUDE, static_cast<double>(place->location.latitude));
-			placeJson.set(NULL, PLACE_GEO_LONGITUDE, static_cast<double>(place->location.longitude));
+			placeJson.set(NULL, PLACE_LOCATION_LATITUDE, static_cast<double>(place->location.latitude));
+			placeJson.set(NULL, PLACE_LOCATION_LONGITUDE, static_cast<double>(place->location.longitude));
 		}
 		placeJson.set(NULL, PLACE_WIFI_APS, place->wifiAps);
 		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int64_t>(place->createDate));
