@@ -63,13 +63,13 @@ namespace ctx {
 		void __processVisits(Visits &visits);
 		static void __mergeLocation(const Visits &mergedVisits, Place &place);
 		std::shared_ptr<graph::Components> __mergeVisits(const std::vector<Visit> &visits);
+		static void __reduceOutliers(Visits &visits);
+		static void __reduceOutliers(std::shared_ptr<graph::Components> &cc);
 
 		bool onTimerExpired(int timerId);
 
 	public:
 		PlacesDetector(bool testMode = false);
-		static void reduceOutliers(Visits &visits); // TODO: move to private
-		static void reduceOutliers(std::shared_ptr<graph::Components> &cc); // TODO: move to private
 		std::vector<std::shared_ptr<Place>> getPlaces();
 
 	};  /* class PlacesDetector */

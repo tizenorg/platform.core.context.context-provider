@@ -296,7 +296,7 @@ const std::vector<ctx::num_t> ctx::VisitCateger::__featuresStd(
 	0.109386661911
 });
 
-ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
+ctx::TimeFeatures ctx::VisitCateger::__timeFeatures(const time_t &time)
 {
 	struct tm timeinfo;
 	struct tm *result;
@@ -316,7 +316,7 @@ ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
 	};
 }
 
-int ctx::VisitCateger::weeksScope(const TimeFeatures &startF, const Interval &interval)
+int ctx::VisitCateger::__weeksScope(const TimeFeatures &startF, const Interval &interval)
 {
 	int durationMinutes = (interval.end - interval.start) / 60;
 	int scopeMinutes = startF.minutesSinceBeginingOfTheWeek + durationMinutes;
@@ -347,7 +347,7 @@ ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Int
 {
 	num_t ret = 0.0;
 	int minutes = 0;
-	int ws = weeksScope(startF, interval);
+	int ws = __weeksScope(startF, interval);
 	for (int week = 1; week <= ws; week++) {
 		size_t startIndex = (week == 1)
 				? startF.minutesSinceBeginingOfTheWeek
@@ -363,7 +363,7 @@ ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Int
 	return ret;
 }
 
-ctx::Categs ctx::VisitCateger::weekModelFeatures(const Interval &interval, const TimeFeatures &startF, const TimeFeatures &endF)
+ctx::Categs ctx::VisitCateger::__weekModelFeatures(const Interval &interval, const TimeFeatures &startF, const TimeFeatures &endF)
 {
 	ctx::Categs categs;
 	for (const auto &item : prob_features::weekModel) {
@@ -376,12 +376,12 @@ ctx::Categs ctx::VisitCateger::weekModelFeatures(const Interval &interval, const
 	return categs;
 }
 
-ctx::IntervalFeatures ctx::VisitCateger::intervalFeatures(const Interval &interval)
+ctx::IntervalFeatures ctx::VisitCateger::__intervalFeatures(const Interval &interval)
 {
 	num_t durationMinutes = 1.0 * (interval.end - interval.start) / 60;
-	TimeFeatures startFeatures = timeFeatures(interval.start);
-	TimeFeatures endFeatures = timeFeatures(interval.end);
-	Categs weekFeatures = weekModelFeatures(interval, startFeatures, endFeatures);
+	TimeFeatures startFeatures = __timeFeatures(interval.start);
+	TimeFeatures endFeatures = __timeFeatures(interval.end);
+	Categs weekFeatures = __weekModelFeatures(interval, startFeatures, endFeatures);
 	return {
 		durationMinutes,
 		(num_t) startFeatures.minutesSinceMidnight,
@@ -404,7 +404,7 @@ void ctx::VisitCateger::__normalize(std::vector<ctx::num_t> &features)
 
 void ctx::VisitCateger::categorize(ctx::Visit &visit)
 {
-	IntervalFeatures features = intervalFeatures(visit.interval);
+	IntervalFeatures features = __intervalFeatures(visit.interval);
 	__normalize(features);
 
 	for (auto &modelPair : __models) {

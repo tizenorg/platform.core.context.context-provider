@@ -241,7 +241,7 @@ std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::__placesFromJsons(
 	return places;
 }
 
-void ctx::PlacesDetector::reduceOutliers(ctx::Visits &visits)
+void ctx::PlacesDetector::__reduceOutliers(ctx::Visits &visits)
 {
 	int size = visits.size();
 	visits.erase(std::remove_if(
@@ -260,7 +260,7 @@ void ctx::PlacesDetector::reduceOutliers(ctx::Visits &visits)
 
 void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
 {
-	reduceOutliers(visits);
+	__reduceOutliers(visits);
 
 	_D("__testMode = %d", __testMode);
 	auto components = __mergeVisits(visits);
@@ -359,7 +359,7 @@ std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromMergedVisits(Visits 
 	return place;
 }
 
-void ctx::PlacesDetector::reduceOutliers(std::shared_ptr<ctx::graph::Components> &cc)
+void ctx::PlacesDetector::__reduceOutliers(std::shared_ptr<ctx::graph::Components> &cc)
 {
 	int size = cc->size();
 	cc->erase(std::remove_if(cc->begin(),
@@ -377,7 +377,7 @@ std::shared_ptr<ctx::graph::Components> ctx::PlacesDetector::__mergeVisits(const
 {
 	auto graph = __graphFromVisits(visits);
 	auto cc = graph::connectedComponents(*graph);
-	reduceOutliers(cc);
+	__reduceOutliers(cc);
 	return cc;
 }
 

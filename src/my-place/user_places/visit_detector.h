@@ -79,6 +79,7 @@ namespace ctx {
 		bool __protrudesFrom(const Macs2Counts &macs2Counts, const MacSet &macSet);
 		void __setPeriod(PlaceRecogMode mode);
 		void __processCurrentLogger();
+		std::shared_ptr<Visits> __getVisits();
 
 		/* DATABASE */
 		void __dbCreateTables();
@@ -95,7 +96,6 @@ namespace ctx {
 		VisitDetector(time_t startScan, PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE, bool testMode = false);
 		~VisitDetector();
 
-		std::shared_ptr<Visits> getVisits(); // only used in test mode
 		void setMode(PlaceRecogMode energyMode);
 
 	};	/* class VisitDetector */

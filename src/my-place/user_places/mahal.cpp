@@ -18,7 +18,7 @@
 #include <math.h>
 #include <Types.h>
 
-ctx::num_t ctx::MahalModel::distance(const std::vector<num_t> &v1, const std::vector<num_t> &v2, const std::vector<num_t> &m)
+ctx::num_t ctx::MahalModel::__distance(const std::vector<num_t> &v1, const std::vector<num_t> &v2, const std::vector<num_t> &m)
 {
 	size_t n = v1.size();
 	if (m.size() != n * n) {
@@ -42,5 +42,5 @@ ctx::num_t ctx::MahalModel::distance(const std::vector<num_t> &v1, const std::ve
 
 ctx::num_t ctx::MahalModel::distance(const std::vector<ctx::num_t> &v)
 {
-	return distance(v, __mean, __sigma);
+	return __distance(v, __mean, __sigma);
 }

@@ -363,7 +363,7 @@ std::shared_ptr<ctx::Macs2Shares> ctx::VisitDetector::__macSharesFromCounts(ctx:
 	return macs2Shares;
 }
 
-std::shared_ptr<ctx::Visits> ctx::VisitDetector::getVisits()
+std::shared_ptr<ctx::Visits> ctx::VisitDetector::__getVisits()
 {
 	return __detectedVisits;
 }

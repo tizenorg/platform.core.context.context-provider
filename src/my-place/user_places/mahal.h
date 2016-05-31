@@ -30,9 +30,9 @@ namespace ctx {
 	private:
 		std::vector<num_t> __mean;
 		std::vector<num_t> __sigma; // represents square matrix row-wise
+		static num_t __distance(const std::vector<num_t> &v1, const std::vector<num_t> &v2, const std::vector<num_t> &m);
 
 	public:
-		static num_t distance(const std::vector<num_t> &v1, const std::vector<num_t> &v2, const std::vector<num_t> &m);
 		MahalModel(std::vector<num_t> mean, std::vector<num_t> sigma) :
 			__mean(mean),
 			__sigma(sigma) { }
