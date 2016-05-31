@@ -95,7 +95,11 @@ bool ctx::VisitDetector::__isValid(const ctx::Mac &mac)
 
 void ctx::VisitDetector::onWifiScan(ctx::MacEvent e)
 {
-	_D("timestamp=%d, curent_interval.end=%d, mac=%s", e.timestamp, __currentInterval.end, std::string(e.mac).c_str());
+	_D("timestamp=%d, current_interval.end=%d, mac=%s, network=%s",
+			e.timestamp,
+			__currentInterval.end,
+			std::string(e.mac).c_str(),
+			e.networkName.c_str());
 	if (__isValid(e.mac)) {
 		while (e.timestamp > __currentInterval.end) {
 			__processCurrentLogger();

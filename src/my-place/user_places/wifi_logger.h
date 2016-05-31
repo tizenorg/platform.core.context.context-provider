@@ -20,7 +20,7 @@
 #include <WifiWrapper.h>
 #include <time.h>
 #include <vector>
-#include <set>
+#include <map>
 #include <TimerManager.h>
 #include "wifi_listener_iface.h"
 #include "visit_listener_iface.h"
@@ -100,7 +100,7 @@ namespace ctx {
 
 		IWifiListener * const __listener;
 		std::vector<MacEvent> __logs;
-		std::set<std::string> __lastScansPool;
+		std::map<std::string, std::string> __lastScansPool; // Mac address to network name map
 		time_t __lastScanTime;
 		time_t __lasTimerCallbackTime;
 		bool __duringVisit;

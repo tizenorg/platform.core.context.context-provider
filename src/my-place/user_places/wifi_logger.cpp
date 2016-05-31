@@ -169,7 +169,7 @@ bool ctx::WifiLogger::__wifiFoundApCb(wifi_ap_h ap, void *userData)
 		if (WIFI_LOGGER_LOW_POWER_MODE
 				&& (wifiLogger->__connectedToWifiAp || wifiLogger->__duringVisit) ) {
 			// Add to last scans AP's set
-			wifiLogger->__lastScansPool.insert(std::string(bssid));
+			wifiLogger->__lastScansPool.insert(std::pair<std::string, std::string>(std::string(bssid), std::string(essid)));
 		}
 	}
 	if (WIFI_LOGGER_DATABASE)
@@ -349,10 +349,10 @@ bool ctx::WifiLogger::onTimerExpired(int id)
 		_D("trying to send fake scan");
 		if (__listener) {
 			_D("__listener != false -> CORRECT");
-			for (std::string bssid : __lastScansPool) {
-				Mac mac(bssid);
-				MacEvent scan(now, mac);
-				_D("send fake scan (%s)", bssid.c_str());
+			for (std::pair<std::string, std::string> ap : __lastScansPool) {
+				Mac mac(ap.first);
+				MacEvent scan(now, mac, ap.second);
+				_D("send fake scan (%s, %s)", ap.first.c_str(), ap.second.c_str());
 				__listener->onWifiScan(scan);
 			}
 		}
