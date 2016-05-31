@@ -39,6 +39,11 @@
 #define VISIT_COLUMN_CATEG_WORK                "categ_work"
 #define VISIT_COLUMN_CATEG_OTHER               "categ_other"
 
+#define WIFI_APS_MAP_TABLE                     "place_status_user_place_wifi_aps_map"
+#define WIFI_APS_MAP_COLUMN_MAC                "mac"
+#define WIFI_APS_MAP_COLUMN_NETWORK_NAME       "network_name"
+#define WIFI_APS_MAP_COLUMN_INSERT_TIME        "insert_time"
+
 #define PLACE_TABLE                            "place_status_user_place"
 #define PLACE_COLUMN_CATEG_ID                  "type_id" // Name inconsistency: "cated_id" vs "type_id" TODO make it consistent
 #define PLACE_COLUMN_CATEG_CONFIDENCE          "type_confidence"

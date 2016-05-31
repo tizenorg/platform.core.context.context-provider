@@ -37,6 +37,7 @@ namespace ctx {
 
 	private:
 		bool __testMode;
+		std::map<std::string, std::string> __wifiAPsMap;
 		std::shared_ptr<Visits> __detectedVisits; // only used in test mode
 		LocationLogger *__locationLogger;
 		WifiLogger *__wifiLogger;
@@ -80,8 +81,9 @@ namespace ctx {
 		void __processCurrentLogger();
 
 		/* DATABASE */
-		void __dbCreateTable();
+		void __dbCreateTables();
 		int __dbInsertVisit(Visit visit);
+		int __dbInsertWifiAPsMap(Visit visit);
 		void __putVisitCategToJson(const char* key, const Categs &categs, int categType, Json &data);
 		void __putVisitCategsToJson(const Categs &categs, Json &data);
 
