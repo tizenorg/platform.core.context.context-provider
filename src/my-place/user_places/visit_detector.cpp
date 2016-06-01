@@ -38,6 +38,7 @@
 	VISIT_COLUMN_LOCATION_VALID " INTEGER, "\
 	VISIT_COLUMN_LOCATION_LATITUDE " REAL, "\
 	VISIT_COLUMN_LOCATION_LONGITUDE " REAL, "\
+	VISIT_COLUMN_LOCATION_ACCURACY " REAL, "\
 	VISIT_COLUMN_CATEG_HOME " REAL, "\
 	VISIT_COLUMN_CATEG_WORK " REAL, "\
 	VISIT_COLUMN_CATEG_OTHER " REAL"
@@ -49,6 +50,7 @@
 	VISIT_COLUMN_LOCATION_VALID " INTEGER, "\
 	VISIT_COLUMN_LOCATION_LATITUDE " REAL, "\
 	VISIT_COLUMN_LOCATION_LONGITUDE " REAL, "\
+	VISIT_COLUMN_LOCATION_ACCURACY " REAL, "\
 	VISIT_COLUMN_CATEG_HOME " REAL, "\
 	VISIT_COLUMN_CATEG_WORK " REAL, "\
 	VISIT_COLUMN_CATEG_OTHER " REAL"
@@ -241,21 +243,25 @@ void ctx::VisitDetector::__visitEndDetected()
 
 void ctx::VisitDetector::__putLocationToVisit(ctx::Visit &visit)
 {
-	// TODO: remove small accuracy locations from vectors?
+	// TODO: filter out small accuracy locations?
 	std::vector<double> latitudes;
 	std::vector<double> longitudes;
+	std::vector<double> accuracy;
 	visit.locationValid = false;
-	for (LocationEvent location : __locationEvents) {
+	for (LocationEvent &location : __locationEvents) {
 		if (location.timestamp >= __entranceTime && location.timestamp <= __departureTime) {
 			latitudes.push_back(location.coordinates.latitude);
 			longitudes.push_back(location.coordinates.longitude);
+			accuracy.push_back(location.coordinates.accuracy);
 			visit.locationValid = true;
 		}
 	}
 	if (visit.locationValid) {
-		visit.location.latitude = median(latitudes);
-		visit.location.longitude = median(longitudes);
-		_D("visit location set: lat=%.8f, lon=%.8f", visit.location.latitude, visit.location.longitude);
+		visit.location = medianLocation(latitudes, longitudes, accuracy);
+		_D("visit location set: lat=%.8f, lon=%.8f, acc=%.8f",
+				visit.location.latitude,
+				visit.location.longitude,
+				visit.location.accuracy);
 	} else {
 		_D("visit location not set");
 	}
@@ -405,6 +411,7 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	data.set(NULL, VISIT_COLUMN_LOCATION_VALID, visit.locationValid);
 	data.set(NULL, VISIT_COLUMN_LOCATION_LATITUDE, visit.location.latitude);
 	data.set(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, visit.location.longitude);
+	data.set(NULL, VISIT_COLUMN_LOCATION_ACCURACY, visit.location.accuracy);
 
 	data.set(NULL, VISIT_COLUMN_START_TIME, static_cast<int>(visit.interval.start));
 	data.set(NULL, VISIT_COLUMN_END_TIME, static_cast<int>(visit.interval.end));

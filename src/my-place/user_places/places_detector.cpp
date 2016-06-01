@@ -43,7 +43,8 @@
 	VISIT_COLUMN_WIFI_APS ", "\
 	VISIT_COLUMN_LOCATION_VALID ", "\
 	VISIT_COLUMN_LOCATION_LATITUDE ", "\
-	VISIT_COLUMN_LOCATION_LONGITUDE ", " \
+	VISIT_COLUMN_LOCATION_LONGITUDE ", "\
+	VISIT_COLUMN_LOCATION_ACCURACY ", "\
 	VISIT_COLUMN_CATEG_HOME ", "\
 	VISIT_COLUMN_CATEG_WORK ", "\
 	VISIT_COLUMN_CATEG_OTHER \
@@ -55,7 +56,8 @@
 	PLACE_COLUMN_NAME ", "\
 	PLACE_COLUMN_LOCATION_VALID ", "\
 	PLACE_COLUMN_LOCATION_LATITUDE ", "\
-	PLACE_COLUMN_LOCATION_LONGITUDE ", " \
+	PLACE_COLUMN_LOCATION_LONGITUDE ", "\
+	PLACE_COLUMN_LOCATION_ACCURACY ", "\
 	PLACE_COLUMN_WIFI_APS ", "\
 	PLACE_COLUMN_CREATE_DATE \
 	" FROM " PLACE_TABLE
@@ -72,6 +74,7 @@
 	PLACE_COLUMN_LOCATION_VALID " INTEGER, "\
 	PLACE_COLUMN_LOCATION_LATITUDE " REAL, "\
 	PLACE_COLUMN_LOCATION_LONGITUDE " REAL, "\
+	PLACE_COLUMN_LOCATION_ACCURACY " REAL, "\
 	PLACE_COLUMN_WIFI_APS " STRING, "\
 	PLACE_COLUMN_CREATE_DATE " timestamp"
 
@@ -205,6 +208,7 @@ void ctx::PlacesDetector::__placeLocationFromJson(Json &row, ctx::Place &place)
 	place.locationValid = (bool) locationValidInt;
 	row.get(NULL, PLACE_COLUMN_LOCATION_LATITUDE, &(place.location.latitude));
 	row.get(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, &(place.location.longitude));
+	row.get(NULL, PLACE_COLUMN_LOCATION_ACCURACY, &(place.location.accuracy));
 }
 
 void ctx::PlacesDetector::__placeWifiAPsFromJson(Json &row, ctx::Place &place)
@@ -324,19 +328,26 @@ void ctx::PlacesDetector::__detectedPlacesUpdate(std::vector<std::shared_ptr<Pla
 
 void ctx::PlacesDetector::__mergeLocation(const Visits &visits, Place &place)
 {
-	place.locationValid = false;
 	std::vector<double> latitudes;
 	std::vector<double> longitudes;
+	std::vector<double> accuracy;
+	place.locationValid = false;
 	for (const Visit& visit : visits) {
 		if (visit.locationValid) {
 			latitudes.push_back(visit.location.latitude);
 			longitudes.push_back(visit.location.longitude);
+			accuracy.push_back(visit.location.accuracy);
 			place.locationValid = true;
 		}
 	}
 	if (place.locationValid) {
-		place.location.latitude = median(latitudes);
-		place.location.longitude = median(longitudes);
+		place.location = medianLocation(latitudes, longitudes, accuracy);
+		_D("place location set: lat=%.8f, lon=%.8f, acc=%.8f",
+				place.location.latitude,
+				place.location.longitude,
+				place.location.accuracy);
+	} else {
+		_D("place location not set");
 	}
 }
 
@@ -464,6 +475,7 @@ void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 	data.set(NULL, PLACE_COLUMN_LOCATION_VALID, place.locationValid);
 	data.set(NULL, PLACE_COLUMN_LOCATION_LATITUDE, place.location.latitude);
 	data.set(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, place.location.longitude);
+	data.set(NULL, PLACE_COLUMN_LOCATION_ACCURACY, place.location.accuracy);
 	std::string wifiAps;
 	for (std::pair<std::string, std::string> ap : place.wifiAps) {
 		wifiAps.append(ap.first);

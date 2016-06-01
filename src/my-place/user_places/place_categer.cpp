@@ -65,7 +65,8 @@ void ctx::PlaceCateger::categorize(ctx::Visits &visits, ctx::Place &place)
 		num_t maxScore = 0.0;
 		for (PlaceCategId categId : categIds) {
 			std::vector<num_t> categVector = __categVectorFromVisits(visits, categId);
-			num_t score = median(categVector);
+			int i, j;
+			num_t score = median(categVector, i, j);
 			sumScore += score;
 			if (score > maxScore) {
 				maxScore = score;

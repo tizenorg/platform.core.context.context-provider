@@ -32,9 +32,10 @@
 #define VISIT_COLUMN_START_TIME_HUMAN          "start_time_human" // only for debug: human readable time data:
 #define VISIT_COLUMN_END_TIME_HUMAN            "end_time_human" // only for debug: human readable time data:
 #endif /* TIZEN_ENGINEER_MODE */
-#define VISIT_COLUMN_LOCATION_VALID            "geo_valid"
-#define VISIT_COLUMN_LOCATION_LATITUDE         "geo_latitude"
-#define VISIT_COLUMN_LOCATION_LONGITUDE        "geo_longitude"
+#define VISIT_COLUMN_LOCATION_VALID            "location_valid"
+#define VISIT_COLUMN_LOCATION_LATITUDE         "location_latitude"
+#define VISIT_COLUMN_LOCATION_LONGITUDE        "location_longitude"
+#define VISIT_COLUMN_LOCATION_ACCURACY         "location_accuracy"
 #define VISIT_COLUMN_CATEG_HOME                "categ_home"
 #define VISIT_COLUMN_CATEG_WORK                "categ_work"
 #define VISIT_COLUMN_CATEG_OTHER               "categ_other"
@@ -45,12 +46,13 @@
 #define WIFI_APS_MAP_COLUMN_INSERT_TIME        "insert_time"
 
 #define PLACE_TABLE                            "place_status_user_place"
-#define PLACE_COLUMN_CATEG_ID                  "type_id" // Name inconsistency: "cated_id" vs "type_id" TODO make it consistent
-#define PLACE_COLUMN_CATEG_CONFIDENCE          "type_confidence"
+#define PLACE_COLUMN_CATEG_ID                  "categ_id"
+#define PLACE_COLUMN_CATEG_CONFIDENCE          "categ_confidence"
 #define PLACE_COLUMN_NAME                      "name"
-#define PLACE_COLUMN_LOCATION_VALID            "geo_valid"
-#define PLACE_COLUMN_LOCATION_LATITUDE         "geo_latitude"
-#define PLACE_COLUMN_LOCATION_LONGITUDE        "geo_longitude"
+#define PLACE_COLUMN_LOCATION_VALID            "location_valid"
+#define PLACE_COLUMN_LOCATION_LATITUDE         "location_latitude"
+#define PLACE_COLUMN_LOCATION_LONGITUDE        "location_longitude"
+#define PLACE_COLUMN_LOCATION_ACCURACY         "location_accuracy"
 #define PLACE_COLUMN_WIFI_APS                  "wifi_aps"
 #define PLACE_COLUMN_CREATE_DATE               "create_date"
 
