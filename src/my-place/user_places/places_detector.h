@@ -35,6 +35,7 @@ namespace ctx {
 
 		double __doubleValueFromJson(Json &row, const char* key);
 		Categs __visitCategsFromJson(Json &row);
+		void __visitLocationFromJson(Json &row, ctx::Visit &visit);
 		Visit __visitFromJson(Json &row);
 		Visits __visitsFromJsons(std::vector<Json>& records);
 		std::shared_ptr<ctx::Place> __placeFromJson(Json &row);

@@ -138,6 +138,16 @@ ctx::Categs ctx::PlacesDetector::__visitCategsFromJson(Json &row)
 	return categs;
 }
 
+void ctx::PlacesDetector::__visitLocationFromJson(Json &row, ctx::Visit &visit)
+{
+	int locationValidInt;
+	row.get(NULL, VISIT_COLUMN_LOCATION_VALID, &locationValidInt);
+	visit.locationValid = (bool) locationValidInt;
+	row.get(NULL, VISIT_COLUMN_LOCATION_LATITUDE, &(visit.location.latitude));
+	row.get(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, &(visit.location.longitude));
+	row.get(NULL, VISIT_COLUMN_LOCATION_ACCURACY, &(visit.location.accuracy));
+}
+
 ctx::Visit ctx::PlacesDetector::__visitFromJson(Json &row)
 {
 	int startTime;
@@ -157,13 +167,7 @@ ctx::Visit ctx::PlacesDetector::__visitFromJson(Json &row)
 
 	Visit visit(interval, macSet, categs);
 
-	{ // location
-		int locationValidInt;
-		row.get(NULL, VISIT_COLUMN_LOCATION_VALID, &locationValidInt);
-		visit.locationValid = (bool) locationValidInt;
-		row.get(NULL, VISIT_COLUMN_LOCATION_LATITUDE, &(visit.location.latitude));
-		row.get(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, &(visit.location.longitude));
-	}
+	__visitLocationFromJson(row, visit);
 
 	return visit;
 }
