@@ -122,17 +122,22 @@ ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> pla
 		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, static_cast<double>(place->categConfidence));
 		placeJson.set(NULL, PLACE_NAME, place->name);
 		if (place->locationValid) {
-			placeJson.set(NULL, PLACE_LOCATION_LATITUDE, static_cast<double>(place->location.latitude));
-			placeJson.set(NULL, PLACE_LOCATION_LONGITUDE, static_cast<double>(place->location.longitude));
+			ctx::Json locationJson;
+			locationJson.set(NULL, PLACE_LOCATION_LATITUDE, static_cast<double>(place->location.latitude));
+			locationJson.set(NULL, PLACE_LOCATION_LONGITUDE, static_cast<double>(place->location.longitude));
+			locationJson.set(NULL, PLACE_LOCATION_ACCURACY, static_cast<double>(place->location.accuracy));
+			placeJson.set(NULL, PLACE_LOCATION, locationJson);
 		}
-		ctx::Json wifiApsListJson;
-		for (std::pair<std::string, std::string> ap : place->wifiAps) {
-			ctx::Json wifiApJson;
-			wifiApJson.set(NULL, PLACE_WIFI_AP_MAC, ap.first);
-			wifiApJson.set(NULL, PLACE_WIFI_AP_NETWORK_NAME, ap.second);
-			wifiApsListJson.append(NULL, PLACE_WIFI_APS, wifiApJson);
+		if (place->wifiAps.size()) {
+			ctx::Json wifiApsListJson;
+			for (std::pair<std::string, std::string> ap : place->wifiAps) {
+				ctx::Json wifiApJson;
+				wifiApJson.set(NULL, PLACE_WIFI_AP_MAC, ap.first);
+				wifiApJson.set(NULL, PLACE_WIFI_AP_NETWORK_NAME, ap.second);
+				wifiApsListJson.append(NULL, PLACE_WIFI_APS, wifiApJson);
+			}
+			placeJson.set(NULL, PLACE_WIFI_APS, wifiApsListJson);
 		}
-		placeJson.set(NULL, PLACE_WIFI_APS, wifiApsListJson);
 		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int64_t>(place->createDate));
 		data.append(NULL, PLACE_DATA_READ, placeJson);
 	}
