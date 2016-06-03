@@ -1,6 +1,6 @@
 SET(target_shared "${target_prefix}-shared")
 SET(DEPS
-	libcontext-server
+	context-common
 )
 
 ADD_SUBDIRECTORY(shared)
