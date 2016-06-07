@@ -25,14 +25,12 @@ namespace similarity {
 
 	template <class T> ctx::share_t overlap1stOver2nd(const T &s1, const T &s2)
 	{
-		if (s2.empty()) {
+		if (s2.empty())
 			return 0;
-		}
 		int count = 0;
 		for (auto e : s2) {
-			if (s1.find(e) != s1.end()) {
+			if (s1.find(e) != s1.end())
 				count++;
-			}
 		}
 		return (ctx::share_t) count / s2.size();
 	}
@@ -49,9 +47,8 @@ namespace similarity {
 	template <class T> bool isJoint(const T &s1, const T &s2)
 	{
 		for (auto e : s2) {
-			if (s1.find(e) != s1.end()) {
+			if (s1.find(e) != s1.end())
 				return true;
-			}
 		}
 		return false;
 	}

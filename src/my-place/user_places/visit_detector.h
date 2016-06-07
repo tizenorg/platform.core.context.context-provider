@@ -37,9 +37,10 @@ namespace ctx {
 
 	private:
 		bool __testMode;
+		std::map<std::string, std::string> __wifiAPsMap;
 		std::shared_ptr<Visits> __detectedVisits; // only used in test mode
-		LocationLogger __locationLogger;
-		WifiLogger __wifiLogger;
+		LocationLogger *__locationLogger;
+		WifiLogger *__wifiLogger;
 		std::vector<IVisitListener*> __listeners;
 		std::shared_ptr<MacEvents> __currentMacEvents;
 		Interval __currentInterval;
@@ -50,7 +51,7 @@ namespace ctx {
 		int __tolerance;
 		bool __entranceToPlace;
 		int __periodSeconds;
-		DatabaseManager __dbManager;
+		DatabaseManager *__dbManager;
 
 		// fields that  are used only in case of entrance detection
 		std::shared_ptr<MacSet> __representativesMacs; // macs that represent the current place
@@ -78,10 +79,12 @@ namespace ctx {
 		bool __protrudesFrom(const Macs2Counts &macs2Counts, const MacSet &macSet);
 		void __setPeriod(PlaceRecogMode mode);
 		void __processCurrentLogger();
+		std::shared_ptr<Visits> __getVisits();
 
 		/* DATABASE */
-		void __dbCreateTable();
+		void __dbCreateTables();
 		int __dbInsertVisit(Visit visit);
+		int __dbInsertWifiAPsMap(Visit visit);
 		void __putVisitCategToJson(const char* key, const Categs &categs, int categType, Json &data);
 		void __putVisitCategsToJson(const Categs &categs, Json &data);
 
@@ -93,7 +96,6 @@ namespace ctx {
 		VisitDetector(time_t startScan, PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE, bool testMode = false);
 		~VisitDetector();
 
-		std::shared_ptr<Visits> getVisits(); // only used in test mode
 		void setMode(PlaceRecogMode energyMode);
 
 	};	/* class VisitDetector */

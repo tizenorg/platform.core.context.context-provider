@@ -49,16 +49,15 @@ namespace ctx {
 		static void __normalize(std::vector<num_t> &features);
 		static PiecewiseLin __chiApprox; // tabled chi function approximator
 
-	public:
 		/**
 		 * Function interpret time in timestamp input argument,
 		 *
 		 * @param  time          timestamp
 		 * @return TimeFeatures  structure with interpretations of timestamp
 		 */
-		static TimeFeatures timeFeatures(const time_t &time);
+		static TimeFeatures __timeFeatures(const time_t &time);
 
-		static int weeksScope(const TimeFeatures &startF, const Interval &interval);
+		static int __weeksScope(const TimeFeatures &startF, const Interval &interval);
 
 		/**
 		 * Function interpret time interval input argument and calculates scores
@@ -69,7 +68,7 @@ namespace ctx {
 		 * @param  endF	     end time features
 		 * @return Categs    score that argument interval is home, work or other
 		 */
-		static Categs weekModelFeatures(const Interval &interval, const TimeFeatures &startF,
+		static Categs __weekModelFeatures(const Interval &interval, const TimeFeatures &startF,
 				const TimeFeatures &endF);
 
 		/**
@@ -78,7 +77,9 @@ namespace ctx {
 		 * @param  interval          time interval
 		 * @return IntervalFeatures  vector with interpretations of input time interval
 		 */
-		static IntervalFeatures intervalFeatures(const Interval &interval);
+		static IntervalFeatures __intervalFeatures(const Interval &interval);
+
+	public:
 
 		/**
 		 * Function categorize visit based on visits time interval and fill its categories values.

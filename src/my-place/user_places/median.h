@@ -23,7 +23,8 @@
 
 namespace ctx {
 
-	num_t median(std::vector<num_t> &values); // caution: the input vector will be sorted
+	double median(std::vector<double> &values, int &elemIdx, int &evenCaseElemIdx);
+	ctx::Location medianLocation(std::vector<double> &latitudes, std::vector<double> &longitudes, std::vector<double> &accuracy);
 
 } /* namespace ctx */
 

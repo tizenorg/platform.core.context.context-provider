@@ -17,10 +17,10 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_
 #define _CONTEXT_PLACE_RECOGNITION_WIFI_LOGGER_H_
 
-#include <wifi.h>
+#include <WifiWrapper.h>
 #include <time.h>
 #include <vector>
-#include <set>
+#include <map>
 #include <TimerManager.h>
 #include "wifi_listener_iface.h"
 #include "visit_listener_iface.h"
@@ -51,8 +51,7 @@ namespace ctx {
 
 	public:
 		WifiLogger(IWifiListener * listener = nullptr,
-				PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE,
-				bool testMode = false);
+				PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);
 		~WifiLogger();
 
 		void startLogging();
@@ -82,16 +81,16 @@ namespace ctx {
 		int __dbInsertLogs();
 
 		/* SYSTEM CAPI WRAPPERS */
+		WifiWrapper __wifiWrapper;
 		void __wifiSetBackgroundScanCbRequest();
 		void __wifiSetDeviceStateChangedCbRequest();
 		void __wifiSetConnectionStateChangedCbRequest();
-		static bool __checkWifiIsActivated();
+		bool __checkWifiIsActivated();
 		void __wifiScanRequest();
-		static int __wifiForeachFoundApsRequest(void *userData);
-		static wifi_connection_state_e __wifiGetConnectionStateRequest();
-		static int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
-		void __wifiInitializeRequest();
-		void __wifiDeinitializeRequest();
+		int __wifiForeachFoundApsRequest(void *userData);
+		wifi_connection_state_e __wifiGetConnectionStateRequest();
+		int __wifiApGetEssidRequest(wifi_ap_h ap, char **essid);
+		int __wifiApGetBssidRequest(wifi_ap_h ap, char **bssid);
 
 		/* SYSTEM CAPI CALLBACKS */
 		static void __wifiDeviceStateChangedCb(wifi_device_state_e state, void *userData);
@@ -99,10 +98,9 @@ namespace ctx {
 		static bool __wifiFoundApCb(wifi_ap_h ap, void *userData);
 		static void __wifiScanFinishedCb(wifi_error_e errorCode, void *userData);
 
-		bool __testMode;
 		IWifiListener * const __listener;
 		std::vector<MacEvent> __logs;
-		std::set<std::string> __lastScansPool;
+		std::map<std::string, std::string> __lastScansPool; // Mac address to network name map
 		time_t __lastScanTime;
 		time_t __lasTimerCallbackTime;
 		bool __duringVisit;

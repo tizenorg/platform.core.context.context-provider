@@ -26,6 +26,7 @@
 #include "../place_recognition_types.h"
 #include <string>
 #include <ctime>
+#include <MyPlaceTypes.h>
 
 namespace ctx {
 
@@ -127,21 +128,15 @@ namespace ctx {
 	struct MacEvent {
 		time_t timestamp;
 		Mac mac;
+		std::string networkName;
 
-		MacEvent(time_t timestamp_, Mac mac_) : timestamp(timestamp_), mac(mac_) {}
+		MacEvent(time_t timestamp_, Mac mac_, std::string networkName_ = "")
+			: timestamp(timestamp_)
+			, mac(mac_)
+			, networkName(networkName_) {}
 	};
 
 	typedef std::map<int, num_t> Categs; // scores of categories
-
-	struct Location {
-		double latitude;
-		double longitude;
-		double accuracy; // [m]
-
-		Location(double latitude_ = 0.0, double longitude_ = 0.0, double accuracy_ = -1.0)
-			: latitude(latitude_), longitude(longitude_), accuracy(accuracy_) {}
-
-	};	/* struct Location */
 
 #ifdef TIZEN_ENGINEER_MODE
 	enum LocationSource {
@@ -196,23 +191,6 @@ namespace ctx {
 	typedef std::vector<MacEvent> MacEvents; // used to store current interval logs
 
 	std::shared_ptr<MacSet> macSetFromMacs2Counts(const Macs2Counts &macs2Counts);
-
-	typedef float confidence_t;
-
-	class Place {
-
-	public:
-		PlaceCategId categId; // category of a place (work/home/other)
-		confidence_t categConfidence; // confidence of the above category - between [0,1]
-		std::string name; // for now: "work"/"home"/"other"
-		bool locationValid;
-		Location location; // makes sense if locationValid == true;
-		std::string wifiAps; // WiFi APs MAC addresses separated by ","
-		time_t createDate; // The last update time of this place
-
-		void print2Stream(std::ostream &out) const;
-
-	};	/* class Place */
 
 }	/* namespace ctx */
 

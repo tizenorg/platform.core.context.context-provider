@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <Types.h>
 
-void ctx::PlaceCateger::reduceOutliers(ctx::Visits &visits)
+void ctx::PlaceCateger::__reduceOutliers(ctx::Visits &visits)
 {
 	int size = visits.size();
 	visits.erase(std::remove_if(
@@ -35,9 +35,8 @@ void ctx::PlaceCateger::reduceOutliers(ctx::Visits &visits)
 					}),
 				visits.end());
 	int newSize = visits.size();
-	if (size != newSize) {
+	if (size != newSize)
 		_D("Visits number from %d to %d (visits min scores checking)", size, newSize);
-	}
 }
 
 /*
@@ -51,7 +50,7 @@ bool ctx::PlaceCateger::__reduceCategory(const PlaceCategId &categId, const ctx:
 
 void ctx::PlaceCateger::categorize(ctx::Visits &visits, ctx::Place &place)
 {
-	reduceOutliers(visits);
+	__reduceOutliers(visits);
 
 	place.categId = PLACE_CATEG_ID_NONE;
 	place.categConfidence = 0.0;
@@ -65,39 +64,38 @@ void ctx::PlaceCateger::categorize(ctx::Visits &visits, ctx::Place &place)
 		num_t sumScore = 0.0;
 		num_t maxScore = 0.0;
 		for (PlaceCategId categId : categIds) {
-			std::vector<num_t> categVector = categVectorFromVisits(visits, categId);
-			num_t score = median(categVector);
+			std::vector<num_t> categVector = __categVectorFromVisits(visits, categId);
+			int i, j;
+			num_t score = median(categVector, i, j);
 			sumScore += score;
 			if (score > maxScore) {
 				maxScore = score;
 				place.categId = categId;
 			}
 		}
-		if (sumScore > 0) {
+		if (sumScore > 0)
 			place.categConfidence = maxScore / sumScore;
-		}
 		if (__reduceCategory(place.categId, visits)) {
 			place.categId = PLACE_CATEG_ID_OTHER;
 			place.categConfidence = 0.0;
 		}
 	}
 
-	place.name = categId2Name(place.categId);
+	place.name = __categId2Name(place.categId);
 }
 
-std::vector<ctx::num_t> ctx::PlaceCateger::categVectorFromVisits(const ctx::Visits &visits, PlaceCategId categId)
+std::vector<ctx::num_t> ctx::PlaceCateger::__categVectorFromVisits(const ctx::Visits &visits, PlaceCategId categId)
 {
 	std::vector<ctx::num_t> vec;
 	for (auto &visit : visits) {
 		auto search = visit.categs.find(categId);
-		if (search != visit.categs.end()) {
+		if (search != visit.categs.end())
 			vec.push_back(search->second);
-		}
 	}
 	return vec;
 }
 
-std::string ctx::PlaceCateger::categId2Name(PlaceCategId categId) {
+std::string ctx::PlaceCateger::__categId2Name(PlaceCategId categId) {
 	switch (categId) {
 	case PLACE_CATEG_ID_HOME:
 		return "home";

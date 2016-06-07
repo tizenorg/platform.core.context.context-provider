@@ -33,14 +33,15 @@ namespace ctx {
 		PlacesDetector *__placesDetector;
 		int __placesDetectorTimerId;
 		TimerManager __timerManager;
+		std::vector<std::shared_ptr<Place>> __getPlaces();
+		static Json __composeJson(std::vector<std::shared_ptr<Place>> places);
 
 	public:
 		UserPlaces(PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);
 		~UserPlaces();
 
 		void setMode(PlaceRecogMode energyMode);
-		std::vector<std::shared_ptr<Place>> getPlaces();
-		static Json composeJson(std::vector<std::shared_ptr<Place>> places);
+		ctx::Json getPlaces();
 
 	};	/* class UserPlaces */
 

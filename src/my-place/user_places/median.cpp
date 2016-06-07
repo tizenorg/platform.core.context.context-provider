@@ -18,19 +18,53 @@
 #include <Types.h>
 #include "median.h"
 
-ctx::num_t ctx::median(std::vector<ctx::num_t> &v)
+static bool compareFun(std::pair<double, int> &i, std::pair<double, int> &j) {
+	return (i.first < j.first);
+}
+
+double ctx::median(std::vector<double> &values, int &elemIdx, int &evenCaseElemIdx)
 {
-	if (v.empty()) {
+	if (values.empty()) {
 		_E("Median of empty set");
-		return 0; // this value does not make any sense
+		return -1;
 	}
-	size_t n = v.size() / 2;
-	std::nth_element(v.begin(), v.begin() + n, v.end());
-	num_t vn = v[n];
-	if (v.size() % 2 == 1) {
-		return vn;
-	} else {
-		std::nth_element(v.begin(), v.begin() + n - 1, v.end());
-		return 0.5 * (vn + v[n - 1]);
+	std::vector<std::pair<double, int>> valuesTemp;
+	for (size_t i = 0; i < values.size(); i++) {
+		valuesTemp.push_back(std::pair<double, int>(values[i], i));
 	}
+	int n = valuesTemp.size() / 2;
+	std::nth_element(valuesTemp.begin(), valuesTemp.begin() + n, valuesTemp.end(), compareFun);
+	std::pair<double, int> valuesTempN = valuesTemp[n];
+	elemIdx = valuesTempN.second;
+	if (valuesTemp.size() % 2 == 1) { //odd size
+		evenCaseElemIdx = -1;
+		return valuesTempN.first;
+	} else { // even size
+		std::nth_element(valuesTemp.begin(), valuesTemp.begin() + n - 1, valuesTemp.end());
+		evenCaseElemIdx = valuesTemp[n - 1].second;
+		return 0.5 * (valuesTempN.first + valuesTemp[n - 1].first);
+	}
+}
+
+ctx::Location ctx::medianLocation(std::vector<double> &latitudes, std::vector<double> &longitudes, std::vector<double> &accuracy)
+{
+	ctx::Location location;
+	if (latitudes.empty() || latitudes.size() != longitudes.size() || latitudes.size() != accuracy.size()) {
+		_E("Incorrect input vectors size");
+		return location;
+	}
+	int idx;
+	int additionalIdx;
+	location.latitude = median(latitudes, idx, additionalIdx);
+	double latitudeAccuracy = accuracy[idx];
+	if (additionalIdx >= 0) {
+		latitudeAccuracy = 0.5 * (latitudeAccuracy + accuracy[additionalIdx]);
+	}
+	location.longitude = median(longitudes, idx, additionalIdx);
+	double longitudeAccuracy = accuracy[idx];
+	if (additionalIdx >= 0) {
+		longitudeAccuracy = 0.5 * (longitudeAccuracy + accuracy[additionalIdx]);
+	}
+	location.accuracy = 0.5 * (latitudeAccuracy + longitudeAccuracy);
+	return location;
 }

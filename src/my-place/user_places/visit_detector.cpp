@@ -38,6 +38,7 @@
 	VISIT_COLUMN_LOCATION_VALID " INTEGER, "\
 	VISIT_COLUMN_LOCATION_LATITUDE " REAL, "\
 	VISIT_COLUMN_LOCATION_LONGITUDE " REAL, "\
+	VISIT_COLUMN_LOCATION_ACCURACY " REAL, "\
 	VISIT_COLUMN_CATEG_HOME " REAL, "\
 	VISIT_COLUMN_CATEG_WORK " REAL, "\
 	VISIT_COLUMN_CATEG_OTHER " REAL"
@@ -49,20 +50,27 @@
 	VISIT_COLUMN_LOCATION_VALID " INTEGER, "\
 	VISIT_COLUMN_LOCATION_LATITUDE " REAL, "\
 	VISIT_COLUMN_LOCATION_LONGITUDE " REAL, "\
+	VISIT_COLUMN_LOCATION_ACCURACY " REAL, "\
 	VISIT_COLUMN_CATEG_HOME " REAL, "\
 	VISIT_COLUMN_CATEG_WORK " REAL, "\
 	VISIT_COLUMN_CATEG_OTHER " REAL"
 #endif /* TIZEN_ENGINEER_MODE */
 
+#define __WIFI_APS_MAP_TABLE_COLUMNS \
+	WIFI_APS_MAP_COLUMN_MAC " TEXT NOT NULL UNIQUE, "\
+	WIFI_APS_MAP_COLUMN_NETWORK_NAME " TEXT NOT NULL, "\
+	WIFI_APS_MAP_COLUMN_INSERT_TIME " timestamp"
+
 ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, bool testMode) :
 	__testMode(testMode),
-	__locationLogger(this, testMode),
-	__wifiLogger(this, energyMode, testMode),
+	__locationLogger(testMode ? nullptr : new LocationLogger(this)),
+	__wifiLogger(testMode ? nullptr : new WifiLogger(this, energyMode)),
 	__currentInterval(startScan, startScan + VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
 	__stableCounter(0),
 	__tolerance(VISIT_DETECTOR_TOLERANCE_DEPTH),
 	__entranceToPlace(false),
 	__periodSeconds(VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
+	__dbManager(testMode ? nullptr : new DatabaseManager()),
 	__entranceTime(0),
 	__departureTime(0)
 {
@@ -76,10 +84,11 @@ ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, b
 		return;
 	}
 
-	__listeners.push_back(&__locationLogger);
-	__listeners.push_back(&__wifiLogger);
-	__dbCreateTable();
-	__wifiLogger.startLogging();
+	__listeners.push_back(__locationLogger);
+	__listeners.push_back(__wifiLogger);
+
+	__dbCreateTables();
+	__wifiLogger->startLogging();
 }
 
 ctx::VisitDetector::~VisitDetector()
@@ -93,7 +102,11 @@ bool ctx::VisitDetector::__isValid(const ctx::Mac &mac)
 
 void ctx::VisitDetector::onWifiScan(ctx::MacEvent e)
 {
-	_D("timestamp=%d, curent_interval.end=%d, mac=%s", e.timestamp, __currentInterval.end, std::string(e.mac).c_str());
+	_D("timestamp=%d, current_interval.end=%d, mac=%s, network=%s",
+			e.timestamp,
+			__currentInterval.end,
+			std::string(e.mac).c_str(),
+			e.networkName.c_str());
 	if (__isValid(e.mac)) {
 		while (e.timestamp > __currentInterval.end) {
 			__processCurrentLogger();
@@ -136,14 +149,18 @@ void ctx::VisitDetector::__shiftCurrentInterval()
 void ctx::VisitDetector::__detectEntranceOrDeparture(std::shared_ptr<ctx::Frame> frame)
 {
 	__entranceToPlace ? __detectDeparture(frame) : __detectEntrance(frame);
+	if (__entranceToPlace) {
+		for (MacEvent e : *__currentMacEvents) {
+			__wifiAPsMap.insert(std::pair<std::string, std::string>(e.mac, e.networkName));
+		}
+	}
 }
 
 bool ctx::VisitDetector::__isDisjoint(const ctx::Macs2Counts &macs2Counts, const ctx::MacSet &macSet)
 {
 	for (auto &mac : macSet) {
-		if (macs2Counts.find(mac) != macs2Counts.end()) {
+		if (macs2Counts.find(mac) != macs2Counts.end())
 			return false;
-		}
 	}
 	return true;
 }
@@ -151,9 +168,8 @@ bool ctx::VisitDetector::__isDisjoint(const ctx::Macs2Counts &macs2Counts, const
 bool ctx::VisitDetector::__protrudesFrom(const ctx::Macs2Counts &macs2Counts, const ctx::MacSet &macSet)
 {
 	for (auto &macCount : macs2Counts) {
-		if (macSet.find(macCount.first) == macSet.end()) {
+		if (macSet.find(macCount.first) == macSet.end())
 			return true;
-		}
 	}
 	return false;
 }
@@ -216,6 +232,7 @@ void ctx::VisitDetector::__visitEndDetected()
 		__detectedVisits->push_back(visit);
 	} else {
 		__dbInsertVisit(visit);
+		__dbInsertWifiAPsMap(visit);
 	}
 
 	// cleaning
@@ -226,21 +243,25 @@ void ctx::VisitDetector::__visitEndDetected()
 
 void ctx::VisitDetector::__putLocationToVisit(ctx::Visit &visit)
 {
-	// TODO: remove small accuracy locations from vectors?
+	// TODO: filter out small accuracy locations?
 	std::vector<double> latitudes;
 	std::vector<double> longitudes;
+	std::vector<double> accuracy;
 	visit.locationValid = false;
-	for (LocationEvent location : __locationEvents) {
+	for (LocationEvent &location : __locationEvents) {
 		if (location.timestamp >= __entranceTime && location.timestamp <= __departureTime) {
 			latitudes.push_back(location.coordinates.latitude);
 			longitudes.push_back(location.coordinates.longitude);
+			accuracy.push_back(location.coordinates.accuracy);
 			visit.locationValid = true;
 		}
 	}
 	if (visit.locationValid) {
-		visit.location.latitude = median(latitudes);
-		visit.location.longitude = median(longitudes);
-		_D("visit location set: lat=%.8f, lon=%.8f", visit.location.latitude, visit.location.longitude);
+		visit.location = medianLocation(latitudes, longitudes, accuracy);
+		_D("visit location set: lat=%.8f, lon=%.8f, acc=%.8f",
+				visit.location.latitude,
+				visit.location.longitude,
+				visit.location.accuracy);
 	} else {
 		_D("visit location not set");
 	}
@@ -254,9 +275,8 @@ void ctx::VisitDetector::__processBuffer(std::shared_ptr<ctx::Frame> frame)
 		__historyFrames.push_back(__bufferedFrames[0]);
 		for (size_t i = 1; i < __bufferedFrames.size(); i++) {
 			__detectEntrance(__bufferedFrames[i]);
-			if (__entranceToPlace) {
+			if (__entranceToPlace)
 				break;
-			}
 		}
 	}
 }
@@ -278,10 +298,8 @@ void ctx::VisitDetector::__detectEntrance(std::shared_ptr<ctx::Frame> currentFra
 	if (similarity::overlapBiggerOverSmaller(*currentBeacons, *__stayMacs) > VISIT_DETECTOR_OVERLAP) {
 		__stableCounter++;
 		__historyFrames.push_back(currentFrame);
-
-		if (__stableCounter == VISIT_DETECTOR_STABLE_DEPTH) { // entrance detected
+		if (__stableCounter == VISIT_DETECTOR_STABLE_DEPTH) // entrance detected
 			__visitStartDetected();
-		}
 	} else {
 		__resetHistory(currentFrame);
 	}
@@ -326,9 +344,8 @@ ctx::share_t ctx::VisitDetector::__calcMaxShare(const ctx::Macs2Shares &macs2Sha
 {
 	ctx::share_t maxShare = 0.0;
 	for (auto &macShare : macs2Shares) {
-		if (macShare.second > maxShare) {
+		if (macShare.second > maxShare)
 			maxShare = macShare.second;
-		}
 	}
 	return maxShare;
 }
@@ -337,9 +354,8 @@ std::shared_ptr<ctx::MacSet> ctx::VisitDetector::__macSetOfGreaterOrEqualShare(c
 {
 	std::shared_ptr<MacSet> macSet = std::make_shared<MacSet>();
 	for (auto &macShare : macs2Shares) {
-		if (macShare.second >= threshold) {
+		if (macShare.second >= threshold)
 			macSet->insert(macShare.first);
-		}
 	}
 	return macSet;
 }
@@ -353,15 +369,18 @@ std::shared_ptr<ctx::Macs2Shares> ctx::VisitDetector::__macSharesFromCounts(ctx:
 	return macs2Shares;
 }
 
-std::shared_ptr<ctx::Visits> ctx::VisitDetector::getVisits()
+std::shared_ptr<ctx::Visits> ctx::VisitDetector::__getVisits()
 {
 	return __detectedVisits;
 }
 
-void ctx::VisitDetector::__dbCreateTable()
+void ctx::VisitDetector::__dbCreateTables()
 {
-	bool ret = __dbManager.createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
-	_D("db: visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
+	bool ret = __dbManager->createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
+	_D("db: Visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
+
+	ret = __dbManager->createTable(0, WIFI_APS_MAP_TABLE, __WIFI_APS_MAP_TABLE_COLUMNS);
+	_D("db: Wifi AP Map Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
 void ctx::VisitDetector::__putVisitCategToJson(const char* key, const Categs &categs, int categType, Json &data)
@@ -392,6 +411,7 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	data.set(NULL, VISIT_COLUMN_LOCATION_VALID, visit.locationValid);
 	data.set(NULL, VISIT_COLUMN_LOCATION_LATITUDE, visit.location.latitude);
 	data.set(NULL, VISIT_COLUMN_LOCATION_LONGITUDE, visit.location.longitude);
+	data.set(NULL, VISIT_COLUMN_LOCATION_ACCURACY, visit.location.accuracy);
 
 	data.set(NULL, VISIT_COLUMN_START_TIME, static_cast<int>(visit.interval.start));
 	data.set(NULL, VISIT_COLUMN_END_TIME, static_cast<int>(visit.interval.end));
@@ -410,8 +430,30 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	__putVisitCategsToJson(visit.categs, data);
 
 	int64_t rowId;
-	bool ret = __dbManager.insertSync(VISIT_TABLE, data, &rowId);
+	bool ret = __dbManager->insertSync(VISIT_TABLE, data, &rowId);
 	_D("db: visit table insert result: %s", ret ? "SUCCESS" : "FAIL");
+	return ret;
+}
+
+int ctx::VisitDetector::__dbInsertWifiAPsMap(Visit visit)
+{
+	std::stringstream query;
+	time_t now = time(nullptr);
+	const char* separator = " ";
+	query << "BEGIN TRANSACTION; \
+			REPLACE INTO " WIFI_APS_MAP_TABLE " \
+			( " WIFI_APS_MAP_COLUMN_MAC ", " WIFI_APS_MAP_COLUMN_NETWORK_NAME ", " WIFI_APS_MAP_COLUMN_INSERT_TIME " ) \
+			VALUES";
+	for (Mac mac : *visit.macSet) {
+		// TODO: Add protection from SQL injection in network name!!
+		query << separator << "( '" << mac << "', '" << __wifiAPsMap.find(mac)->second << "', '" << now << "' )";
+		separator = ", ";
+	}
+	__wifiAPsMap.clear();
+	query << "; \
+			END TRANSACTION;";
+	bool ret = __dbManager->execute(0, query.str().c_str(), NULL);
+	_D("DB Wifi APs map insert request: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
 
@@ -440,5 +482,6 @@ void ctx::VisitDetector::setMode(PlaceRecogMode energyMode)
 {
 	_D("");
 	__setPeriod(energyMode);
-	__wifiLogger.setMode(energyMode);
+	if (__wifiLogger)
+		__wifiLogger->setMode(energyMode);
 }

@@ -19,6 +19,8 @@
 
 #include <string>
 #include <ctime>
+#include <iostream>
+#include <MyPlaceTypes.h>
 
 namespace ctx {
 
@@ -26,6 +28,7 @@ namespace ctx {
 
 	public:
 		static std::string humanReadableDateTime(time_t timestamp, std::string format, size_t size, bool utc = false);
+		static void printPlace2Stream(const Place &place, std::ostream &out);
 
 	};	/* class DebugUtils */
 

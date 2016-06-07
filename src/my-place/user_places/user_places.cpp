@@ -19,7 +19,7 @@
 #include <Types.h>
 #include "user_places.h"
 #include "places_detector.h"
-#include "../place_recognition_types.h"
+#include <MyPlaceTypes.h>
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 	__visitDetector(nullptr),
@@ -59,22 +59,26 @@ ctx::UserPlaces::~UserPlaces()
 		_D("PlacesDetector timer removed");
 	}
 
-	if (__visitDetector) {
+	if (__visitDetector)
 		delete __visitDetector;
-	}
-
-	if (__placesDetector) {
+	if (__placesDetector)
 		delete __placesDetector;
-	}
 };
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::getPlaces()
+std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::__getPlaces()
 {
 	if (__placesDetector) {
 		return __placesDetector->getPlaces();
 	} else {
 		return std::vector<std::shared_ptr<ctx::Place>>();
 	}
+}
+
+ctx::Json ctx::UserPlaces::getPlaces()
+{
+	std::vector<std::shared_ptr<ctx::Place>> places = __getPlaces();
+	Json dataRead = UserPlaces::__composeJson(places);
+	return dataRead;
 }
 
 /*
@@ -109,28 +113,39 @@ std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::getPlaces()
  *	  ]
  * }
  */
-ctx::Json ctx::UserPlaces::composeJson(std::vector<std::shared_ptr<Place>> places)
+ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> places)
 {
 	ctx::Json data;
 	for (std::shared_ptr<ctx::Place> place : places) {
 		ctx::Json placeJson;
-		placeJson.set(NULL, PLACE_CATEG_ID, place->categId);
-		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, place->categConfidence);
+		placeJson.set(NULL, PLACE_CATEG_ID, static_cast<int>(place->categId));
+		placeJson.set(NULL, PLACE_CATEG_CONFIDENCE, static_cast<double>(place->categConfidence));
 		placeJson.set(NULL, PLACE_NAME, place->name);
 		if (place->locationValid) {
-			placeJson.set(NULL, PLACE_GEO_LATITUDE, place->location.latitude);
-			placeJson.set(NULL, PLACE_GEO_LONGITUDE, place->location.longitude);
+			ctx::Json locationJson;
+			locationJson.set(NULL, PLACE_LOCATION_LATITUDE, static_cast<double>(place->location.latitude));
+			locationJson.set(NULL, PLACE_LOCATION_LONGITUDE, static_cast<double>(place->location.longitude));
+			locationJson.set(NULL, PLACE_LOCATION_ACCURACY, static_cast<double>(place->location.accuracy));
+			placeJson.set(NULL, PLACE_LOCATION, locationJson);
 		}
-		placeJson.set(NULL, PLACE_WIFI_APS, place->wifiAps);
-		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int>(place->createDate));
-		data.append(NULL, DATA_READ, placeJson);
+		if (place->wifiAps.size()) {
+			ctx::Json wifiApsListJson;
+			for (std::pair<std::string, std::string> ap : place->wifiAps) {
+				ctx::Json wifiApJson;
+				wifiApJson.set(NULL, PLACE_WIFI_AP_MAC, ap.first);
+				wifiApJson.set(NULL, PLACE_WIFI_AP_NETWORK_NAME, ap.second);
+				wifiApsListJson.append(NULL, PLACE_WIFI_APS, wifiApJson);
+			}
+			placeJson.set(NULL, PLACE_WIFI_APS, wifiApsListJson);
+		}
+		placeJson.set(NULL, PLACE_CREATE_DATE, static_cast<int64_t>(place->createDate));
+		data.append(NULL, PLACE_DATA_READ, placeJson);
 	}
 	return data;
 }
 
 void ctx::UserPlaces::setMode(PlaceRecogMode energyMode)
 {
-	if (__visitDetector) {
+	if (__visitDetector)
 		__visitDetector->setMode(energyMode);
-	}
 }

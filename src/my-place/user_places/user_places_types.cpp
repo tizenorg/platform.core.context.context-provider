@@ -55,13 +55,11 @@ std::istream& ctx::operator>>(std::istream &input, ctx::Mac &mac)
 		input >> std::hex;
 		input >> h;
 		mac.c[i] = h;
-		if (i + 1 >= ctx::Mac::MAC_SIZE) {
+		if (i + 1 >= ctx::Mac::MAC_SIZE)
 			break;
-		}
 		input >> colon;
-		if (colon != __MAC_STRING_COMPONENTS_SEPARATOR) {
+		if (colon != __MAC_STRING_COMPONENTS_SEPARATOR)
 			throw std::runtime_error("Invalid MAC format");
-		}
 	}
 	input >> std::dec;
 	return input;
@@ -74,9 +72,8 @@ std::ostream& ctx::operator<<(std::ostream &output, const ctx::Mac &mac)
 		output << std::hex << std::setfill('0') << std::setw(2);
 		output << static_cast<int>(mac.c[i]);
 		i++;
-		if (i >= Mac::MAC_SIZE) {
+		if (i >= Mac::MAC_SIZE)
 			break;
-		}
 		output << __MAC_STRING_COMPONENTS_SEPARATOR;
 	}
 	output << std::dec;
@@ -93,9 +90,8 @@ ctx::Mac::operator std::string() const
 bool ctx::operator==(const Mac &m1, const Mac &m2)
 {
 	for (size_t i = 0; i < Mac::MAC_SIZE; i++) {
-		if (m1.c[i] != m2.c[i]) {
+		if (m1.c[i] != m2.c[i])
 			return false;
-		}
 	}
 	return true;
 }
@@ -111,12 +107,10 @@ bool ctx::operator<(const Mac &m1, const Mac &m2)
 	for (size_t i = 0; i < Mac::MAC_SIZE; i++) {
 		c1 = m1.c[i];
 		c2 = m2.c[i];
-		if (c1 < c2) {
+		if (c1 < c2)
 			return true;
-		}
-		if (c1 > c2) {
+		if (c1 > c2)
 			return false;
-		}
 	}
 	return false; // they are equal
 }
@@ -133,9 +127,8 @@ std::istream& ctx::operator>>(std::istream &input, ctx::MacSet &macSet)
 			break;
 		}
 		macSet.insert(mac);
-		if (input.eof()) {
+		if (input.eof())
 			break;
-		}
 		delimeter = input.get();
 		if (delimeter != __MAC_SET_STRING_DELIMITER) {
 			input.unget();
@@ -244,19 +237,6 @@ std::shared_ptr<ctx::MacSet> ctx::macSetsUnion(const std::vector<std::shared_ptr
 }
 
 ctx::Interval::Interval(time_t start_, time_t end_) : start(start_), end(end_) {
-	if (end_ < start_) {
+	if (end_ < start_)
 		_E("Negative interval, start=%d, end=%d", start_, end_);
-	}
-}
-
-void ctx::Place::print2Stream(std::ostream &out) const
-{
-	out << "PLACE:" << std::endl;
-	out << "__CATEGORY: " << name << std::endl;
-	if (locationValid) {
-		out << "__LOCATION: lat=" << std::setprecision(GEO_LOCATION_PRECISION + 2) << location.latitude;
-		out << ", lon=" << location.longitude << std::setprecision(5) << std::endl;
-	}
-	out << "__WIFI:" << wifiAps << std::endl;
-	out << "__CREATE_DATE: " << DebugUtils::humanReadableDateTime(createDate, "%F %T", 80) << std::endl;
 }

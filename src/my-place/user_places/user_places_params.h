@@ -68,11 +68,6 @@
 #define PLACES_DETECTOR_RETENTION_SECONDS 24 * 60 * 60 * PLACES_DETECTOR_RETENTION_DAYS
 
 /*
- * Number of digits after decimal point used in geo coordinates.
- */
-#define GEO_LOCATION_PRECISION 7
-
-/*
  * Minimal duration of visit (in minutes) taking into account for place detection
  */
 #define PLACES_DETECTOR_MIN_VISIT_DURATION_MINUTES 15

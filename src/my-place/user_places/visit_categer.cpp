@@ -296,15 +296,14 @@ const std::vector<ctx::num_t> ctx::VisitCateger::__featuresStd(
 	0.109386661911
 });
 
-ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
+ctx::TimeFeatures ctx::VisitCateger::__timeFeatures(const time_t &time)
 {
 	struct tm timeinfo;
 	struct tm *result;
 	tzset();
 	result = localtime_r(&time, &timeinfo);
-	if (result == NULL) {
+	if (result == NULL)
 		return {0, 0, 0, false};
-	}
 	int minutesSinceMidnight = 60 * timeinfo.tm_hour + timeinfo.tm_min;
 	int weekday = (timeinfo.tm_wday + 6) % 7; // Monday is 0, Sunday is 6
 	bool weekend = weekday > 4;
@@ -317,14 +316,13 @@ ctx::TimeFeatures ctx::VisitCateger::timeFeatures(const time_t &time)
 	};
 }
 
-int ctx::VisitCateger::weeksScope(const TimeFeatures &startF, const Interval &interval)
+int ctx::VisitCateger::__weeksScope(const TimeFeatures &startF, const Interval &interval)
 {
 	int durationMinutes = (interval.end - interval.start) / 60;
 	int scopeMinutes = startF.minutesSinceBeginingOfTheWeek + durationMinutes;
 	int weeksScope = scopeMinutes / __MINUTES_IN_WEEK;
-	if (scopeMinutes % __MINUTES_IN_WEEK > 0) {
+	if (scopeMinutes % __MINUTES_IN_WEEK > 0)
 		weeksScope++;
-	}
 	return weeksScope;
 }
 
@@ -335,16 +333,12 @@ ctx::num_t ctx::VisitCateger::__sum(const std::vector<num_t> model, const size_t
 		_E("'to' exceeds model size");
 		toSecure = model.size() - 1;
 	}
-
-	if (from > to) {
+	if (from > to)
 		_E("'from' greater than 'to'");
-	}
-
 	num_t result = 0.0;
 	for (size_t i = from; i <= toSecure; i++) {
 		result += model[i];
 	}
-
 	return result;
 }
 
@@ -353,7 +347,7 @@ ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Int
 {
 	num_t ret = 0.0;
 	int minutes = 0;
-	int ws = weeksScope(startF, interval);
+	int ws = __weeksScope(startF, interval);
 	for (int week = 1; week <= ws; week++) {
 		size_t startIndex = (week == 1)
 				? startF.minutesSinceBeginingOfTheWeek
@@ -364,13 +358,12 @@ ctx::num_t ctx::VisitCateger::__weekModelMeanValue(PlaceCategId categ, const Int
 		ret += __sum(prob_features::weekModel[categ], startIndex, endIndex);
 		minutes += endIndex - startIndex + 1;
 	}
-	if (minutes > 0) {
+	if (minutes > 0)
 		return ret / minutes;
-	}
 	return ret;
 }
 
-ctx::Categs ctx::VisitCateger::weekModelFeatures(const Interval &interval, const TimeFeatures &startF, const TimeFeatures &endF)
+ctx::Categs ctx::VisitCateger::__weekModelFeatures(const Interval &interval, const TimeFeatures &startF, const TimeFeatures &endF)
 {
 	ctx::Categs categs;
 	for (const auto &item : prob_features::weekModel) {
@@ -383,12 +376,12 @@ ctx::Categs ctx::VisitCateger::weekModelFeatures(const Interval &interval, const
 	return categs;
 }
 
-ctx::IntervalFeatures ctx::VisitCateger::intervalFeatures(const Interval &interval)
+ctx::IntervalFeatures ctx::VisitCateger::__intervalFeatures(const Interval &interval)
 {
 	num_t durationMinutes = 1.0 * (interval.end - interval.start) / 60;
-	TimeFeatures startFeatures = timeFeatures(interval.start);
-	TimeFeatures endFeatures = timeFeatures(interval.end);
-	Categs weekFeatures = weekModelFeatures(interval, startFeatures, endFeatures);
+	TimeFeatures startFeatures = __timeFeatures(interval.start);
+	TimeFeatures endFeatures = __timeFeatures(interval.end);
+	Categs weekFeatures = __weekModelFeatures(interval, startFeatures, endFeatures);
 	return {
 		durationMinutes,
 		(num_t) startFeatures.minutesSinceMidnight,
@@ -411,7 +404,7 @@ void ctx::VisitCateger::__normalize(std::vector<ctx::num_t> &features)
 
 void ctx::VisitCateger::categorize(ctx::Visit &visit)
 {
-	IntervalFeatures features = intervalFeatures(visit.interval);
+	IntervalFeatures features = __intervalFeatures(visit.interval);
 	__normalize(features);
 
 	for (auto &modelPair : __models) {

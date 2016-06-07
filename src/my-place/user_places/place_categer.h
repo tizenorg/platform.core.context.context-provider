@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <MyPlaceTypes.h>
 #include "../place_recognition_types.h"
 
 namespace ctx {
@@ -29,12 +30,12 @@ namespace ctx {
 
 	private:
 		static bool __reduceCategory(const PlaceCategId &categId, const ctx::Visits &visits);
+		static void __reduceOutliers(Visits &visits);
+		static std::vector<ctx::num_t> __categVectorFromVisits(const ctx::Visits &visits, PlaceCategId categId);
+		static std::string __categId2Name(PlaceCategId categId);
 
 	public:
-		static void reduceOutliers(Visits &visits); // TODO: move to private
-		static std::vector<ctx::num_t> categVectorFromVisits(const ctx::Visits &visits, PlaceCategId categId); // TODO: move to private
 		static void categorize(ctx::Visits &visits, ctx::Place &place);
-		static std::string categId2Name(PlaceCategId categId); // TODO: move to private
 
 	};	/* class PlaceCateger */
 
