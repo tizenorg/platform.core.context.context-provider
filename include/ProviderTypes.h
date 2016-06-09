@@ -89,6 +89,8 @@
 #define SUBJ_PLACE_GEOFENCE		"place/geofence"
 #define SUBJ_PLACE_DETECTION	PLACE_DETECTION_SUBJECT
 
+#define SUBJ_CUSTOM				"custom"
+
 /* Data & Option Keys */
 #define KEY_QUERY_RESULT	"QueryResult"
 #define KEY_RESULT_SIZE		"ResultSize"
