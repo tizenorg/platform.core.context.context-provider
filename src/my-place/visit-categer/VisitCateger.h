@@ -17,9 +17,9 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_VISIT_CATEGER_H_
 #define _CONTEXT_PLACE_RECOGNITION_VISIT_CATEGER_H_
 
-#include "../facade/user_places_types.h"
-#include "mahal.h"
-#include "piecewise_lin.h"
+#include "../facade/UserPlacesTypes.h"
+#include "Mahal.h"
+#include "PiecewiseLin.h"
 #include <map>
 #include <Types.h>
 

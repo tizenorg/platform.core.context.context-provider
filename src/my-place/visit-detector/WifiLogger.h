@@ -22,9 +22,9 @@
 #include <vector>
 #include <map>
 #include <TimerManager.h>
-#include "wifi_listener_iface.h"
-#include "visit_listener_iface.h"
-#include "../facade/user_places_params.h"
+#include "WifiListenerIface.h"
+#include "VisitListenerIface.h"
+#include "../facade/UserPlacesParams.h"
 
 /* Database usage flag */
 #define WIFI_LOGGER_DATABASE false

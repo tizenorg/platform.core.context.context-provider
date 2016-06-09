@@ -22,14 +22,14 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 #include <Json.h>
 #include <DatabaseManager.h>
-#include "visit_listener_iface.h"
-#include "location_logger.h"
-#include "location_listener_iface.h"
-#include "wifi_listener_iface.h"
-#include "wifi_logger.h"
+#include "VisitListenerIface.h"
+#include "LocationLogger.h"
+#include "LocationListenerIface.h"
+#include "WifiListenerIface.h"
+#include "WifiLogger.h"
 
 namespace ctx {
 

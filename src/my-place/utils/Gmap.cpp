@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "gmap.h"
+#include "Gmap.h"
 #include <iostream>
 #include <fstream>
 

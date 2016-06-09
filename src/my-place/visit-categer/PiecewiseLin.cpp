@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "piecewise_lin.h"
+#include "PiecewiseLin.h"
 #include <Types.h>
 
 ctx::PiecewiseLin::PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs) :

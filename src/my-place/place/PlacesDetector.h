@@ -22,9 +22,9 @@
 #include <ITimerListener.h>
 #include <DatabaseManager.h>
 //#include "visit_detector.h"
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 #include <MyPlaceTypes.h>
-#include "graph.h"
+#include "Graph.h"
 
 namespace ctx {
 

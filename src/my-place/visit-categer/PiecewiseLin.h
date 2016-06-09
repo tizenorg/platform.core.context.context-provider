@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
-#define _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
+#ifndef _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
+#define _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
 
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 
 namespace ctx {
 
-	class IWifiListener {
+	/*
+	 * Piecewise linear function. Used for approximation.
+	 */
+	class PiecewiseLin {
+
+	private:
+		std::vector<num_t> __xs; // nodes
+		std::vector<num_t> __vs; // values in nodes
+		size_t __n;
 
 	public:
-		virtual ~IWifiListener() {};
-		virtual void onWifiScan(ctx::MacEvent macEvent) = 0;
+		PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs);
+		num_t value(num_t x);
 
-	};	/* IWifiListener */
+	}; 	/* PiecewiseLin */
 
 }	/* namespace ctx */
 
-#endif	/* End of _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_ */

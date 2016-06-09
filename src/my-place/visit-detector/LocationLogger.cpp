@@ -18,10 +18,10 @@
 #include <Types.h>
 #include <Json.h>
 #include <DatabaseManager.h>
-#include "../facade/user_places_types.h"
-#include "../facade/user_places_params.h"
-#include "../utils/debug_utils.h"
-#include "location_logger.h"
+#include "../facade/UserPlacesTypes.h"
+#include "../facade/UserPlacesParams.h"
+#include "../utils/DebugUtils.h"
+#include "LocationLogger.h"
 
 #ifdef TIZEN_ENGINEER_MODE
 #define __LOCATION_CREATE_TABLE_COLUMNS \

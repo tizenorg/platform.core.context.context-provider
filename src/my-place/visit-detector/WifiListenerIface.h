@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_PLACE_RECOGNITION_MEDIAN_
-#define _CONTEXT_PLACE_RECOGNITION_MEDIAN_
+#ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
+#define _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
 
-#include "../facade/user_places_types.h"
-#include <vector>
+#include "../facade/UserPlacesTypes.h"
 
 namespace ctx {
 
-	double median(std::vector<double> &values, int &elemIdx, int &evenCaseElemIdx);
-	ctx::Location medianLocation(std::vector<double> &latitudes, std::vector<double> &longitudes, std::vector<double> &accuracy);
+	class IWifiListener {
 
-} /* namespace ctx */
+	public:
+		virtual ~IWifiListener() {};
+		virtual void onWifiScan(ctx::MacEvent macEvent) = 0;
 
-#endif /* End of _CONTEXT_PLACE_RECOGNITION_MEDIAN_ */
+	};	/* IWifiListener */
+
+}	/* namespace ctx */
+
+#endif	/* End of _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_ */

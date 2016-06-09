@@ -17,8 +17,8 @@
 #include <ctime>
 #include <memory>
 #include <Types.h>
-#include "user_places.h"
-#include "../place/places_detector.h"
+#include "UserPlaces.h"
+#include "../place/PlacesDetector.h"
 #include <MyPlaceTypes.h>
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):

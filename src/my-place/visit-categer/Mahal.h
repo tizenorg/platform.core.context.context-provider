@@ -18,7 +18,7 @@
 #define _CONTEXT_PLACE_RECOGNITION_MAHAL_H_
 
 #include <vector>
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 
 namespace ctx {
 

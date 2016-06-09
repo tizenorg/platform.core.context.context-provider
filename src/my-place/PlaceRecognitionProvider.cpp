@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "place_recognition.h"
+#include "PlaceRecognitionProvider.h"
 
 void ctx::PlaceRecognitionProvider::getPrivilege(std::vector<const char*> &privilege)
 {

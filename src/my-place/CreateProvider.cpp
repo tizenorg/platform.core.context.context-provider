@@ -15,7 +15,7 @@
  */
 
 #include <CreateProvider.h>
-#include "place_recognition.h"
+#include "PlaceRecognitionProvider.h"
 
 using namespace ctx;
 

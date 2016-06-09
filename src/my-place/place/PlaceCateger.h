@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_
 #define _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_
 
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 #include <utility>
 #include <vector>
 #include <string>

@@ -16,7 +16,7 @@
 
 #include <memory>
 #include <queue>
-#include "graph.h"
+#include "Graph.h"
 
 std::shared_ptr<ctx::graph::Components> ctx::graph::connectedComponents(Graph &graph)
 {

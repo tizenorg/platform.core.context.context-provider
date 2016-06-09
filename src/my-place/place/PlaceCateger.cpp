@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include "place_categer.h"
-#include "../utils/median.h"
-#include "../facade/user_places_params.h"
-#include "../facade/user_places_types.h"
+#include "PlaceCateger.h"
+#include "../utils/Median.h"
+#include "../facade/UserPlacesParams.h"
+#include "../facade/UserPlacesTypes.h"
 #include <algorithm>
 #include <Types.h>
 

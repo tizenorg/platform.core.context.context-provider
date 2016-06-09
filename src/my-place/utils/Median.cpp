@@ -16,7 +16,7 @@
 
 #include <algorithm>
 #include <Types.h>
-#include "median.h"
+#include "Median.h"
 
 static bool compareFun(std::pair<double, int> &i, std::pair<double, int> &j) {
 	return (i.first < j.first);

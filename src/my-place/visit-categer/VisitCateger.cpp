@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include "visit_categer.h"
-#include "mahal.h"
+#include "VisitCateger.h"
+#include "Mahal.h"
 #include <time.h>
-#include "prob_features_model.h"
+#include "ProbFeaturesModel.h"
 #include <Types.h>
 
 // categorizer model parameters trained offline (implemented in python):

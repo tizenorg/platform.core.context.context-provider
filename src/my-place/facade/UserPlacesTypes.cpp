@@ -20,9 +20,9 @@
 #include <sstream>
 #include <algorithm>
 #include <Types.h>
-#include "user_places_types.h"
-#include "user_places_params.h"
-#include "../utils/debug_utils.h"
+#include "UserPlacesTypes.h"
+#include "UserPlacesParams.h"
+#include "../utils/DebugUtils.h"
 
 #define __MAC_STRING_COMPONENTS_SEPARATOR ':'
 #define __MAC_SET_STRING_DELIMITER ','

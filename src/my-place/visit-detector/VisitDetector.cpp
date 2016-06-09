@@ -20,13 +20,13 @@
 #include <sstream>
 #include <Types.h>
 #include <Json.h>
-#include "../facade/user_places_types.h"
-#include "visit_detector.h"
-#include "../facade/user_places_params.h"
-#include "../visit-categer/visit_categer.h"
-#include "../utils/similarity.h"
-#include "../utils/median.h"
-#include "../utils/debug_utils.h"
+#include "../facade/UserPlacesTypes.h"
+#include "VisitDetector.h"
+#include "../facade/UserPlacesParams.h"
+#include "../visit-categer/VisitCateger.h"
+#include "../utils/Similarity.h"
+#include "../utils/Median.h"
+#include "../utils/DebugUtils.h"
 
 #ifdef TIZEN_ENGINEER_MODE
 #define __VISIT_TABLE_COLUMNS \

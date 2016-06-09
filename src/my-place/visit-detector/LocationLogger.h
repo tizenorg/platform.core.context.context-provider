@@ -19,8 +19,8 @@
 
 #include <locations.h>
 #include <TimerManager.h>
-#include "visit_listener_iface.h"
-#include "location_listener_iface.h"
+#include "VisitListenerIface.h"
+#include "LocationListenerIface.h"
 
 /* Database usage flag */
 #define LOCATION_LOGGER_DATABASE false // TODO: false in final solution

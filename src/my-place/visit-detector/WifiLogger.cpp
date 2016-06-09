@@ -17,9 +17,9 @@
 #include <sstream>
 #include <Types.h>
 #include <DatabaseManager.h>
-#include "../facade/user_places_types.h"
-#include "../utils/debug_utils.h"
-#include "wifi_logger.h"
+#include "../facade/UserPlacesTypes.h"
+#include "../utils/DebugUtils.h"
+#include "WifiLogger.h"
 
 #define __WIFI_CREATE_TABLE_COLUMNS \
 	WIFI_COLUMN_TIMESTAMP " timestamp NOT NULL, "\

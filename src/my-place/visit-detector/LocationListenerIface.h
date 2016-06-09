@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
 #define _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
 
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 
 namespace ctx {
 

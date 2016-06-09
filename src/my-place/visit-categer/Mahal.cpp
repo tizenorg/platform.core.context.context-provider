@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mahal.h"
+#include "Mahal.h"
 #include <math.h>
 #include <Types.h>
 

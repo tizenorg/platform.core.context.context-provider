@@ -17,18 +17,18 @@
 #include <sstream>
 #include <Types.h>
 #include <Json.h>
-#include "../utils/similarity.h"
-#include "places_detector.h"
-#include "place_categer.h"
-#include "../utils/median.h"
+#include "../utils/Similarity.h"
+#include "PlacesDetector.h"
+#include "PlaceCateger.h"
+#include "../utils/Median.h"
 #ifdef TIZEN_ENGINEER_MODE
-#include "../utils/gmap.h"
+#include "../utils/Gmap.h"
 #endif /* TIZEN_ENGINEER_MODE */
-#include "../facade/user_places_types.h"
+#include "../facade/UserPlacesTypes.h"
 #include <fstream>
 #include <algorithm>
-#include "../facade/user_places_params.h"
-#include "../utils/debug_utils.h"
+#include "../facade/UserPlacesParams.h"
+#include "../utils/DebugUtils.h"
 
 #define __DELETE_PLACES_QUERY "DELETE FROM " PLACE_TABLE
 
