@@ -24,7 +24,7 @@
 #include <TimerManager.h>
 #include "wifi_listener_iface.h"
 #include "visit_listener_iface.h"
-#include "user_places_params.h"
+#include "../facade/user_places_params.h"
 
 /* Database usage flag */
 #define WIFI_LOGGER_DATABASE false

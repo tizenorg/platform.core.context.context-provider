@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_PLACE_RECOGNITION_MEDIAN_
-#define _CONTEXT_PLACE_RECOGNITION_MEDIAN_
+#ifndef _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
+#define _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
 
-#include "user_places_types.h"
-#include <vector>
-#include "../place_recognition_types.h"
+#include "../facade/user_places_types.h"
 
 namespace ctx {
 
-	double median(std::vector<double> &values, int &elemIdx, int &evenCaseElemIdx);
-	ctx::Location medianLocation(std::vector<double> &latitudes, std::vector<double> &longitudes, std::vector<double> &accuracy);
+	/*
+	 * Piecewise linear function. Used for approximation.
+	 */
+	class PiecewiseLin {
 
-} /* namespace ctx */
+	private:
+		std::vector<num_t> __xs; // nodes
+		std::vector<num_t> __vs; // values in nodes
+		size_t __n;
 
-#endif /* End of _CONTEXT_PLACE_RECOGNITION_MEDIAN_ */
+	public:
+		PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs);
+		num_t value(num_t x);
+
+	}; 	/* PiecewiseLin */
+
+}	/* namespace ctx */
+
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_ */

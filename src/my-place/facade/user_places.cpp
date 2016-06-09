@@ -18,7 +18,7 @@
 #include <memory>
 #include <Types.h>
 #include "user_places.h"
-#include "places_detector.h"
+#include "../place/places_detector.h"
 #include <MyPlaceTypes.h>
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
@@ -58,7 +58,6 @@ ctx::UserPlaces::~UserPlaces()
 		__timerManager.remove(__placesDetectorTimerId);
 		_D("PlacesDetector timer removed");
 	}
-
 	if (__visitDetector)
 		delete __visitDetector;
 	if (__placesDetector)

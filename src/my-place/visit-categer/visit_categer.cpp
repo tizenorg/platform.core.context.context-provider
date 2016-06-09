@@ -17,7 +17,6 @@
 #include "visit_categer.h"
 #include "mahal.h"
 #include <time.h>
-#include "../place_recognition_types.h"
 #include "prob_features_model.h"
 #include <Types.h>
 
@@ -404,6 +403,7 @@ void ctx::VisitCateger::__normalize(std::vector<ctx::num_t> &features)
 
 void ctx::VisitCateger::categorize(ctx::Visit &visit)
 {
+	_D("");
 	IntervalFeatures features = __intervalFeatures(visit.interval);
 	__normalize(features);
 

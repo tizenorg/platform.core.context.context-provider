@@ -17,8 +17,7 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_GMAP_H_
 #define _CONTEXT_PLACE_RECOGNITION_GMAP_H_
 
-#include "user_places_types.h"
-#include "../place_recognition_types.h"
+#include "../facade/user_places_types.h"
 
 #define GMAP_FILE "/tmp/user_places_map.html"
 

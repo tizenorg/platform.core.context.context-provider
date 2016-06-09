@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
-#define _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
+#ifndef _CONTEXT_PLACE_RECOGNITION_MEDIAN_
+#define _CONTEXT_PLACE_RECOGNITION_MEDIAN_
 
-#include "user_places_types.h"
+#include "../facade/user_places_types.h"
+#include <vector>
 
 namespace ctx {
 
-	class ILocationListener {
+	double median(std::vector<double> &values, int &elemIdx, int &evenCaseElemIdx);
+	ctx::Location medianLocation(std::vector<double> &latitudes, std::vector<double> &longitudes, std::vector<double> &accuracy);
 
-	public:
-		virtual ~ILocationListener() {};
-		virtual void onNewLocation(LocationEvent location) = 0;
+} /* namespace ctx */
 
-	};	/* class ILocationListener */
-
-}	/* namespace ctx */
-
-#endif	/* End of _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_ */
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_MEDIAN_ */

@@ -20,8 +20,8 @@
 #include <vector>
 #include <Json.h>
 #include <TimerManager.h>
-#include "visit_detector.h"
-#include "places_detector.h"
+#include "../visit-detector/visit_detector.h"
+#include "../place/places_detector.h"
 #include "user_places_types.h"
 
 namespace ctx {

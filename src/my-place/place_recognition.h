@@ -19,7 +19,8 @@
 
 #include <ContextProvider.h>
 #include "MyPlaceTypes.h"
-#include "user_places/user_places.h"
+#include "facade/user_places.h"
+#include "ProviderTypes.h"
 
 namespace ctx {
 

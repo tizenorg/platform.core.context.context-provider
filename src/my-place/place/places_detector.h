@@ -21,9 +21,10 @@
 #include <cstdint>
 #include <ITimerListener.h>
 #include <DatabaseManager.h>
-#include "visit_detector.h"
-#include "user_places_types.h"
+//#include "visit_detector.h"
+#include "../facade/user_places_types.h"
 #include <MyPlaceTypes.h>
+#include "graph.h"
 
 namespace ctx {
 

@@ -17,12 +17,11 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_
 #define _CONTEXT_PLACE_RECOGNITION_PLACE_CATEGER_
 
-#include "user_places_types.h"
+#include "../facade/user_places_types.h"
 #include <utility>
 #include <vector>
 #include <string>
 #include <MyPlaceTypes.h>
-#include "../place_recognition_types.h"
 
 namespace ctx {
 

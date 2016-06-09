@@ -22,7 +22,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
-#include "user_places_types.h"
+#include "../facade/user_places_types.h"
 #include <Json.h>
 #include <DatabaseManager.h>
 #include "visit_listener_iface.h"

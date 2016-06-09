@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
-#define _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
+#ifndef _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
+#define _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_
 
-#include "user_places_types.h"
+#include "../facade/user_places_types.h"
 
 namespace ctx {
 
-	class IWifiListener {
+	class ILocationListener {
 
 	public:
-		virtual ~IWifiListener() {};
-		virtual void onWifiScan(ctx::MacEvent macEvent) = 0;
+		virtual ~ILocationListener() {};
+		virtual void onNewLocation(LocationEvent location) = 0;
 
-	};	/* IWifiListener */
+	};	/* class ILocationListener */
 
 }	/* namespace ctx */
 
-#endif	/* End of _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_ */
+#endif	/* End of _CONTEXT_PLACE_RECOGNITION_LOCATION_LISTENER_IFACE_H_ */

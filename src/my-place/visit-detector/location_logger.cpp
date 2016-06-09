@@ -18,9 +18,9 @@
 #include <Types.h>
 #include <Json.h>
 #include <DatabaseManager.h>
-#include "../place_recognition_types.h"
-#include "user_places_params.h"
-#include "debug_utils.h"
+#include "../facade/user_places_types.h"
+#include "../facade/user_places_params.h"
+#include "../utils/debug_utils.h"
 #include "location_logger.h"
 
 #ifdef TIZEN_ENGINEER_MODE

@@ -17,7 +17,7 @@
 #ifndef _CONTEXT_PLACE_RECOGNITION_SIMILAR_H_
 #define _CONTEXT_PLACE_RECOGNITION_SIMILAR_H_
 
-#include "user_places_types.h"
+#include "../facade/user_places_types.h"
 
 namespace ctx {
 

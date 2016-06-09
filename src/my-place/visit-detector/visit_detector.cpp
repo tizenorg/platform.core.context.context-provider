@@ -20,13 +20,13 @@
 #include <sstream>
 #include <Types.h>
 #include <Json.h>
-#include "../place_recognition_types.h"
+#include "../facade/user_places_types.h"
 #include "visit_detector.h"
-#include "user_places_params.h"
-#include "visit_categer.h"
-#include "similarity.h"
-#include "median.h"
-#include "debug_utils.h"
+#include "../facade/user_places_params.h"
+#include "../visit-categer/visit_categer.h"
+#include "../utils/similarity.h"
+#include "../utils/median.h"
+#include "../utils/debug_utils.h"
 
 #ifdef TIZEN_ENGINEER_MODE
 #define __VISIT_TABLE_COLUMNS \
@@ -485,3 +485,6 @@ void ctx::VisitDetector::setMode(PlaceRecogMode energyMode)
 	if (__wifiLogger)
 		__wifiLogger->setMode(energyMode);
 }
+
+
+

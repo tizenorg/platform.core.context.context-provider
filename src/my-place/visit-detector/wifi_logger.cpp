@@ -17,8 +17,8 @@
 #include <sstream>
 #include <Types.h>
 #include <DatabaseManager.h>
-#include "../place_recognition_types.h"
-#include "debug_utils.h"
+#include "../facade/user_places_types.h"
+#include "../utils/debug_utils.h"
 #include "wifi_logger.h"
 
 #define __WIFI_CREATE_TABLE_COLUMNS \
