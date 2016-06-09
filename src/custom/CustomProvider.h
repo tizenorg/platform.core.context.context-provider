@@ -14,37 +14,33 @@
  * limitations under the License.
  */
 
-#ifndef _CONTEXT_CUSTOM_BASE_H_
-#define _CONTEXT_CUSTOM_BASE_H_
+#ifndef _CONTEXT_CUSTOM_PROVIDER_H_
+#define _CONTEXT_CUSTOM_PROVIDER_H_
 
-#include <Json.h>
-#include <ContextProvider.h>
-#include <Types.h>
+#include <ProviderTypes.h>
+#include <BasicProvider.h>
 
 namespace ctx {
 
-	class CustomBase : public ContextProvider {
+	class CustomProvider : public BasicProvider {
 	public:
-		CustomBase(std::string subject, std::string name, ctx::Json tmpl, std::string owner);
-		~CustomBase();
+		CustomProvider(const char* subject, std::string name, ctx::Json tmpl, std::string owner);
+		~CustomProvider();
 
-		int subscribe(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int unsubscribe(const char *subject, ctx::Json option);
-		int read(const char *subject, ctx::Json option, ctx::Json *requestResult);
-		int write(const char *subject, ctx::Json data, ctx::Json *requestResult);
+		int subscribe();
+		int unsubscribe();
+		int read();
 
-		static bool isSupported();
-		void submitTriggerItem();
-		void unsubmitTriggerItem();
+		bool isSupported();
+
+		bool unloadable();
 
 		void handleUpdate(ctx::Json data);
 
-		const char* getSubject();
 		std::string getOwner();
 		ctx::Json getTemplate();
 
 	private:
-		std::string __subject;
 		std::string __name;
 		ctx::Json __tmpl;
 		std::string __owner;
@@ -52,4 +48,4 @@ namespace ctx {
 	};
 }
 
-#endif	/* End of _CONTEXT_CUSTOM_BASE_H_ */
+#endif	/* End of _CONTEXT_CUSTOM_PROVIDER_H_ */
