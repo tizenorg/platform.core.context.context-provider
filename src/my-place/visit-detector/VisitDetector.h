@@ -92,6 +92,8 @@ namespace ctx {
 		void onWifiScan(MacEvent event);
 		void onNewLocation(LocationEvent location);
 
+		void __categorize(Visit &visit);
+
 	public:
 		VisitDetector(time_t startScan, PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE, bool testMode = false);
 		~VisitDetector();

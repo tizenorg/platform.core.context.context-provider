@@ -416,3 +416,9 @@ void ctx::VisitCateger::categorize(ctx::Visit &visit)
 		visit.categs[categId] = probability;
 	}
 }
+
+extern "C" SO_EXPORT void categorize(ctx::Visit &visit)
+{
+	_D("");
+	ctx::VisitCateger::categorize(visit);
+}

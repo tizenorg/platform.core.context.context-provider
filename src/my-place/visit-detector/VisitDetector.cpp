@@ -23,10 +23,14 @@
 #include "../facade/UserPlacesTypes.h"
 #include "VisitDetector.h"
 #include "../facade/UserPlacesParams.h"
-#include "../visit-categer/VisitCateger.h"
 #include "../utils/Similarity.h"
 #include "../utils/Median.h"
 #include "../utils/DebugUtils.h"
+#include <gmodule.h>
+
+#define SO_PATH "/usr/lib/context-service/libctx-prvd-my-place-visit-categer.so"
+
+typedef void (*visit_categer_t)(ctx::Visit &visit);
 
 #ifdef TIZEN_ENGINEER_MODE
 #define __VISIT_TABLE_COLUMNS \
@@ -224,7 +228,7 @@ void ctx::VisitDetector::__visitEndDetected()
 
 	Interval interval(__entranceTime, __departureTime);
 	Visit visit(interval, __representativesMacs);
-	VisitCateger::categorize(visit);
+	__categorize(visit);
 
 	__putLocationToVisit(visit);
 
@@ -486,5 +490,21 @@ void ctx::VisitDetector::setMode(PlaceRecogMode energyMode)
 		__wifiLogger->setMode(energyMode);
 }
 
+void ctx::VisitDetector::__categorize(ctx::Visit &visit)
+{
+	_D("mmastern try to categorize from visit detector");
+	GModule *soHandle = g_module_open(SO_PATH, G_MODULE_BIND_LAZY);
+	IF_FAIL_VOID_TAG(soHandle, _E, "%s", g_module_error());
 
+	gpointer symbol;
+	if (!g_module_symbol(soHandle, "categorize", &symbol) || symbol == NULL) {
+		_E("mmastern %s", g_module_error());
+		g_module_close(soHandle);
+		return;
+	}
 
+	visit_categer_t categorize = reinterpret_cast<visit_categer_t>(symbol);
+
+	categorize(visit);
+	g_module_close(soHandle);
+}
