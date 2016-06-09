@@ -15,63 +15,102 @@
  */
 
 #include <map>
-#include <vector>
-#include <Types.h>
-#include <ContextManager.h>
-#include <ContextProvider.h>
+#include <Util.h>
 #include <DatabaseManager.h>
-#include <CustomContextProvider.h>
-#include "CustomBase.h"
+#include "CustomManager.h"
+#include "CustomProvider.h"
+#include "CustomTypes.h"
 
-static std::map<std::string, ctx::CustomBase*> __customMap;
-static ctx::DatabaseManager __dbManager;
+using namespace ctx;
 
-static bool __isValidFact(std::string subject, ctx::Json& fact);
-static bool __checkValueInt(ctx::Json& tmpl, std::string key, int value);
-static bool __checkValueString(ctx::Json& tmpl, std::string key, std::string value);
+static std::map<std::string, CustomProvider*> __customMap;
+static DatabaseManager __dbManager;
 
-void registerProvider(const char *subject, const char *privilege)
+static bool __isValidFact(std::string subject, Json& fact);
+static bool __checkValueInt(Json& tmpl, std::string key, int value);
+static bool __checkValueString(Json& tmpl, std::string key, std::string value);
+
+CustomManager::CustomManager() :
+	BasicProvider(SUBJ_CUSTOM)
 {
-	ctx::ContextProviderInfo providerInfo(ctx::custom_context_provider::create,
-											ctx::custom_context_provider::destroy,
-											const_cast<char*>(subject), privilege);
-	ctx::context_manager::registerProvider(subject, providerInfo);
-	__customMap[subject]->submitTriggerItem();
+	__initialize();
 }
 
-void unregisterProvider(const char* subject)
+CustomManager::~CustomManager()
 {
-	__customMap[subject]->unsubmitTriggerItem();
-	ctx::context_manager::unregisterProvider(subject);
+	/* Custom provider instances will be deleted by Provider Handler */
+	__customMap.clear();
 }
 
-SO_EXPORT ctx::ContextProvider* ctx::custom_context_provider::create(void *data)
+bool CustomManager::isSupported()
 {
-	// Already created in addItem() function. Return corresponding custom provider
-	return __customMap[static_cast<const char*>(data)];
+	return true;
 }
 
-SO_EXPORT void ctx::custom_context_provider::destroy(void *data)
+bool CustomManager::unloadable()
 {
-	std::map<std::string, ctx::CustomBase*>::iterator it = __customMap.find(static_cast<char*>(data));
-	if (it != __customMap.end()) {
-		delete it->second;
-		__customMap.erase(it);
+	return false;
+}
+
+int CustomManager::subscribe()
+{
+	return ERR_NONE;
+}
+
+int CustomManager::unsubscribe()
+{
+	return ERR_NONE;
+}
+
+int CustomManager::write(Json data, Json *requestResult)
+{
+	int error = ERR_NONE;
+	std::string req;
+	data.get(NULL, CUSTOM_KEY_REQ, &req);
+
+	std::string packageId;
+	std::string name;
+	data.get(NULL, CUSTOM_KEY_PACKAGE_ID, &packageId);
+	data.get(NULL, CUSTOM_KEY_NAME, &name);
+	std::string subj = std::string(SUBJ_CUSTOM) + CUSTOM_SEPERATOR + packageId + CUSTOM_SEPERATOR + name;
+
+	if (req == CUSTOM_REQ_TYPE_ADD) {
+		Json tmpl;
+		data.get(NULL, CUSTOM_KEY_ATTRIBUTES, &tmpl);
+
+		error = __addCustomItem(subj, name, tmpl, packageId);
+	} else if (req == CUSTOM_REQ_TYPE_REMOVE) {
+		error = __removeCustomItem(subj);
+		if (error == ERR_NONE) {
+			requestResult->set(NULL, CUSTOM_KEY_SUBJECT, subj);
+		}
+	} else if (req == CUSTOM_REQ_TYPE_PUBLISH) {
+		Json fact;
+		data.get(NULL, CUSTOM_KEY_FACT, &fact);
+
+		error = __publishData(subj, fact);
 	}
+
+	return error;
 }
 
-SO_EXPORT bool ctx::initCustomContextProvider()
+ContextProvider* CustomManager::getProvider(const char* subject)
 {
-	// Create custom template db
-	std::string q = std::string("CREATE TABLE IF NOT EXISTS context_trigger_custom_template ")
-			+ "(subject TEXT DEFAULT '' NOT NULL PRIMARY KEY, name TEXT DEFAULT '' NOT NULL, operation INTEGER DEFAULT 3 NOT NULL, "
-			+ "attributes TEXT DEFAULT '' NOT NULL, owner TEXT DEFAULT '' NOT NULL)";
+	auto it = __customMap.find(subject);
+	IF_FAIL_RETURN_TAG(it != __customMap.end(), NULL, _E, "'%s' not found", subject);
 
+	CustomProvider* custom = static_cast<CustomProvider*>(it->second);
+	return custom;
+}
+
+bool CustomManager::__initialize()
+{
+	/* Create custom template table */
 	std::vector<Json> record;
-	bool ret = __dbManager.executeSync(q.c_str(), &record);
+	bool ret = __dbManager.executeSync(CUSTOM_TEMPLATE_TABLE_SCHEMA, &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
 
-	// Register custom items
+	/* Register custom items */
 	std::string qSelect = "SELECT * FROM context_trigger_custom_template";
 	ret = __dbManager.executeSync(qSelect.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
@@ -80,17 +119,17 @@ SO_EXPORT bool ctx::initCustomContextProvider()
 	int error;
 	std::vector<Json>::iterator vedEnd = record.end();
 	for (auto vecPos = record.begin(); vecPos != vedEnd; ++vecPos) {
-		ctx::Json elem = *vecPos;
+		Json elem = *vecPos;
 		std::string subject;
 		std::string name;
 		std::string attributes;
 		std::string owner;
-		elem.get(NULL, "subject", &subject);
-		elem.get(NULL, "name", &name);
-		elem.get(NULL, "attributes", &attributes);
-		elem.get(NULL, "owner", &owner);
+		elem.get(NULL, CUSTOM_KEY_SUBJECT, &subject);
+		elem.get(NULL, CUSTOM_KEY_NAME, &name);
+		elem.get(NULL, CUSTOM_KEY_ATTRIBUTES, &attributes);
+		elem.get(NULL, CUSTOM_KEY_OWNER, &owner);
 
-		error = ctx::custom_context_provider::addItem(subject, name, ctx::Json(attributes), owner.c_str(), true);
+		error = __addCustomItem(subject.c_str(), name, Json(attributes), owner, true);
 		if (error != ERR_NONE) {
 			_E("Failed to add custom item(%s): %#x", subject.c_str(), error);
 		}
@@ -99,58 +138,61 @@ SO_EXPORT bool ctx::initCustomContextProvider()
 	return true;
 }
 
-SO_EXPORT int ctx::custom_context_provider::addItem(std::string subject, std::string name, ctx::Json tmpl, const char* owner, bool isInit)
+int CustomManager::__addCustomItem(std::string subject, std::string name, Json tmpl, std::string owner, bool isInit)
 {
-	std::map<std::string, ctx::CustomBase*>::iterator it;
+	std::map<std::string, CustomProvider*>::iterator it;
 	it = __customMap.find(subject);
 
 	if (it != __customMap.end()) {
-		if ((it->second)->getTemplate() != tmpl) {	// Same item name, but different template
+		if ((it->second)->getTemplate() != tmpl) {	/* Same item name, different template */
 			return ERR_DATA_EXIST;
 		}
-		// Same item name with same template
-		return ERR_NONE;
+
+		return ERR_NONE;	/* Same item */
 	}
 
-	// Create custom base
-	ctx::CustomBase* custom = new(std::nothrow) CustomBase(subject, name, tmpl, owner);
+	/* Create custom provider */
+	CustomProvider* custom = new(std::nothrow) CustomProvider(subject.c_str(), name, tmpl, owner);
 	IF_FAIL_RETURN_TAG(custom, ERR_OUT_OF_MEMORY, _E, "Memory allocation failed");
 	__customMap[subject] = custom;
 
-	registerProvider(custom->getSubject(), NULL);
+	/* Register provider handler & template */
+	registerCustomProvider(subject.c_str(), OPS_SUBSCRIBE | OPS_READ, tmpl, NULL, owner.c_str());
 
-	// Add item to custom template db
+	/* Insert item to custom template db */
 	if (!isInit) {
 		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
 				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
 		std::vector<Json> record;
 		bool ret = __dbManager.executeSync(q.c_str(), &record);
-		IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
+		IF_FAIL_RETURN_TAG(ret, ERR_OPERATION_FAILED, _E, "Failed to query custom templates");
 	}
 
 	return ERR_NONE;
 }
 
-SO_EXPORT int ctx::custom_context_provider::removeItem(std::string subject)
+int CustomManager::__removeCustomItem(std::string subject)
 {
-	std::map<std::string, ctx::CustomBase*>::iterator it;
+	std::map<std::string, CustomProvider*>::iterator it;
 	it = __customMap.find(subject);
 	IF_FAIL_RETURN_TAG(it != __customMap.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
 
-	unregisterProvider(subject.c_str());
+	/* Unregister provider handler & template */
+	unregisterCustomProvider(subject.c_str());
+	__customMap.erase(it);
 
-	// Remove item from custom template db
+	/* Delete item from custom template db */
 	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
 	std::vector<Json> record;
 	bool ret = __dbManager.executeSync(q.c_str(), &record);
-	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
+	IF_FAIL_RETURN_TAG(ret, ERR_OPERATION_FAILED, _E, "Failed to query custom templates");
 
 	return ERR_NONE;
 }
 
-SO_EXPORT int ctx::custom_context_provider::publishData(std::string subject, ctx::Json fact)
+int CustomManager::__publishData(std::string subject, Json fact)
 {
-	std::map<std::string, ctx::CustomBase*>::iterator it;
+	std::map<std::string, CustomProvider*>::iterator it;
 	it = __customMap.find(subject);
 	IF_FAIL_RETURN_TAG(it != __customMap.end(), ERR_NOT_SUPPORTED, _E, "%s not supported", subject.c_str());
 
@@ -161,9 +203,9 @@ SO_EXPORT int ctx::custom_context_provider::publishData(std::string subject, ctx
 	return ERR_NONE;
 }
 
-bool __isValidFact(std::string subject, ctx::Json& fact)
+bool __isValidFact(std::string subject, Json& fact)
 {
-	ctx::Json tmpl = __customMap[subject]->getTemplate();
+	Json tmpl = __customMap[subject]->getTemplate();
 	IF_FAIL_RETURN_TAG(tmpl != EMPTY_JSON_OBJECT, false, _E, "Failed to get template");
 
 	bool ret;
@@ -198,7 +240,7 @@ bool __isValidFact(std::string subject, ctx::Json& fact)
 	return true;
 }
 
-bool __checkValueInt(ctx::Json& tmpl, std::string key, int value)
+bool __checkValueInt(Json& tmpl, std::string key, int value)
 {
 	int min, max;
 
@@ -213,13 +255,13 @@ bool __checkValueInt(ctx::Json& tmpl, std::string key, int value)
 	return true;
 }
 
-bool __checkValueString(ctx::Json& tmpl, std::string key, std::string value)
+bool __checkValueString(Json& tmpl, std::string key, std::string value)
 {
-	// case1: any value is accepted
+	/* case1: any value is accepted */
 	if (tmpl.getSize(key.c_str(), "values") <= 0)
 		return true;
 
-	// case2: check acceptable value
+	/* case2: check acceptable value */
 	std::string tmplValue;
 	for (int i = 0; tmpl.getAt(key.c_str(), "values", i, &tmplValue); i++) {
 		if (tmplValue == value)
@@ -228,5 +270,3 @@ bool __checkValueString(ctx::Json& tmpl, std::string key, std::string value)
 
 	return false;
 }
-
-

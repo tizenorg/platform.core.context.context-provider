@@ -32,7 +32,7 @@ const struct {
 	{SUBJ_APP_STATS,		"app-stats"},
 	{SUBJ_STATE_CALL,		"call"},
 	{SUBJ_STATE_CONTACTS,	"contacts"},
-	// {SUBJ_CUSTOM, ""},
+	{SUBJ_CUSTOM,			"custom"},
 	{SUBJ_STATE_EMAIL,		"email"},
 	{SUBJ_PLACE_GEOFENCE,	"geofence"},
 	{SUBJ_STATE_HEADPHONE,	"headphone"},
@@ -91,6 +91,12 @@ const struct {
 			"\"Event\":{\"type\":\"string\",\"values\":[\"Changed\"]},"
 			"\"Type\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
 		"}",
+		NULL
+	},
+	{
+		SUBJ_CUSTOM,
+		OPS_SUBSCRIBE,
+		"{}",
 		NULL
 	},
 	{

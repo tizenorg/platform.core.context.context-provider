@@ -1,6 +1,6 @@
 Name:       context-provider
 Summary:    Context Provider
-Version:    0.9.0
+Version:    0.9.1
 Release:    1
 Group:      Service/Context
 License:    Apache-2.0
@@ -28,7 +28,8 @@ BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: pkgconfig(capi-media-sound-manager)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-network-wifi)
-BuildRequires: pkgconfig(libcore-context-manager)
+#BuildRequires: pkgconfig(libcore-context-manager)
+BuildRequires: pkgconfig(motion)
 
 %if "%{?BUILD_PROFILE}" == "mobile"
 BuildRequires: pkgconfig(msg-service)
