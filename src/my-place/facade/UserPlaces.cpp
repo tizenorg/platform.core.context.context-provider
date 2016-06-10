@@ -16,10 +16,28 @@
 
 #include <ctime>
 #include <memory>
+#include <sstream>
 #include <Types.h>
 #include "UserPlaces.h"
 #include "../place/PlacesDetector.h"
 #include <MyPlaceTypes.h>
+
+#define __GET_PLACES_QUERY "SELECT "\
+	PLACE_COLUMN_CATEG_ID ", "\
+	PLACE_COLUMN_CATEG_CONFIDENCE ", "\
+	PLACE_COLUMN_NAME ", "\
+	PLACE_COLUMN_LOCATION_VALID ", "\
+	PLACE_COLUMN_LOCATION_LATITUDE ", "\
+	PLACE_COLUMN_LOCATION_LONGITUDE ", "\
+	PLACE_COLUMN_LOCATION_ACCURACY ", "\
+	PLACE_COLUMN_WIFI_APS ", "\
+	PLACE_COLUMN_CREATE_DATE \
+	" FROM " PLACE_TABLE
+
+#define __GET_WIFI_APS_MAP_QUERY "SELECT "\
+	WIFI_APS_MAP_COLUMN_MAC ", "\
+	WIFI_APS_MAP_COLUMN_NETWORK_NAME \
+	" FROM " WIFI_APS_MAP_TABLE
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 	__visitDetector(nullptr),
@@ -64,54 +82,14 @@ ctx::UserPlaces::~UserPlaces()
 		delete __placesDetector;
 };
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::__getPlaces()
-{
-	if (__placesDetector) {
-		return __placesDetector->getPlaces();
-	} else {
-		return std::vector<std::shared_ptr<ctx::Place>>();
-	}
-}
-
 ctx::Json ctx::UserPlaces::getPlaces()
 {
-	std::vector<std::shared_ptr<ctx::Place>> places = __getPlaces();
-	Json dataRead = UserPlaces::__composeJson(places);
-	return dataRead;
+	std::vector<Json> records = __dbGetPlaces();
+	std::map<std::string, std::string> wifiAPsMap = __dbGetWifiAPsMap();
+	std::vector<std::shared_ptr<Place>> places = __placesFromJsons(records, wifiAPsMap);
+	return UserPlaces::__composeJson(places);
 }
 
-/*
- * Example JSON output:
- * ------------------------------------------------
- * {
- *	  "PlacesList": [
- *		{
- *		  "TypeId": 2,
- *		  "Name": "Work",
- *		  "GeoLatitude": 10.94433,
- *		  "GeoLongitude": 50.85504,
- *		  "WifiAPs": "00:1f:f3:5b:2b:1f,15:34:56:78:9a:ba,13:34:56:78:9a:ba",
- *		  "CreateDate": 12132567
- *		},
- *		{
- *		  "TypeId": 1,
- *		  "Name": "Home",
- *		  "GeoLatitude": 10.96233,
- *		  "GeoLongitude": 50.84304,
- *		  "WifiAPs": "aa:bb:cc:dd:ee:ff,10:34:56:78:9a:bc",
- *		  "CreateDate": 12132889
- *		},
- *		{
- *		  "TypeId": 3,
- *		  "Name": "Other",
- *		  "GeoLatitude": 10.96553,
- *		  "GeoLongitude": 50.80404,
- *		  "WifiAPs": "12:34:56:78:9a:ba",
- *		  "CreateDate": 12132346
- *		}
- *	  ]
- * }
- */
 ctx::Json ctx::UserPlaces::__composeJson(std::vector<std::shared_ptr<Place>> places)
 {
 	ctx::Json data;
@@ -147,4 +125,93 @@ void ctx::UserPlaces::setMode(PlaceRecogMode energyMode)
 {
 	if (__visitDetector)
 		__visitDetector->setMode(energyMode);
+}
+
+std::vector<ctx::Json> ctx::UserPlaces::__dbGetPlaces()
+{
+	std::vector<Json> records;
+	bool ret = __dbManager->executeSync(__GET_PLACES_QUERY, &records);
+	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
+	return records;
+}
+
+std::map<std::string, std::string> ctx::UserPlaces::__dbGetWifiAPsMap()
+{
+	std::vector<Json> records;
+	std::map<std::string, std::string> wifiAPsMap;
+	bool ret = __dbManager->executeSync(__GET_WIFI_APS_MAP_QUERY, &records);
+	// TODO: add return statements if db fail
+	_D("load Wifi APs map (size = %d), result: %s", records.size(), ret ? "SUCCESS" : "FAIL");
+	std::string mac = "";
+	std::string networkName = "";
+	for (Json record : records) {
+		record.get(NULL, WIFI_APS_MAP_COLUMN_MAC, &mac);
+		record.get(NULL, WIFI_APS_MAP_COLUMN_NETWORK_NAME, &networkName);
+		wifiAPsMap.insert(std::pair<std::string, std::string>(mac, networkName));
+	}
+	return wifiAPsMap;
+}
+
+std::shared_ptr<ctx::Place> ctx::UserPlaces::__placeFromJson(Json &row, std::map<std::string, std::string> &wifiAPsMap)
+{
+	std::shared_ptr<Place> place = std::make_shared<Place>();
+	__placeCategoryFromJson(row, *place);
+	row.get(NULL, PLACE_COLUMN_NAME, &(place->name));
+	__placeLocationFromJson(row, *place);
+	__placeWifiAPsFromJson(row, wifiAPsMap, *place);
+	__placeCreateDateFromJson(row, *place);
+	_D("db_result: categId: %d; place: name: %s; locationValid: %d; latitude: %lf, longitude: %lf, createDate: %d", place->categId, place->name.c_str(), place->locationValid, place->location.latitude, place->location.longitude, place->createDate);
+	return place;
+}
+
+void ctx::UserPlaces::__placeCategoryFromJson(Json &row, ctx::Place &place)
+{
+	int categId;
+	row.get(NULL, PLACE_COLUMN_CATEG_ID, &categId);
+	// This is due to the fact the JSON module API interface doesn't handle enum
+	place.categId = static_cast<PlaceCategId>(categId);
+}
+
+void ctx::UserPlaces::__placeLocationFromJson(Json &row, ctx::Place &place)
+{
+	int locationValidInt;
+	row.get(NULL, PLACE_COLUMN_LOCATION_VALID, &locationValidInt);
+	place.locationValid = (bool) locationValidInt;
+	row.get(NULL, PLACE_COLUMN_LOCATION_LATITUDE, &(place.location.latitude));
+	row.get(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, &(place.location.longitude));
+	row.get(NULL, PLACE_COLUMN_LOCATION_ACCURACY, &(place.location.accuracy));
+}
+
+void ctx::UserPlaces::__placeWifiAPsFromJson(Json &row, std::map<std::string, std::string> &wifiAPsMap, ctx::Place &place)
+{
+	std::string wifiAps;
+	row.get(NULL, PLACE_COLUMN_WIFI_APS, &wifiAps);
+	std::stringstream ss;
+	ss << wifiAps;
+	std::shared_ptr<MacSet> macSet = std::make_shared<MacSet>();
+	ss >> *macSet;
+	for (ctx::Mac mac : *macSet) {
+		place.wifiAps.insert(std::pair<std::string, std::string>(mac, wifiAPsMap[mac]));
+	}
+}
+
+void ctx::UserPlaces::__placeCreateDateFromJson(Json &row, ctx::Place &place)
+{
+	int createDate;
+	row.get(NULL, PLACE_COLUMN_CREATE_DATE, &(createDate));
+	// This is due to the fact the JSON module API interface doesn't handle time_t
+	place.createDate = static_cast<time_t>(createDate);
+}
+
+std::vector<std::shared_ptr<ctx::Place>> ctx::UserPlaces::__placesFromJsons(std::vector<Json>& records, std::map<std::string, std::string> &wifiAPsMap)
+{
+	std::vector<std::shared_ptr<Place>> places;
+	_D("db_result: number of all places: %d", records.size());
+
+	for (Json &row : records) {
+		std::shared_ptr<Place> place = __placeFromJson(row, wifiAPsMap);
+		places.push_back(place);
+	}
+	_D("number of all places in vector: %d", places.size());
+	return places;
 }

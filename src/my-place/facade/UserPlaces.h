@@ -18,8 +18,11 @@
 #define _CONTEXT_PLACE_RECOGNITION_USER_PLACES_H_
 
 #include <vector>
+#include <map>
+#include <string>
 #include <Json.h>
 #include <TimerManager.h>
+#include <DatabaseManager.h>
 #include "../visit-detector/VisitDetector.h"
 #include "../place/PlacesDetector.h"
 #include "UserPlacesTypes.h"
@@ -31,8 +34,21 @@ namespace ctx {
 	private:
 		VisitDetector *__visitDetector;
 		PlacesDetector *__placesDetector;
+		DatabaseManager *__dbManager;
 		int __placesDetectorTimerId;
 		TimerManager __timerManager;
+		std::vector<Json> __dbGetPlaces();
+		std::map<std::string, std::string> __dbGetWifiAPsMap();
+		std::shared_ptr<ctx::Place> __placeFromJson(Json &row, std::map<std::string,
+				std::string> &wifiAPsMap);
+		void __placeCategoryFromJson(Json &row, ctx::Place &place);
+		void __placeLocationFromJson(Json &row, ctx::Place &place);
+		void __placeWifiAPsFromJson(Json &row, std::map<std::string,
+				std::string> &wifiAPsMap, ctx::Place &place);
+		void __placeCreateDateFromJson(Json &row, ctx::Place &place);
+		std::vector<std::shared_ptr<Place>> __placesFromJsons(
+				std::vector<Json>& records,
+				std::map<std::string, std::string> &wifiAPsMap);
 		std::vector<std::shared_ptr<Place>> __getPlaces();
 		static Json __composeJson(std::vector<std::shared_ptr<Place>> places);
 
