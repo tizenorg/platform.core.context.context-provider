@@ -6,7 +6,7 @@ SET(DEPS ${DEPS}
 	capi-network-wifi
 )
 
-FILE(GLOB SRCS *.cpp facade/*.cpp place/*.cpp utils/*.cpp visit-detector/*.cpp)
+FILE(GLOB SRCS *.cpp facade/*.cpp utils/*.cpp visit-detector/*.cpp)
 
 INCLUDE(FindPkgConfig)
 PKG_CHECK_MODULES(PKG_MYPLACE REQUIRED ${DEPS})
@@ -20,4 +20,5 @@ TARGET_LINK_LIBRARIES(${target} ${PKG_MYPLACE_LDFLAGS} ${target_shared})
 
 INSTALL(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target_dir})
 
+ADD_SUBDIRECTORY(place)
 ADD_SUBDIRECTORY(visit-categer)

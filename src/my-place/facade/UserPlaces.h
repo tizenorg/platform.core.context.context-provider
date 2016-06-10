@@ -22,6 +22,7 @@
 #include <string>
 #include <Json.h>
 #include <TimerManager.h>
+#include <ITimerListener.h>
 #include <DatabaseManager.h>
 #include "../visit-detector/VisitDetector.h"
 #include "../place/PlacesDetector.h"
@@ -29,13 +30,12 @@
 
 namespace ctx {
 
-	class UserPlaces {
+	class UserPlaces : public ITimerListener {
 
 	private:
 		VisitDetector *__visitDetector;
-		PlacesDetector *__placesDetector;
 		DatabaseManager *__dbManager;
-		int __placesDetectorTimerId;
+		int __timerId;
 		TimerManager __timerManager;
 		std::vector<Json> __dbGetPlaces();
 		std::map<std::string, std::string> __dbGetWifiAPsMap();
@@ -51,6 +51,8 @@ namespace ctx {
 				std::map<std::string, std::string> &wifiAPsMap);
 		std::vector<std::shared_ptr<Place>> __getPlaces();
 		static Json __composeJson(std::vector<std::shared_ptr<Place>> places);
+
+		bool onTimerExpired(int timerId);
 
 	public:
 		UserPlaces(PlaceRecogMode energyMode = PLACE_RECOG_HIGH_ACCURACY_MODE);

@@ -19,8 +19,12 @@
 #include <sstream>
 #include <Types.h>
 #include "UserPlaces.h"
-#include "../place/PlacesDetector.h"
 #include <MyPlaceTypes.h>
+#include <gmodule.h>
+
+#define SO_PATH "/usr/lib/context-service/libctx-prvd-my-place-places-detector.so"
+
+typedef void (*places_detector_t)();
 
 #define __GET_PLACES_QUERY "SELECT "\
 	PLACE_COLUMN_CATEG_ID ", "\
@@ -41,8 +45,7 @@
 
 ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 	__visitDetector(nullptr),
-	__placesDetector(nullptr),
-	__placesDetectorTimerId(-1)
+	__timerId(-1)
 {
 	time_t now = std::time(nullptr);
 	__visitDetector = new(std::nothrow) VisitDetector(now, energyMode);
@@ -51,35 +54,26 @@ ctx::UserPlaces::UserPlaces(PlaceRecogMode energyMode):
 		return;
 	}
 
-	__placesDetector = new(std::nothrow) PlacesDetector();
-	if (__placesDetector == nullptr) {
-		_E("Cannot initialize __placesDetector");
-		return;
-	}
-
-	__placesDetectorTimerId = __timerManager.setAt( // execute once every night
+	__timerId = __timerManager.setAt( // execute once every night
 			PLACES_DETECTOR_TASK_START_HOUR,
 			PLACES_DETECTOR_TASK_START_MINUTE,
 			DayOfWeek::EVERYDAY,
-			__placesDetector);
-	if (__placesDetectorTimerId < 0) {
-		_E("PlacesDetector timer set FAIL");
+			this);
+	if (__timerId < 0) {
+		_E("timer set FAIL");
 		return;
 	} else {
-		_D("PlacesDetector timer set SUCCESS");
+		_D("timer set SUCCESS");
 	}
 }
 
 ctx::UserPlaces::~UserPlaces()
 {
-	if (__placesDetectorTimerId >= 0) {
-		__timerManager.remove(__placesDetectorTimerId);
-		_D("PlacesDetector timer removed");
+	if (__timerId >= 0) {
+		__timerManager.remove(__timerId);
 	}
 	if (__visitDetector)
 		delete __visitDetector;
-	if (__placesDetector)
-		delete __placesDetector;
 };
 
 ctx::Json ctx::UserPlaces::getPlaces()
@@ -125,6 +119,26 @@ void ctx::UserPlaces::setMode(PlaceRecogMode energyMode)
 {
 	if (__visitDetector)
 		__visitDetector->setMode(energyMode);
+}
+
+bool ctx::UserPlaces::onTimerExpired(int timerId)
+{
+	_D("mmastern try to detect places from UserPlaces");
+	GModule *soHandle = g_module_open(SO_PATH, G_MODULE_BIND_LAZY);
+	IF_FAIL_RETURN_TAG(soHandle, true, _E, "%s", g_module_error());
+
+	gpointer symbol;
+	if (!g_module_symbol(soHandle, "detectPlaces", &symbol) || symbol == NULL) {
+		_E("mmastern %s", g_module_error());
+		g_module_close(soHandle);
+		return true;
+	}
+
+	places_detector_t detectPlaces = reinterpret_cast<places_detector_t>(symbol);
+
+	detectPlaces();
+	g_module_close(soHandle);
+	return true;
 }
 
 std::vector<ctx::Json> ctx::UserPlaces::__dbGetPlaces()

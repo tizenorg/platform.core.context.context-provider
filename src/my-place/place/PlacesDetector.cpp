@@ -376,3 +376,9 @@ void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 	_D("insert place execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
+extern "C" SO_EXPORT void detectPlaces()
+{
+	_D("");
+	ctx::PlacesDetector placesDetector;
+	placesDetector.detectPlaces();
+}
