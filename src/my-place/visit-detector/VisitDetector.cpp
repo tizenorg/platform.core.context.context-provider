@@ -492,13 +492,13 @@ void ctx::VisitDetector::setMode(PlaceRecogMode energyMode)
 
 void ctx::VisitDetector::__categorize(ctx::Visit &visit)
 {
-	_D("mmastern try to categorize from visit detector");
+	_D("");
 	GModule *soHandle = g_module_open(SO_PATH, G_MODULE_BIND_LAZY);
 	IF_FAIL_VOID_TAG(soHandle, _E, "%s", g_module_error());
 
 	gpointer symbol;
 	if (!g_module_symbol(soHandle, "categorize", &symbol) || symbol == NULL) {
-		_E("mmastern %s", g_module_error());
+		_E("%s", g_module_error());
 		g_module_close(soHandle);
 		return;
 	}

@@ -49,23 +49,6 @@
 	VISIT_COLUMN_CATEG_OTHER \
 	" FROM " VISIT_TABLE
 
-#define __GET_PLACES_QUERY "SELECT "\
-	PLACE_COLUMN_CATEG_ID ", "\
-	PLACE_COLUMN_CATEG_CONFIDENCE ", "\
-	PLACE_COLUMN_NAME ", "\
-	PLACE_COLUMN_LOCATION_VALID ", "\
-	PLACE_COLUMN_LOCATION_LATITUDE ", "\
-	PLACE_COLUMN_LOCATION_LONGITUDE ", "\
-	PLACE_COLUMN_LOCATION_ACCURACY ", "\
-	PLACE_COLUMN_WIFI_APS ", "\
-	PLACE_COLUMN_CREATE_DATE \
-	" FROM " PLACE_TABLE
-
-#define __GET_WIFI_APS_MAP_QUERY "SELECT "\
-	WIFI_APS_MAP_COLUMN_MAC ", "\
-	WIFI_APS_MAP_COLUMN_NETWORK_NAME \
-	" FROM " WIFI_APS_MAP_TABLE
-
 #define __PLACE_TABLE_COLUMNS \
 	PLACE_COLUMN_CATEG_ID " INTEGER, "\
 	PLACE_COLUMN_CATEG_CONFIDENCE " REAL, "\
@@ -77,17 +60,19 @@
 	PLACE_COLUMN_WIFI_APS " STRING, "\
 	PLACE_COLUMN_CREATE_DATE " timestamp"
 
-bool ctx::PlacesDetector::onTimerExpired(int timerId)
+bool ctx::PlacesDetector::onTimerExpired(int timerId) {
+	_D("");
+	detectPlaces();
+	return true;
+}
+
+void ctx::PlacesDetector::detectPlaces()
 {
 	_D("");
 	__dbDeletePlaces();
 	__dbDeleteOldEntries();
 	std::vector<Json> records = __dbGetVisits();
 	Visits visits = __visitsFromJsons(records);
-	__dbGetWifiAPsMap();
-	__processVisits(visits);
-	__wifiAPsMap.clear();
-	return true;
 }
 
 std::vector<ctx::Json> ctx::PlacesDetector::__dbGetVisits()
@@ -96,28 +81,6 @@ std::vector<ctx::Json> ctx::PlacesDetector::__dbGetVisits()
 	bool ret = __dbManager->executeSync(__GET_VISITS_QUERY, &records);
 	_D("load visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
 	return records;
-}
-
-std::vector<ctx::Json> ctx::PlacesDetector::__dbGetPlaces()
-{
-	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(__GET_PLACES_QUERY, &records);
-	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
-	return records;
-}
-
-void ctx::PlacesDetector::__dbGetWifiAPsMap()
-{
-	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(__GET_WIFI_APS_MAP_QUERY, &records);
-	_D("load Wifi APs map (size = %d), result: %s", records.size(), ret ? "SUCCESS" : "FAIL");
-	std::string mac = "";
-	std::string networkName = "";
-	for (Json record : records) {
-		record.get(NULL, WIFI_APS_MAP_COLUMN_MAC, &mac);
-		record.get(NULL, WIFI_APS_MAP_COLUMN_NETWORK_NAME, &networkName);
-		__wifiAPsMap.insert(std::pair<std::string, std::string>(mac, networkName));
-	}
 }
 
 double ctx::PlacesDetector::__doubleValueFromJson(Json &row, const char* key)
@@ -184,69 +147,6 @@ ctx::Visits ctx::PlacesDetector::__visitsFromJsons(std::vector<Json>& records)
 	return visits;
 }
 
-std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromJson(Json &row)
-{
-	std::shared_ptr<Place> place = std::make_shared<Place>();
-	__placeCategoryFromJson(row, *place);
-	row.get(NULL, PLACE_COLUMN_NAME, &(place->name));
-	__placeLocationFromJson(row, *place);
-	__placeWifiAPsFromJson(row, *place);
-	__placeCreateDateFromJson(row, *place);
-	_D("db_result: categId: %d; place: name: %s; locationValid: %d; latitude: %lf, longitude: %lf, createDate: %d", place->categId, place->name.c_str(), place->locationValid, place->location.latitude, place->location.longitude, place->createDate);
-	return place;
-}
-
-void ctx::PlacesDetector::__placeCategoryFromJson(Json &row, ctx::Place &place)
-{
-	int categId;
-	row.get(NULL, PLACE_COLUMN_CATEG_ID, &categId);
-	// This is due to the fact the JSON module API interface doesn't handle enum
-	place.categId = static_cast<PlaceCategId>(categId);
-}
-
-void ctx::PlacesDetector::__placeLocationFromJson(Json &row, ctx::Place &place)
-{
-	int locationValidInt;
-	row.get(NULL, PLACE_COLUMN_LOCATION_VALID, &locationValidInt);
-	place.locationValid = (bool) locationValidInt;
-	row.get(NULL, PLACE_COLUMN_LOCATION_LATITUDE, &(place.location.latitude));
-	row.get(NULL, PLACE_COLUMN_LOCATION_LONGITUDE, &(place.location.longitude));
-	row.get(NULL, PLACE_COLUMN_LOCATION_ACCURACY, &(place.location.accuracy));
-}
-
-void ctx::PlacesDetector::__placeWifiAPsFromJson(Json &row, ctx::Place &place)
-{
-	std::string wifiAps;
-	row.get(NULL, PLACE_COLUMN_WIFI_APS, &wifiAps);
-	std::stringstream ss;
-	ss << wifiAps;
-	std::shared_ptr<MacSet> macSet = std::make_shared<MacSet>();
-	ss >> *macSet;
-	for (ctx::Mac mac : *macSet) {
-		place.wifiAps.insert(std::pair<std::string, std::string>(mac, __wifiAPsMap[mac]));
-	}
-}
-
-void ctx::PlacesDetector::__placeCreateDateFromJson(Json &row, ctx::Place &place)
-{
-	int createDate;
-	row.get(NULL, PLACE_COLUMN_CREATE_DATE, &(createDate));
-	// This is due to the fact the JSON module API interface doesn't handle time_t
-	place.createDate = static_cast<time_t>(createDate);
-}
-
-std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::__placesFromJsons(std::vector<Json>& records)
-{
-	std::vector<std::shared_ptr<Place>> places;
-	_D("db_result: number of all places: %d", records.size());
-
-	for (Json &row : records) {
-		std::shared_ptr<Place> place = __placeFromJson(row);
-		places.push_back(place);
-	}
-	_D("number of all places in vector: %d", places.size());
-	return places;
-}
 
 void ctx::PlacesDetector::__reduceOutliers(ctx::Visits &visits)
 {
@@ -265,16 +165,17 @@ void ctx::PlacesDetector::__reduceOutliers(ctx::Visits &visits)
 		_D("Visits number from %d to %d (to short and to long reduction)", size, newSize);
 }
 
-void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
+std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
 {
-	__reduceOutliers(visits);
-
-	_D("__testMode = %d", __testMode);
-	auto components = __mergeVisits(visits);
-	std::vector<std::shared_ptr<Place>> newDetectedPlaces;
 #ifdef TIZEN_ENGINEER_MODE
 	std::vector<Visits> placesVisits; // TODO: remove from final solution.
 #endif /* TIZEN_ENGINEER_MODE */
+
+	std::vector<std::shared_ptr<Place>> newDetectedPlaces;
+
+	__reduceOutliers(visits);
+	auto components = __mergeVisits(visits);
+
 	for (std::shared_ptr<graph::Component> component : *components) {
 		// Small places outliers reduction
 		if (!__testMode && component->size() < PLACES_DETECTOR_MIN_VISITS_PER_BIG_PLACE)
@@ -301,8 +202,6 @@ void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
 #endif /* TIZEN_ENGINEER_MODE */
 	}
 
-	__detectedPlacesUpdate(newDetectedPlaces);
-
 #ifdef TIZEN_ENGINEER_MODE
 	{ // Print to file TODO: Only for debug -> remove in final solution
 		std::ofstream out(__USER_PLACES_FILE);
@@ -317,16 +216,8 @@ void ctx::PlacesDetector::__processVisits(ctx::Visits &visits)
 		Gmap::writeMap(newDetectedPlaces);
 	}
 #endif /* TIZEN_ENGINEER_MODE */
-}
 
-/*
- * Replace old places by new ones.
- */
-void ctx::PlacesDetector::__detectedPlacesUpdate(std::vector<std::shared_ptr<Place>> &newPlaces)
-{
-	_D("");
-	// XXX: In case of thread safety issues use std::mutex to protect places list.
-	__detectedPlaces = newPlaces;
+return newDetectedPlaces;
 }
 
 void ctx::PlacesDetector::__mergeLocation(const Visits &visits, Place &place)
@@ -363,9 +254,6 @@ std::shared_ptr<ctx::Place> ctx::PlacesDetector::__placeFromMergedVisits(Visits 
 		macSets.push_back(visit.macSet);
 	}
 	std::shared_ptr<MacSet> allMacs = macSetsUnion(macSets);
-	for (ctx::Mac mac : *allMacs) {
-		place->wifiAps.insert(std::pair<std::string, std::string>(mac, __wifiAPsMap[mac]));
-	}
 	__mergeLocation(mergedVisits, *place);
 
 	PlaceCateger::categorize(mergedVisits, *place);
@@ -455,11 +343,6 @@ ctx::PlacesDetector::PlacesDetector(bool testMode):
 	if (testMode)
 		return;
 	__dbCreateTable();
-	std::vector<Json> records = __dbGetPlaces();
-	__dbGetWifiAPsMap();
-	std::vector<std::shared_ptr<Place>> dbPlaces = __placesFromJsons(records);
-	__wifiAPsMap.clear();
-	__detectedPlacesUpdate(dbPlaces);
 }
 
 void ctx::PlacesDetector::__dbCreateTable()
@@ -493,8 +376,3 @@ void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 	_D("insert place execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
-std::vector<std::shared_ptr<ctx::Place>> ctx::PlacesDetector::getPlaces()
-{
-	// XXX: In case of thread safety issues use std::mutex to protect places list.
-	return __detectedPlaces;
-}
