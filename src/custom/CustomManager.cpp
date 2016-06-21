@@ -111,7 +111,7 @@ bool CustomManager::__initialize()
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Create template table failed");
 
 	/* Register custom items */
-	std::string qSelect = "SELECT * FROM context_trigger_custom_template";
+	std::string qSelect = "SELECT * FROM ContextTriggerCustomTemplate";
 	ret = __dbManager.executeSync(qSelect.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, false, _E, "Failed to query custom templates");
 	IF_FAIL_RETURN(record.size() > 0, true);
@@ -161,7 +161,7 @@ int CustomManager::__addCustomItem(std::string subject, std::string name, Json t
 
 	/* Insert item to custom template db */
 	if (!isInit) {
-		std::string q = "INSERT OR IGNORE INTO context_trigger_custom_template (subject, name, attributes, owner) VALUES ('"
+		std::string q = "INSERT OR IGNORE INTO ContextTriggerCustomTemplate (subject, name, attributes, owner) VALUES ('"
 				+ subject + "', '" + name +  "', '" + tmpl.str() + "', '" + owner + "'); ";
 		std::vector<Json> record;
 		bool ret = __dbManager.executeSync(q.c_str(), &record);
@@ -182,7 +182,7 @@ int CustomManager::__removeCustomItem(std::string subject)
 	__customMap.erase(it);
 
 	/* Delete item from custom template db */
-	std::string q = "DELETE FROM context_trigger_custom_template WHERE subject = '" + subject + "'";
+	std::string q = "DELETE FROM ContextTriggerCustomTemplate WHERE subject = '" + subject + "'";
 	std::vector<Json> record;
 	bool ret = __dbManager.executeSync(q.c_str(), &record);
 	IF_FAIL_RETURN_TAG(ret, ERR_OPERATION_FAILED, _E, "Failed to query custom templates");

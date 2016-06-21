@@ -33,10 +33,8 @@
 
 #define CUSTOM_SEPERATOR			"/"
 
-#define MEDIA_TABLE_NAME	"Log_MediaPlayback"
-
 #define CUSTOM_TEMPLATE_TABLE_SCHEMA \
-	"CREATE TABLE IF NOT EXISTS context_trigger_custom_template " \
+	"CREATE TABLE IF NOT EXISTS ContextTriggerCustomTemplate " \
 	"(subject TEXT DEFAULT '' NOT NULL PRIMARY KEY, name TEXT DEFAULT '' NOT NULL," \
 	" operation INTEGER DEFAULT 3 NOT NULL, attributes TEXT DEFAULT '' NOT NULL, " \
 	" owner TEXT DEFAULT '' NOT NULL)"
