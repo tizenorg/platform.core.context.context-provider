@@ -15,13 +15,24 @@
  */
 
 #include <CreateProvider.h>
-#include "PlaceRecognitionProvider.h"
+#include "CustomManager.h"
 
 using namespace ctx;
 
 extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
 {
-	ADD_PROVIDER(SUBJ_PLACE_DETECTION, PlaceRecognitionProvider);
+	static CustomManager *__customMgr = NULL;
 
-	return NULL;
+	if (!__customMgr) {
+		__customMgr = new(std::nothrow) CustomManager;
+		IF_FAIL_RETURN_TAG(__customMgr, NULL, _E, "Memory allocation failed");
+	}
+
+	/* Request from client */
+	if (STR_EQ(SUBJ_CUSTOM, subject)) {
+		return __customMgr;
+	}
+
+	/* Request for each custom provider */
+	return __customMgr->getProvider(subject);
 }

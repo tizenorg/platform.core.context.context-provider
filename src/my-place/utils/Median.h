@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-#include <CreateProvider.h>
-#include "PlaceRecognitionProvider.h"
+#ifndef _CONTEXT_PLACE_RECOGNITION_MEDIAN_
+#define _CONTEXT_PLACE_RECOGNITION_MEDIAN_
 
-using namespace ctx;
+#include "../facade/UserPlacesTypes.h"
+#include <vector>
 
-extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_PLACE_DETECTION, PlaceRecognitionProvider);
+namespace ctx {
 
-	return NULL;
-}
+	double median(std::vector<double> &values, int &elemIdx, int &evenCaseElemIdx);
+	ctx::Location medianLocation(std::vector<double> &latitudes, std::vector<double> &longitudes, std::vector<double> &accuracy);
+
+} /* namespace ctx */
+
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_MEDIAN_ */

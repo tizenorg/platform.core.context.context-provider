@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-#include <CreateProvider.h>
-#include "PlaceRecognitionProvider.h"
+#ifndef _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
+#define _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_
 
-using namespace ctx;
+#include "../facade/UserPlacesTypes.h"
 
-extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_PLACE_DETECTION, PlaceRecognitionProvider);
+namespace ctx {
 
-	return NULL;
-}
+	/*
+	 * Piecewise linear function. Used for approximation.
+	 */
+	class PiecewiseLin {
+
+	private:
+		std::vector<num_t> __xs; // nodes
+		std::vector<num_t> __vs; // values in nodes
+		size_t __n;
+
+	public:
+		PiecewiseLin(std::vector<num_t> xs, std::vector<num_t> vs);
+		num_t value(num_t x);
+
+	}; 	/* PiecewiseLin */
+
+}	/* namespace ctx */
+
+#endif /* End of _CONTEXT_PLACE_RECOGNITION_PIECEWISE_LIN_ */

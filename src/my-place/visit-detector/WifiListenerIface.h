@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-#include <CreateProvider.h>
-#include "PlaceRecognitionProvider.h"
+#ifndef _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
+#define _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_
 
-using namespace ctx;
+#include "../facade/UserPlacesTypes.h"
 
-extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_PLACE_DETECTION, PlaceRecognitionProvider);
+namespace ctx {
 
-	return NULL;
-}
+	class IWifiListener {
+
+	public:
+		virtual ~IWifiListener() {};
+		virtual void onWifiScan(ctx::MacEvent macEvent) = 0;
+
+	};	/* IWifiListener */
+
+}	/* namespace ctx */
+
+#endif	/* End of _CONTEXT_PLACE_RECOGNITION_WIFI_LISTENER_IFACE_H_ */
