@@ -19,6 +19,7 @@
 
 #include <ContextProvider.h>
 #include <ProviderTypes.h>
+#include <MyPlaceTypes.h>
 
 #define LIB_DIRECTORY	"/usr/lib/context-service/"
 #define LIB_PREFIX		"libctx-prvd-"

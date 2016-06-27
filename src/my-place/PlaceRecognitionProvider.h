@@ -18,9 +18,8 @@
 #define _CONTEXT_PLACE_RECOGNITION_H_
 
 #include <ContextProvider.h>
-#include "MyPlaceTypes.h"
+#include <MyPlaceTypes.h>
 #include "facade/UserPlaces.h"
-#include "ProviderTypes.h"
 
 namespace ctx {
 
