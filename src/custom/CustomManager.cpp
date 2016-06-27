@@ -70,7 +70,7 @@ int CustomManager::write(Json data, Json *requestResult)
 
 	std::string packageId;
 	std::string name;
-	data.get(NULL, CUSTOM_KEY_PACKAGE_ID, &packageId);
+	data.get(NULL, KEY_CLIENT_PKG_ID, &packageId);
 	data.get(NULL, CUSTOM_KEY_NAME, &name);
 	std::string subj = std::string(SUBJ_CUSTOM) + CUSTOM_SEPERATOR + packageId + CUSTOM_SEPERATOR + name;
 
