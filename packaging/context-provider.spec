@@ -28,7 +28,8 @@ BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: pkgconfig(capi-media-sound-manager)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-network-wifi)
-BuildRequires: pkgconfig(libcore-context-manager)
+BuildRequires: pkgconfig(sensor)
+BuildRequires: pkgconfig(motion)
 
 %if "%{?BUILD_PROFILE}" == "mobile"
 BuildRequires: pkgconfig(msg-service)
