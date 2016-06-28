@@ -19,6 +19,8 @@
 
 #include <ContextProvider.h>
 #include <ProviderTypes.h>
+#include <MyPlaceTypes.h>
+#include <SensorRecorderTypes.h>
 
 #define LIB_DIRECTORY	"/usr/lib/context-service/"
 #define LIB_PREFIX		"libctx-prvd-"
@@ -41,6 +43,7 @@ const struct {
 	{SUBJ_VIDEO_STATS,		"media-stats"},
 	{SUBJ_STATE_MESSAGE,	"message"},
 	{SUBJ_PLACE_DETECTION,	"my-place"},
+	{SUBJ_SENSOR,			"sensor"},
 	{SUBJ_SOCIAL_STATS,		"social-stats"},
 	{SUBJ_STATE_BATTERY,	"system"},
 	{SUBJ_STATE_CHARGER,	"system"},

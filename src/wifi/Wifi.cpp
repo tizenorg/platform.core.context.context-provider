@@ -26,17 +26,10 @@ WifiStateProvider::WifiStateProvider() :
 	__isActivated(false),
 	__connState(WIFI_CONNECTION_STATE_FAILURE)
 {
-	IF_FAIL_VOID_TAG(__startMonitor(), _W, "WiFi monitor initialization failed");
-
-	if (!__getCurrentState()) {
-		__stopMonitor();
-		_W("Getting current WiFi status failed");
-	}
 }
 
 WifiStateProvider::~WifiStateProvider()
 {
-	__stopMonitor();
 }
 
 void WifiStateProvider::getPrivilege(std::vector<const char*> &privilege)
@@ -163,22 +156,19 @@ void WifiStateProvider::__stopMonitor()
 
 int WifiStateProvider::subscribe()
 {
-#if 0
 	IF_FAIL_RETURN(__startMonitor(), ERR_OPERATION_FAILED);
 	if (!__getCurrentState()) {
 		__stopMonitor();
 		return ERR_OPERATION_FAILED;
 	}
-#endif
 
 	return ERR_NONE;
 }
 
 int WifiStateProvider::unsubscribe()
 {
-#if 0
 	__stopMonitor();
-#endif
+
 	return ERR_NONE;
 }
 
