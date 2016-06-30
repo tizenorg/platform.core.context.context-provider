@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-#include <time.h>
-#include <sys/time.h>
-#include <cmath>
 #include <sqlite3.h>
 #include <SensorRecorderTypes.h>
 #include "TypesInternal.h"
+#include "TimeUtil.h"
 #include "SensorLogger.h"
 
 using namespace ctx;
@@ -33,30 +31,6 @@ SensorLogger::~SensorLogger()
 {
 }
 
-uint64_t SensorLogger::getTime()
-{
-	struct timeval tv;
-	double timestamp;
-
-	gettimeofday(&tv, NULL);
-	timestamp = tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0;
-	return static_cast<uint64_t>(round(timestamp));
-}
-
-uint64_t SensorLogger::getTime(unsigned long long monotonic)
-{
-	struct timespec ts;
-	double timestamp;
-	uint64_t currentTime = getTime();
-
-	if (abs(currentTime / 1000 - monotonic / 1000000) < SECONDS_PER_DAY)
-		return static_cast<uint64_t>(round(monotonic / 1000.0));
-
-	clock_gettime(CLOCK_MONOTONIC, &ts);
-	timestamp = static_cast<double>(currentTime) - (ts.tv_sec * 1000000000.0 + ts.tv_nsec) / 1000000.0 + monotonic / 1000.0;
-	return static_cast<uint64_t>(round(timestamp));
-}
-
 bool SensorLogger::executeQuery(const char *query)
 {
 	return __dbMgr.execute(0, query, NULL);
@@ -64,7 +38,7 @@ bool SensorLogger::executeQuery(const char *query)
 
 void SensorLogger::removeExpired(const char *subject, const char *tableName, const char *timeKey)
 {
-	uint64_t timestamp = getTime();
+	uint64_t timestamp = TimeUtil::getTime();
 
 	if (timestamp - __lastRemovalTime < SEC_TO_MS(SECONDS_PER_HOUR))
 		return;

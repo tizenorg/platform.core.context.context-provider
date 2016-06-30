@@ -12,32 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-#ifndef __CONTEXT_SENSOR_LOGGER_H__
-#define __CONTEXT_SENSOR_LOGGER_H__
+#ifndef __CONTEXT_TIME_UTIL_H__
+#define __CONTEXT_TIME_UTIL_H__
 
-#include <DatabaseManager.h>
+#include <stdint.h>
 
 namespace ctx {
 
-	class SensorLogger {
+	class TimeUtil {
 	public:
-		SensorLogger();
-		virtual ~SensorLogger();
-
-		virtual bool start() = 0;
-		virtual void stop() = 0;
-
-	protected:
-		bool executeQuery(const char *query);
-
-		virtual void removeExpired(const char *subject, const char *tableName, const char *timeKey);
+		static uint64_t getTime();
+		static uint64_t getTime(unsigned long long monotonic);
 
 	private:
-		uint64_t __lastRemovalTime;
-		DatabaseManager __dbMgr;
+		TimeUtil();
 	};
+
 }
 
-#endif /* __CONTEXT_SENSOR_LOGGER_H__ */
+#endif /* __CONTEXT_TIME_UTIL_H__ */

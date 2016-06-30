@@ -18,6 +18,7 @@
 #include <SensorRecorderTypes.h>
 #include "../TypesInternal.h"
 #include "../ClientInfo.h"
+#include "../TimeUtil.h"
 #include "PressureLogger.h"
 
 #define INSERTION_THRESHOLD	20000
@@ -57,7 +58,7 @@ bool PressureLogger::start()
 
 	_I(GREEN("Start to record"));
 
-	__lastInsertionTime = getTime();
+	__lastInsertionTime = TimeUtil::getTime();
 	__resetInsertionQuery();
 
 	return SensorProxy::start();
@@ -72,7 +73,7 @@ void PressureLogger::stop()
 
 void PressureLogger::onEvent(sensor_data_t *eventData)
 {
-	uint64_t receivedTime = getTime();
+	uint64_t receivedTime = TimeUtil::getTime();
 	__record(eventData, receivedTime);
 	removeExpired(SUBJ_SENSOR_PRESSURE, PRESSURE_RECORD, KEY_UNIV_TIME);
 }
@@ -81,7 +82,7 @@ void PressureLogger::__record(sensor_data_t *eventData, uint64_t receivedTime)
 {
 	char buffer[64];
 	g_snprintf(buffer, sizeof(buffer), "(%llu, %.5f),",
-			getTime(eventData->timestamp), eventData->values[0]);
+			TimeUtil::getTime(eventData->timestamp), eventData->values[0]);
 
 	__insertionQuery += buffer;
 

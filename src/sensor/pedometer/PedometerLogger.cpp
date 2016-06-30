@@ -18,6 +18,7 @@
 #include <SensorRecorderTypes.h>
 #include "../TypesInternal.h"
 #include "../ClientInfo.h"
+#include "../TimeUtil.h"
 #include "PedometerLogger.h"
 
 using namespace ctx;
@@ -74,7 +75,7 @@ void PedometerLogger::stop()
 void PedometerLogger::onEvent(sensor_data_t *eventData)
 {
 	sensor_pedometer_data_t *pedometerData = reinterpret_cast<sensor_pedometer_data_t*>(eventData);
-	uint64_t timestamp = getTime();
+	uint64_t timestamp = TimeUtil::getTime();
 
 	if (__firstEvent) {
 		_D("Baseline event");
