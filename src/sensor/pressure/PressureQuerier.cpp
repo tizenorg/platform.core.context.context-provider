@@ -16,7 +16,7 @@
 
 #include <sqlite3.h>
 #include <SensorRecorderTypes.h>
-#include "TypesInternal.h"
+#include "../TypesInternal.h"
 #include "PressureQuerier.h"
 
 #define PROJECTION \

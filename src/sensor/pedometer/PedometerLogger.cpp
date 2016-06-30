@@ -16,8 +16,8 @@
 
 #include <sqlite3.h>
 #include <SensorRecorderTypes.h>
-#include "TypesInternal.h"
-#include "ClientInfo.h"
+#include "../TypesInternal.h"
+#include "../ClientInfo.h"
 #include "PedometerLogger.h"
 
 using namespace ctx;

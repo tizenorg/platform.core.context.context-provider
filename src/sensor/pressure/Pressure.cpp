@@ -16,7 +16,7 @@
 
 #include <SensorRecorderTypes.h>
 #include <Util.h>
-#include "TypesInternal.h"
+#include "../TypesInternal.h"
 #include "PressureLogger.h"
 #include "PressureQuerier.h"
 #include "Pressure.h"

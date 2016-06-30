@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PEDOMETER_QUERIER_H__
-#define __CONTEXT_PEDOMETER_QUERIER_H__
+#ifndef __CONTEXT_PRESSURE_QUERIER_H__
+#define __CONTEXT_PRESSURE_QUERIER_H__
 
-#include "Querier.h"
+#include "../Querier.h"
 
 namespace ctx {
 
-	class PedometerQuerier : public Querier {
+	class PressureQuerier : public Querier {
 	public:
-		PedometerQuerier(ContextProvider *provider, Json option);
-		~PedometerQuerier();
+		PressureQuerier(ContextProvider *provider, Json option);
+		~PressureQuerier();
 
+		int queryRaw(int startTime, int endTime);
 		int query(int startTime, int endTime);
 		int query(int startTime, int endTime, int anchor, int interval);
 	};
 }
 
-#endif /* __CONTEXT_PEDOMETER_QUERIER_H__ */
+#endif /* __CONTEXT_PRESSURE_QUERIER_H__ */

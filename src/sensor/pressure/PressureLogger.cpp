@@ -16,8 +16,8 @@
 
 #include <sqlite3.h>
 #include <SensorRecorderTypes.h>
-#include "TypesInternal.h"
-#include "ClientInfo.h"
+#include "../TypesInternal.h"
+#include "../ClientInfo.h"
 #include "PressureLogger.h"
 
 #define INSERTION_THRESHOLD	20000

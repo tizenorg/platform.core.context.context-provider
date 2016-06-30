@@ -17,8 +17,8 @@
 #ifndef __CONTEXT_PEDOMETER_LOGGER_H__
 #define __CONTEXT_PEDOMETER_LOGGER_H__
 
-#include "SensorLogger.h"
-#include "SensorProxy.h"
+#include "../SensorLogger.h"
+#include "../SensorProxy.h"
 
 namespace ctx {
 

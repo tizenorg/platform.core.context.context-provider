@@ -16,7 +16,7 @@
 
 #include <SensorRecorderTypes.h>
 #include <Util.h>
-#include "TypesInternal.h"
+#include "../TypesInternal.h"
 #include "PedometerLogger.h"
 #include "PedometerQuerier.h"
 #include "Pedometer.h"

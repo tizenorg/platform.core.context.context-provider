@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PRESSURE_QUERIER_H__
-#define __CONTEXT_PRESSURE_QUERIER_H__
+#ifndef __CONTEXT_PRESSURE_LOGGER_H__
+#define __CONTEXT_PRESSURE_LOGGER_H__
 
-#include "Querier.h"
+#include "../SensorLogger.h"
+#include "../SensorProxy.h"
 
 namespace ctx {
 
-	class PressureQuerier : public Querier {
+	class PressureLogger : public SensorLogger, public SensorProxy {
 	public:
-		PressureQuerier(ContextProvider *provider, Json option);
-		~PressureQuerier();
+		PressureLogger();
+		~PressureLogger();
 
-		int queryRaw(int startTime, int endTime);
-		int query(int startTime, int endTime);
-		int query(int startTime, int endTime, int anchor, int interval);
+		bool start();
+		void stop();
+
+	protected:
+		void onEvent(sensor_data_t *eventData);
+
+	private:
+		void __record(sensor_data_t *eventData, uint64_t receivedTime);
+		void __resetInsertionQuery();
+
+		uint64_t __lastInsertionTime;
+		std::string __insertionQuery;
 	};
 }
 
-#endif /* __CONTEXT_PRESSURE_QUERIER_H__ */
+#endif /* __CONTEXT_PRESSURE_LOGGER_H__ */

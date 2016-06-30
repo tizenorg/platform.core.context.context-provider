@@ -16,8 +16,8 @@
 
 #include <SensorRecorderTypes.h>
 #include <CreateProvider.h>
-#include "Pedometer.h"
-#include "Pressure.h"
+#include "pedometer/Pedometer.h"
+#include "pressure/Pressure.h"
 
 using namespace ctx;
 

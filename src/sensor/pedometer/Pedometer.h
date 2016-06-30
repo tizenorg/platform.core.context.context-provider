@@ -17,7 +17,7 @@
 #ifndef __CONTEXT_PEDOMETER_PROVIDER_H__
 #define __CONTEXT_PEDOMETER_PROVIDER_H__
 
-#include "SensorProvider.h"
+#include "../SensorProvider.h"
 
 namespace ctx {
 
