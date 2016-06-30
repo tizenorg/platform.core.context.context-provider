@@ -35,6 +35,7 @@ namespace ctx {
 
 		virtual bool start();
 		virtual void stop();
+		bool isRunning();
 		void flush();
 
 	protected:
@@ -46,8 +47,6 @@ namespace ctx {
 		void *userData;
 
 		static bool isSupported(sensor_type_t type);
-
-		bool isRunning();
 
 		virtual void onEvent(sensor_data_t *eventData) = 0;
 
