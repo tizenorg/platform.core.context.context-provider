@@ -18,9 +18,12 @@
 #define __CONTEXT_SENSOR_RECORDER_TYPES_INTERNAL_H__
 
 /* Tables */
-#define PEDOMETER_RECORD	"SensorPedometerRecord"
-#define PRESSURE_RECORD		"SensorPressureRecord"
 #define CLIENT_INFO			"SensorClientInfo"
+
+#define PEDOMETER_RECORD		"SensorPedometerRecord"
+#define PRESSURE_RECORD			"SensorPressureRecord"
+#define SLEEP_MONITOR_RECORD	"SensorSleepMonitorRecord"
+#define HEART_RATE_RECORD		"SensorHeartRateRecord"
 
 /* Privileges */
 #define PRIV_HEALTHINFO		"healthinfo"
