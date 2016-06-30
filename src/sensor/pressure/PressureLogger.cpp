@@ -49,26 +49,26 @@ PressureLogger::PressureLogger()
 
 PressureLogger::~PressureLogger()
 {
+	stop();
 }
 
 bool PressureLogger::start()
 {
-	if (SensorProxy::isRunning())
-		return true;
-
+	IF_FAIL_RETURN_TAG(!isRunning(), true, _D, "Started already");
 	_I(GREEN("Start to record"));
 
 	__lastInsertionTime = TimeUtil::getTime();
 	__resetInsertionQuery();
 
-	return SensorProxy::start();
+	return listen();
 }
 
 void PressureLogger::stop()
 {
+	IF_FAIL_VOID_TAG(isRunning(), _D, "Stopped already");
 	_I(GREEN("Stop recording"));
 
-	SensorProxy::stop();
+	unlisten();
 }
 
 void PressureLogger::onEvent(sensor_data_t *eventData)

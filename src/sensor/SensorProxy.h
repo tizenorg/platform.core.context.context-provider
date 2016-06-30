@@ -33,8 +33,8 @@ namespace ctx {
 		void setBatchLatency(unsigned int latency);
 		void setUserData(void *data);
 
-		virtual bool start();
-		virtual void stop();
+		bool listen();
+		void unlisten();
 		bool isRunning();
 		void flush();
 

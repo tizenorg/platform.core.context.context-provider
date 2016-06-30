@@ -47,16 +47,15 @@ PedometerLogger::PedometerLogger() :
 
 PedometerLogger::~PedometerLogger()
 {
+	stop();
 }
 
 bool PedometerLogger::start()
 {
-	if (SensorProxy::isRunning())
-		return true;
-
+	IF_FAIL_RETURN_TAG(!isRunning(), true, _D, "Started already");
 	_I(GREEN("Start to record"));
 
-	if (SensorProxy::start()) {
+	if (listen()) {
 		flush();
 		return true;
 	}
@@ -66,9 +65,10 @@ bool PedometerLogger::start()
 
 void PedometerLogger::stop()
 {
+	IF_FAIL_VOID_TAG(isRunning(), _D, "Stopped already");
 	_I(GREEN("Stop recording"));
 
-	SensorProxy::stop();
+	unlisten();
 	__firstEvent = true;
 }
 
