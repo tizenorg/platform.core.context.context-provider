@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-#include <SensorRecorderTypes.h>
-#include <CreateProvider.h>
-#include "pedometer/Pedometer.h"
-#include "pressure/Pressure.h"
-#include "sleep/Sleep.h"
+#ifndef __CONTEXT_SLEEP_QUERIER_H__
+#define __CONTEXT_SLEEP_QUERIER_H__
 
-using namespace ctx;
+#include "../Querier.h"
 
-extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_SENSOR_PEDOMETER, PedometerProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_PRESSURE,  PressureProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_SLEEP_MONITOR,  SleepProvider);
+namespace ctx {
 
-	return NULL;
+	class SleepQuerier : public Querier {
+	public:
+		SleepQuerier(ContextProvider *provider, Json option);
+		~SleepQuerier();
+
+		int queryRaw(int startTime, int endTime);
+		int query(int startTime, int endTime);
+	};
 }
+
+#endif /* __CONTEXT_SLEEP_QUERIER_H__ */

@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-#include <SensorRecorderTypes.h>
-#include <CreateProvider.h>
-#include "pedometer/Pedometer.h"
-#include "pressure/Pressure.h"
-#include "sleep/Sleep.h"
+#ifndef __CONTEXT_SLEEP_DETECTOR_H__
+#define __CONTEXT_SLEEP_DETECTOR_H__
 
-using namespace ctx;
+#include "../SensorProxy.h"
+#include "SleepLogger.h"
 
-extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_SENSOR_PEDOMETER, PedometerProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_PRESSURE,  PressureProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_SLEEP_MONITOR,  SleepProvider);
+namespace ctx {
 
-	return NULL;
+	class SleepDetector : public SensorProxy {
+	public:
+		SleepDetector(SleepLogger *logger);
+		~SleepDetector();
+
+		bool start();
+		void stop();
+
+	protected:
+		void onEvent(sensor_data_t *eventData);
+
+	private:
+		SleepLogger *__logger;
+	};
 }
+
+#endif /* __CONTEXT_SLEEP_DETECTOR_H__ */
