@@ -29,6 +29,7 @@ namespace ctx {
 
 		bool start();
 		void stop();
+		void flushCache(bool force = false);
 
 	protected:
 		void onEvent(sensor_data_t *eventData);
@@ -44,9 +45,11 @@ namespace ctx {
 
 		void __recordSingle(sensor_pedometer_data_t *eventData, uint64_t timestamp);
 		void __recordBatch(sensor_pedometer_data_t *eventData, uint64_t timestamp);
+		void __setRecord(DataRecord &record, uint64_t timestamp, sensor_pedometer_data_t *eventData);
 
 		bool __firstEvent;
 		DataRecord __baseline;
+		DataRecord __lastRecord;
 	};
 }
 
