@@ -119,6 +119,9 @@ int SensorProvider::__addClient(std::string pkgId, int retentionPeriod, Json opt
 	Json tmp;
 	int ret;
 
+	/* Validate the retention period */
+	IF_FAIL_RETURN(retentionPeriod > 0 && retentionPeriod <= MAX_RETENTION_PERIOD, ERR_INVALID_PARAMETER);
+
 	/* Check if the app already started Sensor recording */
 	ret = __clientInfo.get(getSubject(), pkgId, tmp);
 	IF_FAIL_RETURN(ret != ERR_NONE, ERR_ALREADY_STARTED);

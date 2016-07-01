@@ -33,7 +33,7 @@
 #define SECONDS_PER_HOUR	3600
 #define SECONDS_PER_DAY		86400
 
-/* Default  Parameters */
+#define MAX_RETENTION_PERIOD	2678400				/* 1 month (31 days) */
 #define DEFAULT_RETENTION		SECONDS_PER_HOUR	/* 1 hour */
 #define DEFAULT_QUERY_PERIOD	SECONDS_PER_DAY		/* 1 day */
 
