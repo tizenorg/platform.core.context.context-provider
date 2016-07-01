@@ -16,39 +16,34 @@
 
 #include <SensorRecorderTypes.h>
 #include <Util.h>
-#include "TypesInternal.h"
-#include "PedometerLogger.h"
-#include "PedometerQuerier.h"
-#include "Pedometer.h"
+#include "../TypesInternal.h"
+#include "PressureLogger.h"
+#include "PressureQuerier.h"
+#include "Pressure.h"
 
 using namespace ctx;
 
-PedometerProvider::PedometerProvider() :
-	SensorProvider(SUBJ_SENSOR_PEDOMETER)
+PressureProvider::PressureProvider() :
+	SensorProvider(SUBJ_SENSOR_PRESSURE)
 {
 	IF_FAIL_VOID(isSupported());
 
-	sensorLogger = new(std::nothrow) PedometerLogger();
+	sensorLogger = new(std::nothrow) PressureLogger();
 	IF_FAIL_VOID_TAG(sensorLogger, _E, "Memory allocation failed");
 }
 
-PedometerProvider::~PedometerProvider()
+PressureProvider::~PressureProvider()
 {
 }
 
-void PedometerProvider::getPrivilege(std::vector<const char*> &privilege)
+bool PressureProvider::isSupported()
 {
-	privilege.push_back(PRIV_HEALTHINFO);
+	return util::getSystemInfoBool("tizen.org/feature/sensor.barometer");
 }
 
-bool PedometerProvider::isSupported()
+Querier* PressureProvider::getQuerier(Json option)
 {
-	return util::getSystemInfoBool("tizen.org/feature/sensor.pedometer");
-}
-
-Querier* PedometerProvider::getQuerier(Json option)
-{
-	PedometerQuerier *querier = new(std::nothrow) PedometerQuerier(this, option);
+	PressureQuerier *querier = new(std::nothrow) PressureQuerier(this, option);
 	IF_FAIL_RETURN_TAG(querier, NULL, _E, "Memory allocation failed");
 	return querier;
 }

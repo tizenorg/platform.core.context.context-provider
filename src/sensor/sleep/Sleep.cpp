@@ -16,34 +16,39 @@
 
 #include <SensorRecorderTypes.h>
 #include <Util.h>
-#include "TypesInternal.h"
-#include "PressureLogger.h"
-#include "PressureQuerier.h"
-#include "Pressure.h"
+#include "../TypesInternal.h"
+#include "SleepLogger.h"
+#include "SleepQuerier.h"
+#include "Sleep.h"
 
 using namespace ctx;
 
-PressureProvider::PressureProvider() :
-	SensorProvider(SUBJ_SENSOR_PRESSURE)
+SleepProvider::SleepProvider() :
+	SensorProvider(SUBJ_SENSOR_SLEEP_MONITOR)
 {
 	IF_FAIL_VOID(isSupported());
 
-	sensorLogger = new(std::nothrow) PressureLogger();
+	sensorLogger = new(std::nothrow) SleepLogger();
 	IF_FAIL_VOID_TAG(sensorLogger, _E, "Memory allocation failed");
 }
 
-PressureProvider::~PressureProvider()
+SleepProvider::~SleepProvider()
 {
 }
 
-bool PressureProvider::isSupported()
+void SleepProvider::getPrivilege(std::vector<const char*> &privilege)
 {
-	return util::getSystemInfoBool("tizen.org/feature/sensor.barometer");
+	privilege.push_back(PRIV_HEALTHINFO);
 }
 
-Querier* PressureProvider::getQuerier(Json option)
+bool SleepProvider::isSupported()
 {
-	PressureQuerier *querier = new(std::nothrow) PressureQuerier(this, option);
+	return util::getSystemInfoBool("tizen.org/feature/sensor.sleep_monitor");
+}
+
+Querier* SleepProvider::getQuerier(Json option)
+{
+	SleepQuerier *querier = new(std::nothrow) SleepQuerier(this, option);
 	IF_FAIL_RETURN_TAG(querier, NULL, _E, "Memory allocation failed");
 	return querier;
 }

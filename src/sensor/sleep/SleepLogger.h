@@ -14,40 +14,38 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PEDOMETER_LOGGER_H__
-#define __CONTEXT_PEDOMETER_LOGGER_H__
+#ifndef __CONTEXT_SLEEP_LOGGER_H__
+#define __CONTEXT_SLEEP_LOGGER_H__
 
-#include "SensorLogger.h"
-#include "SensorProxy.h"
+#include "../SensorLogger.h"
+
+#define STATE_SLEEP	1
+#define STATE_WAKE	0
 
 namespace ctx {
 
-	class PedometerLogger : public SensorLogger, public SensorProxy {
+	class SleepLogger : public SensorLogger {
 	public:
-		PedometerLogger();
-		~PedometerLogger();
+		SleepLogger();
+		~SleepLogger();
 
 		bool start();
 		void stop();
 
-	protected:
-		void onEvent(sensor_data_t *eventData);
+		void fallAsleep(uint64_t timestamp);
+		void wakeUp(uint64_t timestamp);
+
+		void record(uint64_t startTime, uint64_t endTime, int state);
+		void flushCache(bool force = false);
 
 	private:
-		struct DataRecord {
-			uint64_t timestamp;
-			unsigned int walkSteps;
-			unsigned int runSteps;
-			float distance;
-			float calories;
-		};
+		void __resetInsertionQuery();
+		void __appendQuery(uint64_t startTime, uint64_t endTime);
 
-		void __recordSingle(sensor_pedometer_data_t *eventData, uint64_t timestamp);
-		void __recordBatch(sensor_pedometer_data_t *eventData, uint64_t timestamp);
-
-		bool __firstEvent;
-		DataRecord __baseline;
+		std::string __insertionQuery;
+		uint64_t __startTime;
+		uint64_t __endTime;
 	};
 }
 
-#endif /* __CONTEXT_PEDOMETER_LOGGER_H__ */
+#endif /* __CONTEXT_SLEEP_LOGGER_H__ */

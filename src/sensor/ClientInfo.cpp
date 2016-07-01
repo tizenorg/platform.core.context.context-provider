@@ -18,19 +18,22 @@
 #include <Types.h>
 #include <SensorRecorderTypes.h>
 #include "TypesInternal.h"
+#include "SensorProvider.h"
 #include "ClientInfo.h"
 
 using namespace ctx;
 
 unsigned int ClientInfo::__refCnt = 0;
 DatabaseManager *ClientInfo::__dbMgr = NULL;
+UninstallMonitor *ClientInfo::__uninstallMonitor = NULL;
 
 ClientInfo::ClientInfo()
 {
-	++__refCnt;
-
-	if (__dbMgr)
+	if (++__refCnt != 1)
 		return;
+
+	__uninstallMonitor = new(std::nothrow) UninstallMonitor();
+	IF_FAIL_VOID_TAG(__uninstallMonitor, _E, "Memory allocation failed");
 
 	__dbMgr = new(std::nothrow) DatabaseManager();
 	IF_FAIL_VOID_TAG(__dbMgr, _E, "Memory allocation failed");
@@ -54,6 +57,9 @@ ClientInfo::~ClientInfo()
 
 	delete __dbMgr;
 	__dbMgr = NULL;
+
+	delete __uninstallMonitor;
+	__uninstallMonitor = NULL;
 }
 
 int ClientInfo::get(std::string subject, std::string pkgId, Json& option)
@@ -98,7 +104,7 @@ int ClientInfo::get(std::string subject, std::vector<Json>& options)
 	IF_FAIL_RETURN(ret, ERR_OPERATION_FAILED);
 	IF_FAIL_RETURN(!records.empty(), ERR_NO_DATA);
 
-	for (auto jObj : records) {
+	for (Json& jObj : records) {
 		if (!jObj.get(NULL, KEY_OPTION, &optStr))
 			continue;
 		options.push_back(Json(optStr));
@@ -156,4 +162,28 @@ bool ClientInfo::remove(std::string subject, std::string pkgId)
 	sqlite3_free(query);
 
 	return ret;
+}
+
+void ClientInfo::purgeClient(std::string pkgId)
+{
+	IF_FAIL_VOID_TAG(__dbMgr, _W, "DB not initialized");
+
+	bool ret;
+	std::string subject;
+	std::vector<Json> records;
+
+	char *query = sqlite3_mprintf(
+			"SELECT " KEY_SUBJECT " FROM " CLIENT_INFO " WHERE " KEY_PKG_ID "='%q'",
+			pkgId.c_str());
+
+	ret = __dbMgr->executeSync(query, &records);
+	sqlite3_free(query);
+	IF_FAIL_VOID(ret);
+
+	for (Json& jObj : records) {
+		if (!jObj.get(NULL, KEY_SUBJECT, &subject))
+			continue;
+		_I("Stop recording '%s' for '%s'", subject.c_str(), pkgId.c_str());
+		SensorProvider::removeClient(subject, pkgId);
+	}
 }

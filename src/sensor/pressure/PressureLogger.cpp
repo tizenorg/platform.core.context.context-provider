@@ -16,14 +16,16 @@
 
 #include <sqlite3.h>
 #include <SensorRecorderTypes.h>
-#include "TypesInternal.h"
-#include "ClientInfo.h"
+#include "../TypesInternal.h"
+#include "../ClientInfo.h"
+#include "../TimeUtil.h"
 #include "PressureLogger.h"
 
-#define INSERTION_THRESHOLD	20000
 #define SAMPLING_INTERVAL	60000
 #define BATCH_LATENCY		INT_MAX
-#define MAX_QUERY_LENGTH	1000
+
+#define RESAMPLING_INTERVAL	20000
+#define CACHE_LIMIT			20
 
 using namespace ctx;
 
@@ -48,52 +50,62 @@ PressureLogger::PressureLogger()
 
 PressureLogger::~PressureLogger()
 {
+	stop();
 }
 
 bool PressureLogger::start()
 {
-	if (SensorProxy::isRunning())
-		return true;
-
+	IF_FAIL_RETURN_TAG(!isRunning(), true, _D, "Started already");
 	_I(GREEN("Start to record"));
 
-	__lastInsertionTime = getTime();
+	__lastEventTime = 0;
+	__cacheCount = 0;
 	__resetInsertionQuery();
 
-	return SensorProxy::start();
+	return listen();
 }
 
 void PressureLogger::stop()
 {
+	IF_FAIL_VOID_TAG(isRunning(), _D, "Stopped already");
 	_I(GREEN("Stop recording"));
 
-	SensorProxy::stop();
+	unlisten();
+	flushCache(true);
 }
 
-void PressureLogger::onEvent(sensor_data_t *eventData)
+void PressureLogger::flushCache(bool force)
 {
-	uint64_t receivedTime = getTime();
-	__record(eventData, receivedTime);
-	removeExpired(SUBJ_SENSOR_PRESSURE, PRESSURE_RECORD, KEY_UNIV_TIME);
-}
-
-void PressureLogger::__record(sensor_data_t *eventData, uint64_t receivedTime)
-{
-	char buffer[64];
-	g_snprintf(buffer, sizeof(buffer), "(%llu, %.5f),",
-			getTime(eventData->timestamp), eventData->values[0]);
-
-	__insertionQuery += buffer;
-
-	if (receivedTime - __lastInsertionTime < INSERTION_THRESHOLD && __insertionQuery.size() < MAX_QUERY_LENGTH)
-		return;
+	IF_FAIL_VOID(force || __cacheCount > CACHE_LIMIT);
 
 	__insertionQuery.resize(__insertionQuery.size() - 1);
 	if (__insertionQuery.at(__insertionQuery.size() - 1) == ')')
 		executeQuery(__insertionQuery.c_str());
 
-	__lastInsertionTime = receivedTime;
+	__cacheCount = 0;
 	__resetInsertionQuery();
+}
+
+void PressureLogger::onEvent(sensor_data_t *eventData)
+{
+	uint64_t eventTime = TimeUtil::getTime(eventData->timestamp);
+	__record(eventData->values[0], eventTime);
+	removeExpired(SUBJ_SENSOR_PRESSURE, PRESSURE_RECORD, KEY_UNIV_TIME);
+}
+
+void PressureLogger::__record(float pressure, uint64_t eventTime)
+{
+	IF_FAIL_VOID(eventTime - __lastEventTime >= RESAMPLING_INTERVAL);
+
+	char buffer[64];
+	g_snprintf(buffer, sizeof(buffer), "(%llu, %.5f),", eventTime, pressure);
+	_D("[%u] %s", __cacheCount, buffer);
+
+	__insertionQuery += buffer;
+	__lastEventTime = eventTime;
+	++__cacheCount;
+
+	flushCache();
 }
 
 void PressureLogger::__resetInsertionQuery()

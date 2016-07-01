@@ -17,6 +17,7 @@
 #ifndef __CONTEXT_SENSOR_PROVIDER_H__
 #define __CONTEXT_SENSOR_PROVIDER_H__
 
+#include <map>
 #include <ContextProvider.h>
 #include "ClientInfo.h"
 #include "SensorLogger.h"
@@ -34,6 +35,8 @@ namespace ctx {
 		virtual int read(Json option, Json *requestResult);
 		virtual int write(Json data, Json *requestResult);
 
+		static void removeClient(std::string subject, std::string pkgId);
+
 	protected:
 		virtual Querier* getQuerier(Json option) = 0;
 
@@ -44,6 +47,8 @@ namespace ctx {
 		int __removeClient(std::string pkgId);
 
 		ClientInfo __clientInfo;
+
+		static std::map<std::string, SensorProvider*> __providerMap;
 	};
 }
 
