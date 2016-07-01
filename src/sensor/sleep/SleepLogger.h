@@ -18,7 +18,6 @@
 #define __CONTEXT_SLEEP_LOGGER_H__
 
 #include "../SensorLogger.h"
-#include "../SensorProxy.h"
 
 #define STATE_SLEEP	1
 #define STATE_WAKE	0
@@ -44,8 +43,6 @@ namespace ctx {
 		void __appendQuery(uint64_t startTime, uint64_t endTime);
 
 		std::string __insertionQuery;
-		SensorProxy *__sleepDetector;
-		SensorProxy *__sleepMonitor;
 		uint64_t __startTime;
 		uint64_t __endTime;
 	};

@@ -27,12 +27,16 @@
 
 using namespace ctx;
 
+static SleepDetector *__sleepDetector = NULL;
+static SleepMonitor  *__sleepMonitor  = NULL;
+
 SleepLogger::SleepLogger() :
-	__sleepDetector(NULL),
-	__sleepMonitor(NULL),
 	__startTime(0),
 	__endTime(0)
 {
+	__sleepDetector = NULL;
+	__sleepMonitor = NULL;
+
 	/* Create the log table */
 	executeQuery(
 			"CREATE TABLE IF NOT EXISTS " SLEEP_MONITOR_RECORD " (" \
@@ -81,7 +85,7 @@ bool SleepLogger::start()
 	__endTime = 0;
 	__resetInsertionQuery();
 
-	return dynamic_cast<SleepDetector*>(__sleepDetector)->start();
+	return __sleepDetector->start();
 }
 
 void SleepLogger::stop()
@@ -89,8 +93,8 @@ void SleepLogger::stop()
 	IF_FAIL_VOID_TAG(__sleepDetector, _D, "Stopped already");
 	_I(GREEN("Stop recording"));
 
-	dynamic_cast<SleepDetector*>(__sleepDetector)->stop();
-	dynamic_cast<SleepMonitor*>(__sleepMonitor)->stop();
+	__sleepDetector->stop();
+	__sleepMonitor->stop();
 
 	__appendQuery(__startTime, __endTime);
 	flush();
@@ -106,13 +110,13 @@ void SleepLogger::fallAsleep(uint64_t timestamp)
 {
 	_D("Fall asleep");
 	record(timestamp, TimeUtil::getTime(), STATE_SLEEP);
-	dynamic_cast<SleepMonitor*>(__sleepMonitor)->start();
+	__sleepMonitor->start();
 }
 
 void SleepLogger::wakeUp(uint64_t timestamp)
 {
 	_D("Wake up");
-	dynamic_cast<SleepMonitor*>(__sleepMonitor)->lazyStop();
+	__sleepMonitor->lazyStop();
 }
 
 void SleepLogger::record(uint64_t startTime, uint64_t endTime, int state)
