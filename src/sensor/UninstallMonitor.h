@@ -17,7 +17,6 @@
 #ifndef __CONTEXT_UNINSTALL_MONITOR_H__
 #define __CONTEXT_UNINSTALL_MONITOR_H__
 
-#include <string>
 #include <DBusSignalWatcher.h>
 
 namespace ctx {
@@ -32,7 +31,6 @@ namespace ctx {
 	private:
 		int64_t __dbusSignalId;
 		DBusSignalWatcher __dbusWatcher;
-		std::string __pkgId;
 	};
 
 }

@@ -24,7 +24,7 @@ UninstallMonitor::UninstallMonitor() :
 	__dbusWatcher(DBusType::SYSTEM)
 {
 	__dbusSignalId = __dbusWatcher.watch(NULL,
-			"/org/tizen/pkgmgr_status", "org.tizen.pkgmgr_status", "status", this);
+			"/org/tizen/pkgmgr/signal", "org.tizen.pkgmgr.signal", "uninstall", this);
 }
 
 UninstallMonitor::~UninstallMonitor()
@@ -35,32 +35,15 @@ UninstallMonitor::~UninstallMonitor()
 
 void UninstallMonitor::onSignal(const char *sender, const char *path, const char *iface, const char *name, GVariant *param)
 {
-	const gchar *reqId = NULL;
-	const gchar *pkgType = NULL;
 	const gchar *pkgId = NULL;
 	const gchar *key = NULL;
 	const gchar *val = NULL;
 
-	g_variant_get(param, "(&s&s&s&s&s)", &reqId, &pkgType, &pkgId, &key, &val);
+	g_variant_get(param, "(u&s&s&s&s&s&s)", NULL, NULL, NULL, &pkgId, NULL, &key, &val);
 	_D("%s, %s, %s", pkgId, key, val);
 
-	IF_FAIL_VOID_TAG(pkgId && key && val, _E, "Invalid parameter");
+	IF_FAIL_VOID(pkgId && STR_EQ(key, "end") && STR_EQ(val, "ok"));
 
-	if (STR_EQ(key, "start")) {
-		if (STR_EQ(val, "uninstall")) {
-			__pkgId = pkgId;
-		} else {
-			__pkgId.clear();
-		}
-		return;
-	}
-
-	if (__pkgId.empty() || !STR_EQ(key, "end") || !STR_EQ(val, "ok"))
-		return;
-
-	_I("'%s' has been removed", __pkgId.c_str());
-
-	ClientInfo::purgeClient(__pkgId);
-
-	__pkgId.clear();
+	_I("'%s' has been removed", pkgId);
+	ClientInfo::purgeClient(pkgId);
 }
