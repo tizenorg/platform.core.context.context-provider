@@ -22,14 +22,18 @@
 
 using namespace ctx;
 
+std::map<std::string, SensorProvider*> SensorProvider::__providerMap;
+
 SensorProvider::SensorProvider(const char *subject) :
 	ContextProvider(subject),
 	sensorLogger(NULL)
 {
+	__providerMap[subject] = this;
 }
 
 SensorProvider::~SensorProvider()
 {
+	__providerMap.erase(getSubject());
 	delete sensorLogger;
 }
 
@@ -154,4 +158,9 @@ int SensorProvider::__removeClient(std::string pkgId)
 	sensorLogger->stop();
 
 	return ERR_NONE;
+}
+
+void SensorProvider::removeClient(std::string subject, std::string pkgId)
+{
+	__providerMap[subject]->__removeClient(pkgId);
 }

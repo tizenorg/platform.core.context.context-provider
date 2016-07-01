@@ -21,6 +21,7 @@
 #include <vector>
 #include <Json.h>
 #include <DatabaseManager.h>
+#include "UninstallMonitor.h"
 
 namespace ctx {
 
@@ -36,9 +37,12 @@ namespace ctx {
 		bool set(std::string subject, std::string pkgId, Json option, int retentionPeriod);
 		bool remove(std::string subject, std::string pkgId);
 
+		static void purgeClient(std::string pkgId);
+
 	private:
 		static unsigned int __refCnt;
 		static DatabaseManager *__dbMgr;
+		static UninstallMonitor *__uninstallMonitor;
 	};
 }
 
