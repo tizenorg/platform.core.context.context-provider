@@ -98,6 +98,7 @@ int SensorProvider::write(Json data, Json *requestResult)
 
 	std::string operation;
 	std::string pkgId;
+	Json option;
 	int retentionPeriod = DEFAULT_RETENTION;
 
 	_J("Data", data);
@@ -105,13 +106,15 @@ int SensorProvider::write(Json data, Json *requestResult)
 	IF_FAIL_RETURN(data.get(NULL, KEY_OPERATION, &operation), ERR_INVALID_PARAMETER);
 	IF_FAIL_RETURN(data.get(NULL, KEY_CLIENT_PKG_ID, &pkgId), ERR_INVALID_PARAMETER);
 
-	if (data.get(NULL, KEY_RETENTION, &retentionPeriod))
-		retentionPeriod *= SECONDS_PER_HOUR;
+	data.get(NULL, KEY_OPTION, &option);
 
-	/* TODO: remove the operation & pkg id from the json */
+	if (option.get(NULL, KEY_RETENTION, &retentionPeriod)) {
+		retentionPeriod *= SECONDS_PER_HOUR;
+		option.remove(NULL, KEY_RETENTION);
+	}
 
 	if (operation == VAL_START)
-		return __addClient(pkgId, retentionPeriod, data);
+		return __addClient(pkgId, retentionPeriod, option);
 	else if (operation == VAL_STOP)
 		return __removeClient(pkgId);
 
