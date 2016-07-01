@@ -31,6 +31,10 @@ SensorLogger::~SensorLogger()
 {
 }
 
+void SensorLogger::flushCache(bool force)
+{
+}
+
 bool SensorLogger::executeQuery(const char *query)
 {
 	return __dbMgr.execute(0, query, NULL);

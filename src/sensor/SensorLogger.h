@@ -28,6 +28,7 @@ namespace ctx {
 
 		virtual bool start() = 0;
 		virtual void stop() = 0;
+		virtual void flushCache(bool force = false);
 
 	protected:
 		bool executeQuery(const char *query);

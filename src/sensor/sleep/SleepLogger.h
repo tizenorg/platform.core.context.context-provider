@@ -36,7 +36,7 @@ namespace ctx {
 		void wakeUp(uint64_t timestamp);
 
 		void record(uint64_t startTime, uint64_t endTime, int state);
-		void flush();
+		void flushCache(bool force = false);
 
 	private:
 		void __resetInsertionQuery();

@@ -97,7 +97,7 @@ void SleepLogger::stop()
 	__sleepMonitor->stop();
 
 	__appendQuery(__startTime, __endTime);
-	flush();
+	flushCache();
 
 	delete __sleepDetector;
 	__sleepDetector = NULL;
@@ -143,7 +143,7 @@ void SleepLogger::record(uint64_t startTime, uint64_t endTime, int state)
 	_D("Reset event: %llu ~ %llu", __startTime, __endTime);
 }
 
-void SleepLogger::flush()
+void SleepLogger::flushCache(bool force)
 {
 	__insertionQuery.resize(__insertionQuery.size() - 1);
 	if (__insertionQuery.at(__insertionQuery.size() - 1) == ')')

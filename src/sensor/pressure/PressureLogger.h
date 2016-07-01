@@ -29,15 +29,17 @@ namespace ctx {
 
 		bool start();
 		void stop();
+		void flushCache(bool force = false);
 
 	protected:
 		void onEvent(sensor_data_t *eventData);
 
 	private:
-		void __record(sensor_data_t *eventData, uint64_t receivedTime);
+		void __record(float pressure, uint64_t eventTime);
 		void __resetInsertionQuery();
 
-		uint64_t __lastInsertionTime;
+		uint64_t __lastEventTime;
+		uint32_t __cacheCount;
 		std::string __insertionQuery;
 	};
 }

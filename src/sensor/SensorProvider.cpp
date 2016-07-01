@@ -79,6 +79,8 @@ int SensorProvider::read(Json option, Json *requestResult)
 	Querier *querier = getQuerier(option);
 	IF_FAIL_RETURN(querier, ERR_OPERATION_FAILED);
 
+	sensorLogger->flushCache(true);
+
 	if (interval == 0)
 		ret = querier->queryRaw(startTime, endTime);
 	else if (interval > 0)

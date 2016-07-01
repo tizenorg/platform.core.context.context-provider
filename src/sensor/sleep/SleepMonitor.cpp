@@ -68,7 +68,7 @@ void SleepMonitor::onEvent(sensor_data_t *eventData)
 	if (static_cast<int>(eventData->values[IDX_REMAINING]) > 0)
 		return;
 
-	__logger->flush();
+	__logger->flushCache();
 
 	if (__lazyStopOn)
 		stop();
