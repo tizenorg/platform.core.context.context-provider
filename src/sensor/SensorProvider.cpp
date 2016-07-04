@@ -22,14 +22,18 @@
 
 using namespace ctx;
 
+std::map<std::string, SensorProvider*> SensorProvider::__providerMap;
+
 SensorProvider::SensorProvider(const char *subject) :
 	ContextProvider(subject),
 	sensorLogger(NULL)
 {
+	__providerMap[subject] = this;
 }
 
 SensorProvider::~SensorProvider()
 {
+	__providerMap.erase(getSubject());
 	delete sensorLogger;
 }
 
@@ -75,6 +79,8 @@ int SensorProvider::read(Json option, Json *requestResult)
 	Querier *querier = getQuerier(option);
 	IF_FAIL_RETURN(querier, ERR_OPERATION_FAILED);
 
+	sensorLogger->flushCache(true);
+
 	if (interval == 0)
 		ret = querier->queryRaw(startTime, endTime);
 	else if (interval > 0)
@@ -94,6 +100,7 @@ int SensorProvider::write(Json data, Json *requestResult)
 
 	std::string operation;
 	std::string pkgId;
+	Json option;
 	int retentionPeriod = DEFAULT_RETENTION;
 
 	_J("Data", data);
@@ -101,13 +108,15 @@ int SensorProvider::write(Json data, Json *requestResult)
 	IF_FAIL_RETURN(data.get(NULL, KEY_OPERATION, &operation), ERR_INVALID_PARAMETER);
 	IF_FAIL_RETURN(data.get(NULL, KEY_CLIENT_PKG_ID, &pkgId), ERR_INVALID_PARAMETER);
 
-	if (data.get(NULL, KEY_RETENTION, &retentionPeriod))
-		retentionPeriod *= SECONDS_PER_HOUR;
+	data.get(NULL, KEY_OPTION, &option);
 
-	/* TODO: remove the operation & pkg id from the json */
+	if (option.get(NULL, KEY_RETENTION, &retentionPeriod)) {
+		retentionPeriod *= SECONDS_PER_HOUR;
+		option.remove(NULL, KEY_RETENTION);
+	}
 
 	if (operation == VAL_START)
-		return __addClient(pkgId, retentionPeriod, data);
+		return __addClient(pkgId, retentionPeriod, option);
 	else if (operation == VAL_STOP)
 		return __removeClient(pkgId);
 
@@ -118,6 +127,9 @@ int SensorProvider::__addClient(std::string pkgId, int retentionPeriod, Json opt
 {
 	Json tmp;
 	int ret;
+
+	/* Validate the retention period */
+	IF_FAIL_RETURN(retentionPeriod > 0 && retentionPeriod <= MAX_RETENTION_PERIOD, ERR_INVALID_PARAMETER);
 
 	/* Check if the app already started Sensor recording */
 	ret = __clientInfo.get(getSubject(), pkgId, tmp);
@@ -151,4 +163,9 @@ int SensorProvider::__removeClient(std::string pkgId)
 	sensorLogger->stop();
 
 	return ERR_NONE;
+}
+
+void SensorProvider::removeClient(std::string subject, std::string pkgId)
+{
+	__providerMap[subject]->__removeClient(pkgId);
 }

@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PRESSURE_QUERIER_H__
-#define __CONTEXT_PRESSURE_QUERIER_H__
+#ifndef __CONTEXT_SLEEP_DETECTOR_H__
+#define __CONTEXT_SLEEP_DETECTOR_H__
 
-#include "Querier.h"
+#include "../SensorProxy.h"
+#include "SleepLogger.h"
 
 namespace ctx {
 
-	class PressureQuerier : public Querier {
+	class SleepDetector : public SensorProxy {
 	public:
-		PressureQuerier(ContextProvider *provider, Json option);
-		~PressureQuerier();
+		SleepDetector(SleepLogger *logger);
+		~SleepDetector();
 
-		int queryRaw(int startTime, int endTime);
-		int query(int startTime, int endTime);
-		int query(int startTime, int endTime, int anchor, int interval);
+		bool start();
+		void stop();
+
+	protected:
+		void onEvent(sensor_data_t *eventData);
+
+	private:
+		SleepLogger *__logger;
 	};
 }
 
-#endif /* __CONTEXT_PRESSURE_QUERIER_H__ */
+#endif /* __CONTEXT_SLEEP_DETECTOR_H__ */

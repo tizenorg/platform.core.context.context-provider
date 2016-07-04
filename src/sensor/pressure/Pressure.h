@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PEDOMETER_PROVIDER_H__
-#define __CONTEXT_PEDOMETER_PROVIDER_H__
+#ifndef __CONTEXT_PRESSURE_PROVIDER_H__
+#define __CONTEXT_PRESSURE_PROVIDER_H__
 
-#include "SensorProvider.h"
+#include "../SensorProvider.h"
 
 namespace ctx {
 
-	class PedometerProvider : public SensorProvider {
+	class PressureProvider : public SensorProvider {
 	public:
-		PedometerProvider();
-		~PedometerProvider();
+		PressureProvider();
+		~PressureProvider();
 
 		bool isSupported();
-		void getPrivilege(std::vector<const char*> &privilege);
 
 	protected:
 		Querier* getQuerier(Json option);
 	};
 }
 
-#endif /* _CONTEXT_PEDOMETER_PROVIDER_H_ */
+#endif /* _CONTEXT_PRESSURE_PROVIDER_H_ */

@@ -12,23 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-#ifndef __CONTEXT_PEDOMETER_QUERIER_H__
-#define __CONTEXT_PEDOMETER_QUERIER_H__
+#ifndef __CONTEXT_TIME_UTIL_H__
+#define __CONTEXT_TIME_UTIL_H__
 
-#include "Querier.h"
+#include <stdint.h>
 
 namespace ctx {
 
-	class PedometerQuerier : public Querier {
+	class TimeUtil {
 	public:
-		PedometerQuerier(ContextProvider *provider, Json option);
-		~PedometerQuerier();
+		static uint64_t getTime();
+		static uint64_t getTime(unsigned long long monotonic);
 
-		int query(int startTime, int endTime);
-		int query(int startTime, int endTime, int anchor, int interval);
+	private:
+		TimeUtil();
 	};
+
 }
 
-#endif /* __CONTEXT_PEDOMETER_QUERIER_H__ */
+#endif /* __CONTEXT_TIME_UTIL_H__ */

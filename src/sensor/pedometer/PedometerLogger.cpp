@@ -16,9 +16,12 @@
 
 #include <sqlite3.h>
 #include <SensorRecorderTypes.h>
-#include "TypesInternal.h"
-#include "ClientInfo.h"
+#include "../TypesInternal.h"
+#include "../ClientInfo.h"
+#include "../TimeUtil.h"
 #include "PedometerLogger.h"
+
+#define MIN_INTERVAL	60000
 
 using namespace ctx;
 
@@ -46,16 +49,15 @@ PedometerLogger::PedometerLogger() :
 
 PedometerLogger::~PedometerLogger()
 {
+	stop();
 }
 
 bool PedometerLogger::start()
 {
-	if (SensorProxy::isRunning())
-		return true;
-
+	IF_FAIL_RETURN_TAG(!isRunning(), true, _D, "Started already");
 	_I(GREEN("Start to record"));
 
-	if (SensorProxy::start()) {
+	if (listen()) {
 		flush();
 		return true;
 	}
@@ -65,67 +67,80 @@ bool PedometerLogger::start()
 
 void PedometerLogger::stop()
 {
+	IF_FAIL_VOID_TAG(isRunning(), _D, "Stopped already");
 	_I(GREEN("Stop recording"));
 
-	SensorProxy::stop();
+	unlisten();
 	__firstEvent = true;
+}
+
+void PedometerLogger::flushCache(bool force)
+{
+	DataRecord record;
+	record.walkSteps = __lastRecord.walkSteps - __baseline.walkSteps;
+	record.runSteps  = __lastRecord.runSteps - __baseline.runSteps;
+	record.distance  = __lastRecord.distance - __baseline.distance;
+	record.calories  = __lastRecord.calories - __baseline.calories;
+
+	if (record.walkSteps + record.runSteps > 0) {
+		char *query = sqlite3_mprintf(
+				"INSERT INTO " PEDOMETER_RECORD " (" \
+					KEY_START_TIME ", " \
+					KEY_END_TIME ", " \
+					KEY_WALK_STEPS ", " \
+					KEY_RUN_STEPS ", " \
+					KEY_DISTANCE ", " \
+					KEY_CALORIES ") " \
+					"VALUES (%llu, %llu, %u, %u, %.3f, %.3f)",
+				__baseline.timestamp, __lastRecord.timestamp, record.walkSteps, record.runSteps, record.distance, record.calories);
+		executeQuery(query);
+		sqlite3_free(query);
+	}
+
+	__baseline = __lastRecord;
 }
 
 void PedometerLogger::onEvent(sensor_data_t *eventData)
 {
 	sensor_pedometer_data_t *pedometerData = reinterpret_cast<sensor_pedometer_data_t*>(eventData);
-	uint64_t timestamp = getTime();
+	uint64_t timestamp = TimeUtil::getTime();
 
 	if (__firstEvent) {
-		_D("Baseline event");
 		__firstEvent = false;
+		__setRecord(__lastRecord, timestamp, pedometerData);
+		__baseline = __lastRecord;
+
+		_SD("Baseline: %u, %u, %.3f, %.3f",
+				__baseline.walkSteps, __baseline.runSteps, __baseline.distance, __baseline.calories);
+
 	} else if (pedometerData->diffs_count == 0) {
-		_D("Single event");
+		_SD("Single: %.0f, %.0f, %.3f, %.3f",
+				eventData->values[1], eventData->values[2], eventData->values[3], eventData->values[4]);
 		__recordSingle(pedometerData, timestamp);
+
 	} else {
-		_D("Batch event");
+		_SD("Batch [%d]: %.0f, %.0f, %.3f, %.3f",
+				pedometerData->diffs_count,
+				eventData->values[1], eventData->values[2], eventData->values[3], eventData->values[4]);
 		__recordBatch(pedometerData, timestamp);
 	}
-
-	__baseline.timestamp = timestamp;
-	__baseline.walkSteps = eventData->values[1];
-	__baseline.runSteps  = eventData->values[2];
-	__baseline.distance  = eventData->values[3];
-	__baseline.calories  = eventData->values[4];
-
-	_D("Baseline: %u, %u, %.3f, %.3f",
-			__baseline.walkSteps, __baseline.runSteps, __baseline.distance, __baseline.calories);
 
 	removeExpired(SUBJ_SENSOR_PEDOMETER, PEDOMETER_RECORD, KEY_END_TIME);
 }
 
 void PedometerLogger::__recordSingle(sensor_pedometer_data_t *eventData, uint64_t timestamp)
 {
-	DataRecord record;
-	record.walkSteps = static_cast<unsigned int>(eventData->values[1]) - __baseline.walkSteps;
-	record.runSteps  = static_cast<unsigned int>(eventData->values[2]) - __baseline.runSteps;
-	record.distance  = eventData->values[3] - __baseline.distance;
-	record.calories  = eventData->values[4] - __baseline.calories;
+	if (timestamp - __baseline.timestamp >= MIN_INTERVAL)
+		flushCache();
 
-	IF_FAIL_VOID_TAG(record.walkSteps + record.runSteps > 0, _D, "Skipping zero-count event");
-
-	char *query = sqlite3_mprintf(
-			"INSERT INTO " PEDOMETER_RECORD "(" \
-				KEY_START_TIME ", " \
-				KEY_END_TIME ", " \
-				KEY_WALK_STEPS ", " \
-				KEY_RUN_STEPS ", " \
-				KEY_DISTANCE ", " \
-				KEY_CALORIES ") " \
-				"VALUES (%llu, %llu, %u, %u, %.3f, %.3f)",
-			__baseline.timestamp, timestamp, record.walkSteps, record.runSteps, record.distance, record.calories);
-	executeQuery(query);
-	sqlite3_free(query);
+	__setRecord(__lastRecord, timestamp, eventData);
 }
 
 void PedometerLogger::__recordBatch(sensor_pedometer_data_t *eventData, uint64_t timestamp)
 {
-	std::string query("INSERT INTO " PEDOMETER_RECORD "(" \
+	flushCache();
+
+	std::string query("INSERT INTO " PEDOMETER_RECORD " (" \
 				KEY_START_TIME ", " \
 				KEY_END_TIME ", " \
 				KEY_WALK_STEPS ", " \
@@ -155,4 +170,16 @@ void PedometerLogger::__recordBatch(sensor_pedometer_data_t *eventData, uint64_t
 	IF_FAIL_VOID_TAG(query.at(query.size() - 1) == ')', _D, "No records");
 
 	executeQuery(query.c_str());
+
+	__setRecord(__lastRecord, timestamp, eventData);
+	__baseline = __lastRecord;
+}
+
+void PedometerLogger::__setRecord(DataRecord &record, uint64_t timestamp, sensor_pedometer_data_t *eventData)
+{
+	record.timestamp = timestamp;
+	record.walkSteps = static_cast<unsigned int>(eventData->values[1]);
+	record.runSteps  = static_cast<unsigned int>(eventData->values[2]);
+	record.distance  = eventData->values[3];
+	record.calories  = eventData->values[4];
 }

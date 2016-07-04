@@ -34,7 +34,7 @@ SensorProxy::SensorProxy() :
 
 SensorProxy::~SensorProxy()
 {
-	stop();
+	unlisten();
 }
 
 void SensorProxy::setSensor(sensor_type_t type)
@@ -62,7 +62,7 @@ void SensorProxy::setUserData(void *data)
 	userData = data;
 }
 
-bool SensorProxy::start()
+bool SensorProxy::listen()
 {
 	_D("#Sensor = %#x", sensorType);
 
@@ -90,7 +90,7 @@ bool SensorProxy::start()
 	return true;
 }
 
-void SensorProxy::stop()
+void SensorProxy::unlisten()
 {
 	IF_FAIL_VOID(sensorHandle >= 0);
 

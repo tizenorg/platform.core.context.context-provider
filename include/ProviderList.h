@@ -26,6 +26,13 @@
 #define LIB_PREFIX		"libctx-prvd-"
 #define LIB_EXTENSION	".so"
 
+/* Json Formats */
+#define TRIG_DEF_RANK			"\"Rank\":{\"type\":\"integer\",\"minimum\":1}"
+#define TRIG_DEF_TOTAL_COUNT	"\"TotalCount\":{\"type\":\"integer\",\"minimum\":0}"
+#define TRIG_DEF_TIME_OF_DAY	"\"TimeOfDay\":{\"type\":\"string\"}"
+#define TRIG_DEF_DAY_OF_WEEK	"\"DayOfWeek\":{\"enum\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
+#define TRIG_BOOL_ITEM_DEF(sbj)	"\"" sbj "\":{\"type\":\"integer\",\"minimum\":0,\"maximum\":1}"
+
 const struct {
 	const char *subject;
 	const char *library;
@@ -64,8 +71,8 @@ const struct {
 	{
 		SUBJ_ACTIVITY,
 		OPS_SUBSCRIBE,
-		"{\"Event\":{\"type\":\"string\", \"values\":[\"Detected\"]}}",
-		"{\"Accuracy\":{\"type\":\"string\", \"values\":[\"Low\", \"Normal\", \"High\"]}}"
+		"{\"Event\":{\"enum\":[\"Detected\"]}}",
+		"{\"Accuracy\":{\"enum\":[\"Low\",\"Normal\",\"High\"]}}"
 	},
 	{
 		SUBJ_APP_FREQUENCY,
@@ -81,8 +88,8 @@ const struct {
 		OPS_SUBSCRIBE | OPS_READ,
 		/* TODO remove Connecting, Connected */
 		"{"
-			"\"Medium\":{\"type\":\"string\",\"values\":[\"Voice\",\"Video\"]},"
-			"\"State\":{\"type\":\"string\",\"values\":[\"Idle\",\"Connecting\",\"Connected\"]},"
+			"\"Medium\":{\"enum\":[\"Voice\",\"Video\"]},"
+			"\"State\":{\"enum\":[\"Idle\",\"Connecting\",\"Connected\"]},"
 			"\"Address\":{\"type\":\"string\"}"
 		"}",
 		NULL
@@ -91,8 +98,8 @@ const struct {
 		SUBJ_STATE_CONTACTS,
 		OPS_SUBSCRIBE,
 		"{"
-			"\"Event\":{\"type\":\"string\",\"values\":[\"Changed\"]},"
-			"\"Type\":{\"type\":\"string\",\"values\":[\"MyProfile\",\"Person\"]}"
+			"\"Event\":{\"enum\":[\"Changed\"]},"
+			"\"Type\":{\"enum\":[\"MyProfile\",\"Person\"]}"
 		"}",
 		NULL
 	},
@@ -106,7 +113,7 @@ const struct {
 		SUBJ_STATE_EMAIL,
 		OPS_SUBSCRIBE,
 		"{"
-			"\"Event\":{\"type\":\"string\",\"values\":[\"Received\",\"Sent\"]}"
+			"\"Event\":{\"enum\":[\"Received\",\"Sent\"]}"
 		"}",
 		NULL
 	},
@@ -114,10 +121,10 @@ const struct {
 		SUBJ_PLACE_GEOFENCE,
 		OPS_SUBSCRIBE,
 		"{"
-			"\"Event\":{\"type\":\"string\",\"values\":[\"In\",\"Out\"]}"
+			"\"Event\":{\"enum\":[\"In\",\"Out\"]}"
 		"}",
 		"{"
-			"\"PlaceId\":{\"type\":\"integer\",\"min\":1}"
+			"\"PlaceId\":{\"type\":\"integer\",\"minimum\":1}"
 		"}"
 	},
 	{
@@ -125,7 +132,7 @@ const struct {
 		OPS_SUBSCRIBE | OPS_READ,
 		"{"
 			TRIG_BOOL_ITEM_DEF("IsConnected") ","
-			"\"Type\":{\"type\":\"string\",\"values\":[\"Normal\",\"Headset\",\"Bluetooth\"]}"
+			"\"Type\":{\"enum\":[\"Normal\",\"Headset\",\"Bluetooth\"]}"
 		"}",
 		NULL
 	},
@@ -145,8 +152,8 @@ const struct {
 		SUBJ_STATE_MESSAGE,
 		OPS_SUBSCRIBE,
 		"{"
-			"\"Event\":{\"type\":\"string\",\"values\":[\"Received\"]},"
-			"\"Type\":{\"type\":\"string\",\"values\":[\"SMS\",\"MMS\"]},"
+			"\"Event\":{\"enum\":[\"Received\"]},"
+			"\"Type\":{\"enum\":[\"SMS\",\"MMS\"]},"
 			"\"Address\":{\"type\":\"string\"}"
 		"}",
 		NULL
@@ -164,7 +171,7 @@ const struct {
 		SUBJ_STATE_BATTERY,
 		OPS_SUBSCRIBE | OPS_READ,
 		"{"
-			"\"Level\":{\"type\":\"string\",\"values\":[\"Empty\",\"Critical\",\"Low\",\"Normal\",\"High\",\"Full\"]},"
+			"\"Level\":{\"enum\":[\"Empty\",\"Critical\",\"Low\",\"Normal\",\"High\",\"Full\"]},"
 			TRIG_BOOL_ITEM_DEF("IsCharging")
 		"}",
 		NULL
@@ -179,7 +186,7 @@ const struct {
 		SUBJ_STATE_GPS,
 		OPS_SUBSCRIBE | OPS_READ,
 		"{"
-			"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Searching\",\"Connected\"]}"
+			"\"State\":{\"enum\":[\"Disabled\",\"Searching\",\"Connected\"]}"
 		"}",
 		NULL
 	},
@@ -199,8 +206,8 @@ const struct {
 		SUBJ_STATE_ALARM,
 		OPS_SUBSCRIBE,
 		"{"
-			"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
-			"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
+			"\"TimeOfDay\":{\"type\":\"integer\",\"minimum\":0,\"maximum\":1439},"
+			"\"DayOfWeek\":{\"enum\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]}"
 		"}",
 		NULL
 	},
@@ -208,9 +215,9 @@ const struct {
 		SUBJ_STATE_TIME,
 		OPS_READ,
 		"{"
-			"\"TimeOfDay\":{\"type\":\"integer\",\"min\":0,\"max\":1439},"
-			"\"DayOfWeek\":{\"type\":\"string\",\"values\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]},"
-			"\"DayOfMonth\":{\"type\":\"integer\",\"min\":1,\"max\":31}"
+			"\"TimeOfDay\":{\"type\":\"integer\",\"minimum\":0,\"maximum\":1439},"
+			"\"DayOfWeek\":{\"enum\":[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Weekday\",\"Weekend\"]},"
+			"\"DayOfMonth\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":31}"
 		"}",
 		NULL
 	},
@@ -218,7 +225,7 @@ const struct {
 		SUBJ_STATE_WIFI,
 		OPS_SUBSCRIBE | OPS_READ,
 		"{"
-			"\"State\":{\"type\":\"string\",\"values\":[\"Disabled\",\"Unconnected\",\"Connected\"]},"
+			"\"State\":{\"enum\":[\"Disabled\",\"Unconnected\",\"Connected\"]},"
 			"\"BSSID\":{\"type\":\"string\"}"
 		"}",
 		NULL

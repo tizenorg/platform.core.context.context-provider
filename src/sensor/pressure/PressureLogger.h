@@ -14,31 +14,34 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_SENSOR_LOGGER_H__
-#define __CONTEXT_SENSOR_LOGGER_H__
+#ifndef __CONTEXT_PRESSURE_LOGGER_H__
+#define __CONTEXT_PRESSURE_LOGGER_H__
 
-#include <DatabaseManager.h>
+#include "../SensorLogger.h"
+#include "../SensorProxy.h"
 
 namespace ctx {
 
-	class SensorLogger {
+	class PressureLogger : public SensorLogger, public SensorProxy {
 	public:
-		SensorLogger();
-		virtual ~SensorLogger();
+		PressureLogger();
+		~PressureLogger();
 
-		virtual bool start() = 0;
-		virtual void stop() = 0;
-		virtual void flushCache(bool force = false);
+		bool start();
+		void stop();
+		void flushCache(bool force = false);
 
 	protected:
-		bool executeQuery(const char *query);
-
-		virtual void removeExpired(const char *subject, const char *tableName, const char *timeKey);
+		void onEvent(sensor_data_t *eventData);
 
 	private:
-		uint64_t __lastRemovalTime;
-		DatabaseManager __dbMgr;
+		void __record(float pressure, uint64_t eventTime);
+		void __resetInsertionQuery();
+
+		uint64_t __lastEventTime;
+		uint32_t __cacheCount;
+		std::string __insertionQuery;
 	};
 }
 
-#endif /* __CONTEXT_SENSOR_LOGGER_H__ */
+#endif /* __CONTEXT_PRESSURE_LOGGER_H__ */

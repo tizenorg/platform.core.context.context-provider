@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_PRESSURE_PROVIDER_H__
-#define __CONTEXT_PRESSURE_PROVIDER_H__
+#ifndef __CONTEXT_PRESSURE_QUERIER_H__
+#define __CONTEXT_PRESSURE_QUERIER_H__
 
-#include "SensorProvider.h"
+#include "../Querier.h"
 
 namespace ctx {
 
-	class PressureProvider : public SensorProvider {
+	class PressureQuerier : public Querier {
 	public:
-		PressureProvider();
-		~PressureProvider();
+		PressureQuerier(ContextProvider *provider, Json option);
+		~PressureQuerier();
 
-		bool isSupported();
-
-	protected:
-		Querier* getQuerier(Json option);
+		int queryRaw(int startTime, int endTime);
+		int query(int startTime, int endTime);
+		int query(int startTime, int endTime, int anchor, int interval);
 	};
 }
 
-#endif /* _CONTEXT_PRESSURE_PROVIDER_H_ */
+#endif /* __CONTEXT_PRESSURE_QUERIER_H__ */
