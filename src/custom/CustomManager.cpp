@@ -29,6 +29,7 @@ static DatabaseManager __dbManager;
 static bool __isValidFact(std::string subject, Json& fact);
 static bool __checkValueInt(Json& tmpl, std::string key, int value);
 static bool __checkValueString(Json& tmpl, std::string key, std::string value);
+static bool __checkValueEnum(Json& tmpl, std::string key, std::string value);
 
 CustomManager::CustomManager() :
 	BasicProvider(SUBJ_CUSTOM)
@@ -216,7 +217,13 @@ bool __isValidFact(std::string subject, Json& fact)
 		std::string key = *it;
 
 		std::string type;
-		tmpl.get(key.c_str(), "type", &type);
+		ret = tmpl.get(key.c_str(), "type", &type);
+		if (!ret) {
+			int size = tmpl.getSize(key.c_str(), "enum");
+			IF_FAIL_RETURN_TAG(size >= 0, false, _E, "Invalid template");
+			type = "enum";
+		}
+
 		if (type == "integer") {
 			int val;
 			ret = fact.get(NULL, key.c_str(), &val);
@@ -231,6 +238,13 @@ bool __isValidFact(std::string subject, Json& fact)
 
 			ret = __checkValueString(tmpl, key, val_str);
 			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid value");
+		} else if (type == "enum") {
+			std::string val_str;
+			ret = fact.get(NULL, key.c_str(), &val_str);
+			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid data type");
+
+			ret = __checkValueEnum(tmpl, key, val_str);
+			IF_FAIL_RETURN_TAG(ret, false, _E, "Custom fact: invalid value");
 		} else {
 			_E("Custom fact: invalid data type");
 			return false;
@@ -244,11 +258,11 @@ bool __checkValueInt(Json& tmpl, std::string key, int value)
 {
 	int min, max;
 
-	if (tmpl.get(key.c_str(), "min", &min)) {
+	if (tmpl.get(key.c_str(), "minimum", &min)) {
 		IF_FAIL_RETURN(value >= min, false);
 	}
 
-	if (tmpl.get(key.c_str(), "max", &max)) {
+	if (tmpl.get(key.c_str(), "maximum", &max)) {
 		IF_FAIL_RETURN(value <= max, false);
 	}
 
@@ -257,13 +271,15 @@ bool __checkValueInt(Json& tmpl, std::string key, int value)
 
 bool __checkValueString(Json& tmpl, std::string key, std::string value)
 {
-	/* case1: any value is accepted */
-	if (tmpl.getSize(key.c_str(), "values") <= 0)
-		return true;
+	/* any value is accepted */
+	return true;
+}
 
-	/* case2: check acceptable value */
+bool __checkValueEnum(Json& tmpl, std::string key, std::string value)
+{
+	/* check acceptable value */
 	std::string tmplValue;
-	for (int i = 0; tmpl.getAt(key.c_str(), "values", i, &tmplValue); i++) {
+	for (int i = 0; tmpl.getAt(key.c_str(), "enum", i, &tmplValue); i++) {
 		if (tmplValue == value)
 			return true;
 	}
