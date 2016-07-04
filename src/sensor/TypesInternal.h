@@ -40,4 +40,7 @@
 /* Time Conversions */
 #define SEC_TO_MS(X)	((X) * 1000)
 
+/* SQL Helper */
+#define TIME_QUANTIZER(key)	"ROUND((CAST(" key " AS REAL) - %llu)/CAST(%llu AS REAL) + 0.5)"
+
 #endif	/* __CONTEXT_SENSOR_RECORDER_TYPES_INTERNAL_H__ */
