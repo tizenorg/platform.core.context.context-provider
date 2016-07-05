@@ -59,7 +59,7 @@ int PedometerQuerier::query(int startTime, int endTime, int anchor, int interval
 			"SELECT " PROJECTION \
 			" FROM " PEDOMETER_RECORD \
 			" WHERE " KEY_END_TIME " > %llu AND " KEY_END_TIME " <= %llu" \
-			" GROUP BY ROUND((" KEY_END_TIME " - %llu) / %llu + 0.5)" \
+			" GROUP BY " TIME_QUANTIZER(KEY_END_TIME) \
 			" ORDER BY " KEY_END_TIME " ASC",
 			SEC_TO_MS(static_cast<uint64_t>(startTime)), SEC_TO_MS(static_cast<uint64_t>(endTime)),
 			SEC_TO_MS(static_cast<uint64_t>(anchor)), SEC_TO_MS(static_cast<uint64_t>(interval)));
