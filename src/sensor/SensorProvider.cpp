@@ -156,13 +156,20 @@ int SensorProvider::__removeClient(std::string pkgId)
 
 	/* Check if there is no client anymore */
 	ret = __clientInfo.get(getSubject(), options);
-	IF_FAIL_RETURN(ret != ERR_NONE, ERR_NONE);
-	IF_FAIL_RETURN(ret == ERR_NO_DATA, ERR_OPERATION_FAILED);
 
-	/* Stop listening */
-	sensorLogger->stop();
+	if (ret == ERR_NONE) {
+		/* Still, one or more clients exist */
+		/* If necessary, the logger restarts its logging logic with updated parameters */
+		sensorLogger->start();
+		return ERR_NONE;
 
-	return ERR_NONE;
+	} else if (ret == ERR_NO_DATA) {
+		/* No client */
+		sensorLogger->stop();
+		return ERR_NONE;
+	}
+
+	return ERR_OPERATION_FAILED;
 }
 
 void SensorProvider::removeClient(std::string subject, std::string pkgId)

@@ -164,6 +164,20 @@ bool ClientInfo::remove(std::string subject, std::string pkgId)
 	return ret;
 }
 
+void ClientInfo::getParam(std::vector<Json> &options, const char *key, float *min, float *max)
+{
+	double val;
+
+	for (Json& opt : options) {
+		if (!opt.get(NULL, key, &val))
+			continue;
+		if (min)
+			*min = MIN(*min, static_cast<float>(val));
+		if (max)
+			*max = MAX(*max, static_cast<float>(val));
+	}
+}
+
 void ClientInfo::purgeClient(std::string pkgId)
 {
 	IF_FAIL_VOID_TAG(__dbMgr, _W, "DB not initialized");

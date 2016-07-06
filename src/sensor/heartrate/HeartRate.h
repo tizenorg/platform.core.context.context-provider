@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-#include <SensorRecorderTypes.h>
-#include <CreateProvider.h>
-#include "pedometer/Pedometer.h"
-#include "pressure/Pressure.h"
-#include "sleep/Sleep.h"
-#include "heartrate/HeartRate.h"
+#ifndef __CONTEXT_HEARTRATE_PROVIDER_H__
+#define __CONTEXT_HEARTRATE_PROVIDER_H__
 
-using namespace ctx;
+#include "../SensorProvider.h"
 
-extern "C" SO_EXPORT ContextProvider* CreateProvider(const char *subject)
-{
-	ADD_PROVIDER(SUBJ_SENSOR_PEDOMETER, PedometerProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_PRESSURE,  PressureProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_SLEEP_MONITOR,  SleepProvider);
-	ADD_PROVIDER(SUBJ_SENSOR_HEART_RATE,  HeartRateProvider);
+namespace ctx {
 
-	return NULL;
+	class HeartRateProvider : public SensorProvider {
+	public:
+		HeartRateProvider();
+		~HeartRateProvider();
+
+		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
+
+	protected:
+		Querier* getQuerier(Json option);
+	};
 }
+
+#endif /* _CONTEXT_HEARTRATE_PROVIDER_H_ */
