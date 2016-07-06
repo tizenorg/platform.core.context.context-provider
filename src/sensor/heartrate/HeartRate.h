@@ -31,6 +31,7 @@ namespace ctx {
 
 	protected:
 		Querier* getQuerier(Json option);
+		bool verifyOption(Json option);
 	};
 }
 

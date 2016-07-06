@@ -52,3 +52,19 @@ Querier* HeartRateProvider::getQuerier(Json option)
 	IF_FAIL_RETURN_TAG(querier, NULL, _E, "Memory allocation failed");
 	return querier;
 }
+
+bool HeartRateProvider::verifyOption(Json option)
+{
+	std::list<std::string> keys;
+	option.getKeys(&keys);
+
+	IF_FAIL_RETURN(keys.size() <= 1, false);
+
+	int interval = 0;
+	if (option.get(NULL, KEY_INTERVAL, &interval)) {
+		if (interval < MIN_MEASURING_INTERVAL || interval > MAX_MEASURING_INTERVAL)
+			return false;
+	}
+
+	return true;
+}

@@ -21,6 +21,9 @@
 #include "../SensorLogger.h"
 #include "../SensorProxy.h"
 
+#define MIN_MEASURING_INTERVAL	10		/* minutes */
+#define MAX_MEASURING_INTERVAL	1440	/* minutes */
+
 namespace ctx {
 
 	class HeartRateLogger : public SensorLogger, public SensorProxy, public ITimerListener {

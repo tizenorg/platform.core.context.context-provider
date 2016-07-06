@@ -25,7 +25,6 @@
 #define SAMPLING_INTERVAL	200		/* ms */
 #define VALID_HR_LB			30		/* BPM */
 #define MIN_VALID_COUNT		3
-#define MAX_TIMER_INTERVAL	1440	/* minutes */
 #define MEASURING_LIMIT		10000	/* ms */
 
 using namespace ctx;
@@ -61,7 +60,7 @@ bool HeartRateLogger::start()
 {
 	std::vector<Json> options;
 	ClientInfo clientInfo;
-	float interval = MAX_TIMER_INTERVAL;
+	float interval = MAX_MEASURING_INTERVAL;
 
 	if (clientInfo.get(SUBJ_SENSOR_HEART_RATE, options) != ERR_NONE)
 		return false;

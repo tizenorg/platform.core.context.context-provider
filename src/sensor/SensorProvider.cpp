@@ -115,12 +115,21 @@ int SensorProvider::write(Json data, Json *requestResult)
 		option.remove(NULL, KEY_RETENTION);
 	}
 
+	IF_FAIL_RETURN(verifyOption(option), ERR_INVALID_PARAMETER);
+
 	if (operation == VAL_START)
 		return __addClient(pkgId, retentionPeriod, option);
 	else if (operation == VAL_STOP)
 		return __removeClient(pkgId);
 
 	return ERR_NOT_SUPPORTED;
+}
+
+bool SensorProvider::verifyOption(Json option)
+{
+	std::list<std::string> keys;
+	option.getKeys(&keys);
+	return keys.size() == 0;
 }
 
 int SensorProvider::__addClient(std::string pkgId, int retentionPeriod, Json option)
