@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_H__
-#define __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_H__
+#ifndef _CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_H_
+#define _CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_H_
 
 #include <vector>
 #include "AppInactiveDetectorTypes.h"
@@ -23,15 +23,15 @@
 
 namespace ctx {
 
-	class inactive_detector_classificator
+	class InactiveDetectorClassificator
 	{
-		public:
-			inactive_detector_classificator();
-			~inactive_detector_classificator();
+	public:
+		InactiveDetectorClassificator();
+		~InactiveDetectorClassificator();
 
-			int classify(std::vector<app_t> *apps_with_weights);
-	};	/* class inactive_detector_classificator */
+		int classify(std::vector<AppInfo> *appsWithWeights);
+	};	/* class InactiveDetectorClassificator */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_H__ */
+#endif /* _CONTEXT_INACTIVE_DETECTOR_CLASSIFICATOR_H_ */

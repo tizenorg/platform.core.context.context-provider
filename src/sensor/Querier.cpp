@@ -47,7 +47,8 @@ int Querier::query(int startTime, int endTime)
 
 int Querier::query(int startTime, int endTime, int anchor, int interval)
 {
-	return ERR_INVALID_PARAMETER;
+	_D("Ignore anchor & interval");
+	return query(startTime, endTime);
 }
 
 void Querier::onTableCreated(unsigned int queryId, int error)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_APP_INACTIVE_DETECTOR_TYPES__
-#define __CONTEXT_APP_INACTIVE_DETECTOR_TYPES__
+#ifndef _CONTEXT_APP_INACTIVE_DETECTOR_TYPES_H_
+#define _CONTEXT_APP_INACTIVE_DETECTOR_TYPES_H_
 
 #include <string>
 
@@ -81,16 +81,16 @@ enum {
 #define APP_INACTIVE_DETECTOR_VALUE_PLACEHOLDER_VALUES		"$values"
 
 // Objects
-struct app_t {
+struct AppInfo {
 	int id;
-	std::string package_name;
-	int is_nodisplay;
-	int is_enabled;
-	int is_atboot;
-	int is_preloaded;
+	std::string packageName;
+	int isNodisplay;
+	int isEnabled;
+	int isAtBoot;
+	int isPreloaded;
 	double timestamp;
 	int weight;
-	int is_active;
+	int isActive;
 	int timeframe;
 };
 
@@ -110,5 +110,4 @@ struct app_t {
 #define CONTEXT_HISTORY_FILTER_TIME_INTERVAL_ONEMONTH	60*60*24*31
 
 
-
-#endif /* __CONTEXT_APP_INACTIVE_DETECTOR_TYPES__ */
+#endif /* _CONTEXT_APP_INACTIVE_DETECTOR_TYPES_H_ */

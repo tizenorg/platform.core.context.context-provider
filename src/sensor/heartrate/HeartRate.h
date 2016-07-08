@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <Types.h>
-#include "InactiveDetector.h"
-#include "AppInactiveDetectorTypes.h"
-#include "InactiveDetectorClassificator.h"
-#include "InactiveDetectorClassificatorKmeans.h"
 
-int ctx::InactiveDetectorClassificator::classify(std::vector<AppInfo> *appsWithWeights)
-{
-	InactiveDetectorClassificatorKmeans kmeans;
-	int error = kmeans.classify(appsWithWeights);
+#ifndef __CONTEXT_HEARTRATE_PROVIDER_H__
+#define __CONTEXT_HEARTRATE_PROVIDER_H__
 
-	return error;
+#include "../SensorProvider.h"
+
+namespace ctx {
+
+	class HeartRateProvider : public SensorProvider {
+	public:
+		HeartRateProvider();
+		~HeartRateProvider();
+
+		bool isSupported();
+		void getPrivilege(std::vector<const char*> &privilege);
+
+	protected:
+		Querier* getQuerier(Json option);
+		bool verifyOption(Json option);
+	};
 }
+
+#endif /* _CONTEXT_HEARTRATE_PROVIDER_H_ */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __CONTEXT_INACTIVE_DETECTOR_STORAGE_H__
-#define __CONTEXT_INACTIVE_DETECTOR_STORAGE_H__
+#ifndef _CONTEXT_INACTIVE_DETECTOR_STORAGE_H_
+#define _CONTEXT_INACTIVE_DETECTOR_STORAGE_H_
 
 #include <vector>
 #include "AppInactiveDetectorTypes.h"
@@ -24,41 +24,32 @@
 
 namespace ctx {
 
-	class inactive_detector_storage : public IDatabaseListener
+	class InactiveDetectorStorage : public IDatabaseListener
 	{
-		private:
-			//int type;  //TODO: enum
-			void inject_params(std::string& str,
-				const std::string& from,
-				const std::string& to);
+	private:
+		//int type;  //TODO: enum
+		void __injectParams(std::string& str, const std::string& from, const std::string& to);
+		void __jsonToObject(std::vector<Json>& records, std::vector<AppInfo> *appsWithWeights, bool resultMode);
+		std::string __getQueryGetApps(const char *subject, ctx::Json filter);
+		std::string __getQueryUpdateApps(std::vector<AppInfo> *appsWithWeights);
+		std::string __getSubqueryFormValues(std::vector<AppInfo> *appsWithWeights);
 
-			void json_to_object(std::vector<Json>& records,
-				std::vector<app_t> *apps_with_weights, bool result_mode);
+		void onTableCreated(unsigned int queryId, int error) {}
+		void onInserted(unsigned int queryId, int error, int64_t rowId) {}
+		void onExecuted(unsigned int queryId, int error, std::vector<Json>& records);
 
-			std::string query_get_apps(const char *subject,
-				ctx::Json filter);
+		DatabaseManager __dbManager;
 
-			std::string query_update_apps(std::vector<app_t> *apps_with_weights);
+	public:
+		InactiveDetectorStorage();
+		~InactiveDetectorStorage();
 
-			std::string subquery_form_values(std::vector<app_t> *apps_with_weights);
+		int read(const char *subject, ctx::Json filter);
 
-			void onTableCreated(unsigned int query_id, int error) {}
-			void onInserted(unsigned int query_id, int error, int64_t row_id) {}
-			void onExecuted(unsigned int query_id, int error, std::vector<Json>& records);
-
-			DatabaseManager __dbManager;
-
-		public:
-			inactive_detector_storage();
-			~inactive_detector_storage();
-
-			int read(const char *subject,
-				ctx::Json filter);
-
-			int update_ranks();
-			int get_apps_info_w_weights(double timestamp_from);
-	};	/* class inactive_detector_storage */
+		int updateRanks();
+		int getAppsInfoWithWeights(double timestampFrom);
+	};	/* class InactiveDetectorStorage */
 
 }	/* namespace ctx */
 
-#endif /* __CONTEXT_INACTIVE_DETECTOR_STORAGE_H__ */
+#endif /* _CONTEXT_INACTIVE_DETECTOR_STORAGE_H_ */

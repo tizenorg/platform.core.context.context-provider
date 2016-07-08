@@ -115,12 +115,21 @@ int SensorProvider::write(Json data, Json *requestResult)
 		option.remove(NULL, KEY_RETENTION);
 	}
 
+	IF_FAIL_RETURN(verifyOption(option), ERR_INVALID_PARAMETER);
+
 	if (operation == VAL_START)
 		return __addClient(pkgId, retentionPeriod, option);
 	else if (operation == VAL_STOP)
 		return __removeClient(pkgId);
 
 	return ERR_NOT_SUPPORTED;
+}
+
+bool SensorProvider::verifyOption(Json option)
+{
+	std::list<std::string> keys;
+	option.getKeys(&keys);
+	return keys.size() == 0;
 }
 
 int SensorProvider::__addClient(std::string pkgId, int retentionPeriod, Json option)
@@ -156,13 +165,20 @@ int SensorProvider::__removeClient(std::string pkgId)
 
 	/* Check if there is no client anymore */
 	ret = __clientInfo.get(getSubject(), options);
-	IF_FAIL_RETURN(ret != ERR_NONE, ERR_NONE);
-	IF_FAIL_RETURN(ret == ERR_NO_DATA, ERR_OPERATION_FAILED);
 
-	/* Stop listening */
-	sensorLogger->stop();
+	if (ret == ERR_NONE) {
+		/* Still, one or more clients exist */
+		/* If necessary, the logger restarts its logging logic with updated parameters */
+		sensorLogger->start();
+		return ERR_NONE;
 
-	return ERR_NONE;
+	} else if (ret == ERR_NO_DATA) {
+		/* No client */
+		sensorLogger->stop();
+		return ERR_NONE;
+	}
+
+	return ERR_OPERATION_FAILED;
 }
 
 void SensorProvider::removeClient(std::string subject, std::string pkgId)

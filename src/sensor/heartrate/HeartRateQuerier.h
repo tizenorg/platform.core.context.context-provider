@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <Types.h>
-#include "InactiveDetector.h"
-#include "AppInactiveDetectorTypes.h"
-#include "InactiveDetectorClassificator.h"
-#include "InactiveDetectorClassificatorKmeans.h"
 
-int ctx::InactiveDetectorClassificator::classify(std::vector<AppInfo> *appsWithWeights)
-{
-	InactiveDetectorClassificatorKmeans kmeans;
-	int error = kmeans.classify(appsWithWeights);
+#ifndef __CONTEXT_HEARTRATE_QUERIER_H__
+#define __CONTEXT_HEARTRATE_QUERIER_H__
 
-	return error;
+#include "../Querier.h"
+
+namespace ctx {
+
+	class HeartRateQuerier : public Querier {
+	public:
+		HeartRateQuerier(ContextProvider *provider, Json option);
+		~HeartRateQuerier();
+
+		int queryRaw(int startTime, int endTime);
+		int query(int startTime, int endTime);
+	};
 }
+
+#endif /* __CONTEXT_HEARTRATE_QUERIER_H__ */

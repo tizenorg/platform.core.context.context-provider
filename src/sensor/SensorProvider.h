@@ -39,6 +39,7 @@ namespace ctx {
 
 	protected:
 		virtual Querier* getQuerier(Json option) = 0;
+		virtual bool verifyOption(Json option);
 
 		SensorLogger *sensorLogger;
 

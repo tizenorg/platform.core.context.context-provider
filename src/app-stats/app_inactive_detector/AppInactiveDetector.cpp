@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,32 @@
  */
 
 #include <Types.h>
-#include <ContextManager.h>
 #include <Json.h>
 #include "AppInactiveDetector.h"
 #include "AppInactiveDetectorTypes.h"
 #include "InactiveDetector.h"
 
+ctx::AppInactiveDetectorProvider *ctx::AppInactiveDetectorProvider::__instance = NULL;
 
-ctx::app_inactive_detector_provider *ctx::app_inactive_detector_provider::__instance = NULL;
-
-ctx::app_inactive_detector_provider::app_inactive_detector_provider()
+ctx::AppInactiveDetectorProvider::AppInactiveDetectorProvider()
+	: ContextProvider(APP_INACTIVE_SUBJ_GET_APPS_INACTIVE)
 {
 }
 
-ctx::app_inactive_detector_provider::~app_inactive_detector_provider()
+ctx::AppInactiveDetectorProvider::~AppInactiveDetectorProvider()
 {
 }
 
-ctx::ContextProvider *ctx::app_inactive_detector_provider::create(void *data)
+ctx::ContextProvider *ctx::AppInactiveDetectorProvider::create(void *data)
 {
 	IF_FAIL_RETURN(!__instance, __instance);
-	__instance = new(std::nothrow) app_inactive_detector_provider();
+	__instance = new(std::nothrow) AppInactiveDetectorProvider();
 	IF_FAIL_RETURN_TAG(__instance, NULL, _E, "Memory allocation failed");
 	_I(BLUE("Created"));
 	return __instance;
 }
 
-void ctx::app_inactive_detector_provider::destroy(void *data)
+void ctx::AppInactiveDetectorProvider::destroy(void *data)
 {
 	IF_FAIL_VOID(__instance);
 	delete __instance;
@@ -49,31 +48,31 @@ void ctx::app_inactive_detector_provider::destroy(void *data)
 	_I(BLUE("Destroyed"));
 }
 
-int ctx::app_inactive_detector_provider::subscribe(const char *subject, ctx::Json option, ctx::Json* request_result)
+int ctx::AppInactiveDetectorProvider::subscribe(ctx::Json option, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::app_inactive_detector_provider::unsubscribe(const char *subject, ctx::Json option)
+int ctx::AppInactiveDetectorProvider::unsubscribe(ctx::Json option)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-int ctx::app_inactive_detector_provider::read(const char *subject, ctx::Json option, ctx::Json* request_result)
+int ctx::AppInactiveDetectorProvider::read(ctx::Json option, ctx::Json* requestResult)
 {
 	_I(BLUE("Read"));
 	_J("Option", option);
 
-	int error = engine->read(subject, option);
+	int error = __engine->read(APP_INACTIVE_SUBJ_GET_APPS_INACTIVE, option);
 	return error == ERR_NONE ? ERR_NONE : error;
 }
 
-int ctx::app_inactive_detector_provider::write(const char *subject, ctx::Json data, ctx::Json* request_result)
+int ctx::AppInactiveDetectorProvider::write(ctx::Json data, ctx::Json* requestResult)
 {
 	return ERR_NOT_SUPPORTED;
 }
 
-bool ctx::app_inactive_detector_provider::is_supported()
+bool ctx::AppInactiveDetectorProvider::isSupported()
 {
 	return true;
 }

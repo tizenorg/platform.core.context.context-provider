@@ -37,6 +37,8 @@ namespace ctx {
 		bool set(std::string subject, std::string pkgId, Json option, int retentionPeriod);
 		bool remove(std::string subject, std::string pkgId);
 
+		void getParam(std::vector<Json>& options, const char *key, float *min, float *max);
+
 		static void purgeClient(std::string pkgId);
 
 	private:
