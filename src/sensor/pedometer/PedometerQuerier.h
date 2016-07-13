@@ -26,6 +26,7 @@ namespace ctx {
 		PedometerQuerier(ContextProvider *provider, Json option);
 		~PedometerQuerier();
 
+		int queryRaw(int startTime, int endTime);
 		int query(int startTime, int endTime);
 		int query(int startTime, int endTime, int anchor, int interval);
 	};

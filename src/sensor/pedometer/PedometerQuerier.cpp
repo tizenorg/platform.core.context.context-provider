@@ -28,6 +28,15 @@
 	"MIN(" KEY_START_TIME ") AS " KEY_START_TIME ", " \
 	"MAX(" KEY_END_TIME ") AS " KEY_END_TIME
 
+#define PROJECTION_RAW \
+	KEY_WALK_STEPS " + " KEY_RUN_STEPS " AS " KEY_STEPS ", " \
+	KEY_WALK_STEPS ", " \
+	KEY_RUN_STEPS ", " \
+	KEY_DISTANCE ", " \
+	KEY_CALORIES ", " \
+	KEY_START_TIME ", " \
+	KEY_END_TIME
+
 using namespace ctx;
 
 PedometerQuerier::PedometerQuerier(ContextProvider *provider, Json option) :
@@ -37,6 +46,21 @@ PedometerQuerier::PedometerQuerier(ContextProvider *provider, Json option) :
 
 PedometerQuerier::~PedometerQuerier()
 {
+}
+
+int PedometerQuerier::queryRaw(int startTime, int endTime)
+{
+	char *sql = sqlite3_mprintf(
+			"SELECT " PROJECTION_RAW \
+			" FROM " PEDOMETER_RECORD \
+			" WHERE " KEY_END_TIME " > %llu AND " KEY_END_TIME " <= %llu" \
+			" ORDER BY " KEY_END_TIME " ASC",
+			SEC_TO_MS(static_cast<uint64_t>(startTime)), SEC_TO_MS(static_cast<uint64_t>(endTime)));
+
+	int ret = Querier::query(sql);
+	sqlite3_free(sql);
+
+	return ret;
 }
 
 int PedometerQuerier::query(int startTime, int endTime)
