@@ -39,6 +39,7 @@ const struct {
 } subjectLibraryList[] = {
 	{SUBJ_ACTIVITY,			"activity"},
 	{SUBJ_APP_STATS,		"app-stats"},
+	{SUBJ_BATTERY_STATS,	"battery-stats"},
 	{SUBJ_STATE_CALL,		"call"},
 	{SUBJ_STATE_CONTACTS,	"contacts"},
 	{SUBJ_CUSTOM,			"custom"},
