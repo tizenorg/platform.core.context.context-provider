@@ -15,6 +15,7 @@
  */
 
 #include "PlaceRecognitionProvider.h"
+#include <Util.h>
 
 void ctx::PlaceRecognitionProvider::getPrivilege(std::vector<const char*> &privilege)
 {
@@ -62,6 +63,8 @@ int ctx::PlaceRecognitionProvider::write(ctx::Json data, ctx::Json* requestResul
 
 bool ctx::PlaceRecognitionProvider::isSupported()
 {
-	/* TODO: This function should be implemented properly */
-	return true;
+	bool locationSupport = util::getSystemInfoBool("tizen.org/feature/location");
+	bool wifiSupport = util::getSystemInfoBool("tizen.org/feature/network.wifi");
+	_D("locationSupport = %d, wifiSupport = %d", locationSupport, wifiSupport);
+	return locationSupport && wifiSupport;
 }
