@@ -35,19 +35,19 @@ namespace ctx {
 		VisitDetector *__visitDetector;
 		int __timerId;
 		TimerManager __timerManager;
-		std::vector<Json> __dbGetPlaces();
-		std::map<std::string, std::string> __dbGetWifiAPsMap();
-		std::shared_ptr<ctx::Place> __placeFromJson(Json &row, std::map<std::string,
+		static std::vector<Json> __dbGetPlaces();
+		static std::map<std::string, std::string> __dbGetWifiAPsMap();
+		static std::shared_ptr<ctx::Place> __placeFromJson(Json &row, std::map<std::string,
 				std::string> &wifiAPsMap);
-		void __placeCategoryFromJson(Json &row, ctx::Place &place);
-		void __placeLocationFromJson(Json &row, ctx::Place &place);
-		void __placeWifiAPsFromJson(Json &row, std::map<std::string,
+		static void __placeCategoryFromJson(Json &row, ctx::Place &place);
+		static void __placeLocationFromJson(Json &row, ctx::Place &place);
+		static void __placeWifiAPsFromJson(Json &row, std::map<std::string,
 				std::string> &wifiAPsMap, ctx::Place &place);
-		void __placeCreateDateFromJson(Json &row, ctx::Place &place);
-		std::vector<std::shared_ptr<Place>> __placesFromJsons(
+		static void __placeCreateDateFromJson(Json &row, ctx::Place &place);
+		static std::vector<std::shared_ptr<Place>> __placesFromJsons(
 				std::vector<Json>& records,
 				std::map<std::string, std::string> &wifiAPsMap);
-		std::vector<std::shared_ptr<Place>> __getPlaces();
+		static std::vector<std::shared_ptr<Place>> __getPlaces();
 		static Json __composeJson(std::vector<std::shared_ptr<Place>> places);
 
 		bool onTimerExpired(int timerId);
@@ -57,7 +57,7 @@ namespace ctx {
 		~UserPlaces();
 
 		void setMode(PlaceRecogMode energyMode);
-		ctx::Json getPlaces();
+		static ctx::Json getPlaces();
 
 	};	/* class UserPlaces */
 
