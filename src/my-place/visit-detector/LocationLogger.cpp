@@ -175,7 +175,7 @@ void ctx::LocationLogger::__log(location_accessibility_state_e state)
 
 int ctx::LocationLogger::__dbCreateTable()
 {
-	ctx::DatabaseManager dbManager;
+	DatabaseManager dbManager;
 	bool ret = dbManager.createTable(0, LOCATION_TABLE_NAME, __LOCATION_CREATE_TABLE_COLUMNS, NULL, NULL);
 	_D("%s -> Table Creation Request", ret ? "SUCCESS" : "FAIL");
 	return 0;
@@ -194,7 +194,7 @@ int ctx::LocationLogger::__dbInsertLog(LocationEvent locationEvent)
 	data.set(NULL, LOCATION_COLUMN_METHOD, static_cast<int>(locationEvent.method));
 #endif /* TIZEN_ENGINEER_MODE */
 
-	ctx::DatabaseManager dbManager;
+	DatabaseManager dbManager;
 	int64_t rowId;
 	bool ret = dbManager.insertSync(LOCATION_TABLE_NAME, data, &rowId);
 	_D("%s -> DB: location table insert result", ret ? "SUCCESS" : "FAIL");

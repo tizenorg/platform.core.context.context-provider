@@ -27,6 +27,7 @@
 #include "../utils/Median.h"
 #include "../utils/DebugUtils.h"
 #include <gmodule.h>
+#include <DatabaseManager.h>
 
 #define SO_PATH "/usr/lib/context-service/libctx-prvd-my-place-visit-categer.so"
 
@@ -74,7 +75,6 @@ ctx::VisitDetector::VisitDetector(time_t startScan, PlaceRecogMode energyMode, b
 	__tolerance(VISIT_DETECTOR_TOLERANCE_DEPTH),
 	__entranceToPlace(false),
 	__periodSeconds(VISIT_DETECTOR_PERIOD_SECONDS_HIGH_ACCURACY),
-	__dbManager(testMode ? nullptr : new DatabaseManager()),
 	__entranceTime(0),
 	__departureTime(0)
 {
@@ -380,10 +380,11 @@ std::shared_ptr<ctx::Visits> ctx::VisitDetector::__getVisits()
 
 void ctx::VisitDetector::__dbCreateTables()
 {
-	bool ret = __dbManager->createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
+	DatabaseManager dbManager;
+	bool ret = dbManager.createTable(0, VISIT_TABLE, __VISIT_TABLE_COLUMNS);
 	_D("db: Visit Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 
-	ret = __dbManager->createTable(0, WIFI_APS_MAP_TABLE, __WIFI_APS_MAP_TABLE_COLUMNS);
+	ret = dbManager.createTable(0, WIFI_APS_MAP_TABLE, __WIFI_APS_MAP_TABLE_COLUMNS);
 	_D("db: Wifi AP Map Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -434,7 +435,8 @@ int ctx::VisitDetector::__dbInsertVisit(Visit visit)
 	__putVisitCategsToJson(visit.categs, data);
 
 	int64_t rowId;
-	bool ret = __dbManager->insertSync(VISIT_TABLE, data, &rowId);
+	DatabaseManager dbManager;
+	bool ret = dbManager.insertSync(VISIT_TABLE, data, &rowId);
 	_D("db: visit table insert result: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }
@@ -456,7 +458,8 @@ int ctx::VisitDetector::__dbInsertWifiAPsMap(Visit visit)
 	__wifiAPsMap.clear();
 	query << "; \
 			END TRANSACTION;";
-	bool ret = __dbManager->execute(0, query.str().c_str(), NULL);
+	DatabaseManager dbManager;
+	bool ret = dbManager.execute(0, query.str().c_str(), NULL);
 	_D("DB Wifi APs map insert request: %s", ret ? "SUCCESS" : "FAIL");
 	return ret;
 }

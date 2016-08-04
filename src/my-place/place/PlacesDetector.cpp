@@ -29,6 +29,7 @@
 #include <algorithm>
 #include "../facade/UserPlacesParams.h"
 #include "../utils/DebugUtils.h"
+#include <DatabaseManager.h>
 
 #define __DELETE_PLACES_QUERY "DELETE FROM " PLACE_TABLE
 
@@ -78,7 +79,8 @@ void ctx::PlacesDetector::detectPlaces()
 std::vector<ctx::Json> ctx::PlacesDetector::__dbGetVisits()
 {
 	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(__GET_VISITS_QUERY, &records);
+	DatabaseManager dbManager;
+	bool ret = dbManager.executeSync(__GET_VISITS_QUERY, &records);
 	_D("load visits execute query result: %s", ret ? "SUCCESS" : "FAIL");
 	return records;
 }
@@ -302,7 +304,8 @@ std::shared_ptr<ctx::graph::Graph> ctx::PlacesDetector::__graphFromVisits(const 
 void ctx::PlacesDetector::__dbDeletePlaces()
 {
 	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(__DELETE_PLACES_QUERY, &records);
+	DatabaseManager dbManager;
+	bool ret = dbManager.executeSync(__DELETE_PLACES_QUERY, &records);
 	_D("delete places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -322,7 +325,8 @@ void ctx::PlacesDetector::__dbDeleteOlderVisitsThan(time_t threshold)
 	query << " WHERE " << VISIT_COLUMN_END_TIME << " < " << threshold;
 	// query << " AND 0"; // XXX: Always false condition. Uncomment it for not deleting any visit during development.
 	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(query.str().c_str(), &records);
+	DatabaseManager dbManager;
+	bool ret = dbManager.executeSync(query.str().c_str(), &records);
 	_D("deleting visits older than: %d, result: %s", threshold, ret ? "SUCCESS" : "FAIL");
 }
 
@@ -332,13 +336,13 @@ void ctx::PlacesDetector::__dbDeleteOlderWifiAPsThan(time_t threshold)
 	query << "DELETE FROM " << WIFI_APS_MAP_TABLE;
 	query << " WHERE " << WIFI_APS_MAP_COLUMN_INSERT_TIME << " < " << threshold;
 	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(query.str().c_str(), &records);
+	DatabaseManager dbManager;
+	bool ret = dbManager.executeSync(query.str().c_str(), &records);
 	_D("deleting Wifi APs older than: %d, result: %s", threshold, ret ? "SUCCESS" : "FAIL");
 }
 
 ctx::PlacesDetector::PlacesDetector(bool testMode):
-	__testMode(testMode),
-	__dbManager(testMode ? nullptr : new DatabaseManager())
+	__testMode(testMode)
 {
 	if (testMode)
 		return;
@@ -347,7 +351,8 @@ ctx::PlacesDetector::PlacesDetector(bool testMode):
 
 void ctx::PlacesDetector::__dbCreateTable()
 {
-	bool ret = __dbManager->createTable(0, PLACE_TABLE, __PLACE_TABLE_COLUMNS);
+	DatabaseManager dbManager;
+	bool ret = dbManager.createTable(0, PLACE_TABLE, __PLACE_TABLE_COLUMNS);
 	_D("db: place Table Creation Result: %s", ret ? "SUCCESS" : "FAIL");
 }
 
@@ -372,7 +377,8 @@ void ctx::PlacesDetector::__dbInsertPlace(const Place &place)
 	data.set(NULL, PLACE_COLUMN_CREATE_DATE, static_cast<int>(place.createDate));
 
 	int64_t rowId;
-	bool ret = __dbManager->insertSync(PLACE_TABLE, data, &rowId);
+	DatabaseManager dbManager;
+	bool ret = dbManager.insertSync(PLACE_TABLE, data, &rowId);
 	_D("insert place execute query result: %s", ret ? "SUCCESS" : "FAIL");
 }
 

@@ -20,7 +20,6 @@
 #include <vector>
 #include <cstdint>
 #include <ITimerListener.h>
-#include <DatabaseManager.h>
 #include "../facade/UserPlacesTypes.h"
 #include <MyPlaceTypes.h>
 #include "Graph.h"
@@ -31,7 +30,6 @@ namespace ctx {
 
 	private:
 		bool __testMode;
-		DatabaseManager *__dbManager;
 
 		double __doubleValueFromJson(Json &row, const char* key);
 		Categs __visitCategsFromJson(Json &row);

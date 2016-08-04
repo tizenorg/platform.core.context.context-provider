@@ -21,6 +21,7 @@
 #include "UserPlaces.h"
 #include <MyPlaceTypes.h>
 #include <gmodule.h>
+#include <DatabaseManager.h>
 
 #define SO_PATH "/usr/lib/context-service/libctx-prvd-my-place-places-detector.so"
 
@@ -144,7 +145,8 @@ bool ctx::UserPlaces::onTimerExpired(int timerId)
 std::vector<ctx::Json> ctx::UserPlaces::__dbGetPlaces()
 {
 	std::vector<Json> records;
-	bool ret = __dbManager->executeSync(__GET_PLACES_QUERY, &records);
+	DatabaseManager dbManager;
+	bool ret = dbManager.executeSync(__GET_PLACES_QUERY, &records);
 	_D("load places execute query result: %s", ret ? "SUCCESS" : "FAIL");
 	return records;
 }
@@ -153,7 +155,8 @@ std::map<std::string, std::string> ctx::UserPlaces::__dbGetWifiAPsMap()
 {
 	std::vector<Json> records;
 	std::map<std::string, std::string> wifiAPsMap;
-	bool ret = __dbManager->executeSync(__GET_WIFI_APS_MAP_QUERY, &records);
+	DatabaseManager dbManager;
+	bool ret = dbManager.executeSync(__GET_WIFI_APS_MAP_QUERY, &records);
 	// TODO: add return statements if db fail
 	_D("load Wifi APs map (size = %d), result: %s", records.size(), ret ? "SUCCESS" : "FAIL");
 	std::string mac = "";

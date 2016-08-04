@@ -23,7 +23,6 @@
 #include <Json.h>
 #include <TimerManager.h>
 #include <ITimerListener.h>
-#include <DatabaseManager.h>
 #include "../visit-detector/VisitDetector.h"
 #include "../place/PlacesDetector.h"
 #include "UserPlacesTypes.h"
@@ -34,7 +33,6 @@ namespace ctx {
 
 	private:
 		VisitDetector *__visitDetector;
-		DatabaseManager *__dbManager;
 		int __timerId;
 		TimerManager __timerManager;
 		std::vector<Json> __dbGetPlaces();
